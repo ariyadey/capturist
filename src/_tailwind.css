@@ -1,0 +1,126 @@
+@import "../node_modules/.pnpm/tailwindcss@4.1.12/node_modules/tailwindcss/dist/lib.d.mts";
+
+@theme {
+  /*--color-*: initial;*/
+  /* COLORS */
+  --color-primary: var(--mat-sys-primary);
+  --color-on-primary: var(--mat-sys-on-primary);
+  --color-surface: var(--mat-sys-surface);
+  --color-on-surface: var(--mat-sys-on-surface);
+  --color-on-surface-variant: var(--mat-sys-on-surface-variant);
+  --color-error: var(--mat-sys-error);
+  --color-on-error: var(--mat-sys-on-error);
+  --color-outline: var(--mat-sys-outline);
+  --color-outline-variant: var(--mat-sys-outline-variant);
+  /* ALTERNATIVE THEME COLORS */
+  --color-primary-container: var(--mat-sys-primary-container);
+  --color-on-primary-container: var(--mat-sys-on-primary-container);
+  --color-secondary: var(--mat-sys-secondary);
+  --color-on-secondary: var(--mat-sys-on-secondary);
+  --color-secondary-container: var(--mat-sys-secondary-container);
+  --color-on-secondary-container: var(--mat-sys-on-secondary-container);
+  --color-tertiary: var(--mat-sys-tertiary);
+  --color-on-tertiary: var(--mat-sys-on-tertiary);
+  --color-tertiary-container: var(--mat-sys-tertiary-container);
+  --color-on-tertiary-container: var(--mat-sys-on-tertiary-container);
+  --color-error-container: var(--mat-sys-error-container);
+  --color-on-error-container: var(--mat-sys-on-error-container);
+  /* ALTERNATIVE SURFACE COLORS */
+  --color-surface-dim: var(--mat-sys-surface-dim);
+  --color-surface-bright: var(--mat-sys-surface-bright);
+  --color-surface-container-lowest: var(--mat-sys-surface-container-lowest);
+  --color-surface-container-low: var(--mat-sys-surface-container-low);
+  --color-surface-container: var(--mat-sys-surface-container);
+  --color-surface-container-high: var(--mat-sys-surface-container-high);
+  --color-surface-container-highest: var(--mat-sys-surface-container-highest);
+  /* TYPOGRAPHY */
+  /*--font-*: initial;*/
+  /*--text-*: initial;*/
+  /*--font-weight-*: initial;*/
+  /*--tracking-*: initial;*/
+  /*--leading-*: initial;*/
+  /* BREAKPOINTS */
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1920px;
+  --breakpoint-2xl: initial;
+  /* ELEVATION */
+  --shadow-0: var(--mat-sys-level0);
+  --shadow-1: var(--mat-sys-level1);
+  --shadow-2: var(--mat-sys-level2);
+  --shadow-3: var(--mat-sys-level3);
+  --shadow-4: var(--mat-sys-level4);
+  --shadow-5: var(--mat-sys-level5);
+  /* CORNERS */
+  --radius-none: var(--mat-sys-corner-none);
+  --radius-xs: var(--mat-sys-corner-extra-small);
+  --radius-sm: var(--mat-sys-corner-small);
+  --radius-md: var(--mat-sys-corner-medium);
+  --radius-lg: var(--mat-sys-corner-large);
+  --radius-xl: var(--mat-sys-corner-extra-large);
+  --radius-2xl: initial;
+  --radius-3xl: initial;
+  --radius-4xl: initial;
+  --radius-full: var(--mat-sys-corner-full);
+}
+
+@utility font-body-sm {
+  font: var(--mat-sys-body-small);
+}
+
+@utility font-body-md {
+  font: var(--mat-sys-body-medium);
+}
+
+@utility font-body-lg {
+  font: var(--mat-sys-body-large);
+}
+
+@utility font-display-sm {
+  font: var(--mat-sys-display-small);
+}
+
+@utility font-display-md {
+  font: var(--mat-sys-display-medium);
+}
+
+@utility font-display-lg {
+  font: var(--mat-sys-display-large);
+}
+
+@utility font-headline-sm {
+  font: var(--mat-sys-headline-small);
+}
+
+@utility font-headline-md {
+  font: var(--mat-sys-headline-medium);
+}
+
+@utility font-headline-lg {
+  font: var(--mat-sys-headline-large);
+}
+
+@utility font-label-sm {
+  font: var(--mat-sys-label-small);
+}
+
+@utility font-label-md {
+  font: var(--mat-sys-label-medium);
+}
+
+@utility font-label-lg {
+  font: var(--mat-sys-label-large);
+}
+
+@utility font-title-sm {
+  font: var(--mat-sys-title-small);
+}
+
+@utility font-title-md {
+  font: var(--mat-sys-title-medium);
+}
+
+@utility font-title-lg {
+  font: var(--mat-sys-title-large);
+}

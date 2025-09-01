@@ -1,0 +1,16 @@
+editorconfig: true
+plugins:
+  - prettier-plugin-organize-attributes
+  - prettier-plugin-organize-imports
+  - prettier-plugin-tailwindcss
+attributeGroups:
+  - $ANGULAR_STRUCTURAL_DIRECTIVE
+  - $ANGULAR_OUTPUT
+  - ^(name|\[name\])$
+  - ^(id|\[id\])$
+  - ^(class)|\[class\]$
+  - ^(cssClass|\[cssClass\])$
+  - (^class\.|\[class\.\])$
+  - ^(ngClass|\[ngClass\])$
+  - $ANGULAR_TWO_WAY_BINDING
+  - $ANGULAR_INPUT
