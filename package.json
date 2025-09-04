@@ -1,6 +1,7 @@
 {
   "name": "capturist",
   "version": "0.1.0",
+  "private": true,
   "packageManager": "pnpm@10.15.1",
   "scripts": {
     "ng": "ng",
@@ -9,7 +10,6 @@
     "watch": "ng build --watch --configuration development",
     "tauri": "tauri"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^20.2.3",
     "@angular/cdk": "^20.2.1",
