@@ -26,10 +26,14 @@ yarn-error.log
 
 # IDEs and editors
 .idea/*
+!.idea/codeStyles/
 !.idea/stylesheetLinters/
 !.idea/jsLinters/
 !.idea/inspectionProfiles/
 !.idea/prettier.xml
+!.idea/vcs.xml
+!.idea/modules.xml
+!.idea/compiler.xml
 .project
 .classpath
 .c9/
