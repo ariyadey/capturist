@@ -1,6 +1,7 @@
 use crate::desktop::{cli, window};
-use crate::ipc::deeplink::OAUTH_URI;
+use crate::ipc::deeplink::DeepLinkHost;
 use crate::shared::error::AppResult;
+use crate::shared::metadata::APP_ID;
 use crate::shared::storage::key::StorageKey;
 use crate::shared::{state, storage};
 use desktop::{autostart, shortcut, tray};
@@ -70,28 +71,33 @@ pub fn run() {
         .expect("Error while running Tauri application.");
 }
 
-// TODO: 06/11/2025 Test it
-// TODO: 06/11/2025 Add docs
+/// Handles the event when another instance of the application tries to start.
+///
+/// This function checks the command-line arguments of the new instance.
+/// If the new instance is an OAuth deep link or requests minimization, it does nothing.
+/// Otherwise, it brings the existing instance's window to the foreground.
 fn on_another_instance_trial(
     app_handle: &AppHandle,
     argv: Vec<String>,
     cwd: String,
 ) -> AppResult<()> {
-    log::info!("Another instance tried to start with args: {argv:?} and cwd: {cwd:?}.");
-    let app_args = argv.into_iter().collect::<HashSet<String>>();
-    let ignored_args = HashSet::from([
-        OAUTH_URI.to_string(),
-        format!("--{:?}", cli::Argument::Minimize),
-    ]);
-    if HashSet::is_disjoint(&app_args, &ignored_args) {
-        show_initial_window(app_handle)?;
+    log::info!("Another instance tried to start with args: {argv:#?} and cwd: {cwd:#?}.");
+
+    let oauth_url = format!("{APP_ID}://{}", DeepLinkHost::OAUTH);
+    let is_oauth_deep_link = argv.iter().any(|arg| arg.starts_with(&oauth_url));
+    let should_minimize = argv.contains(&format!("--{}", cli::Argument::Minimize));
+    if is_oauth_deep_link || should_minimize {
+        return Ok(());
     }
+    show_initial_window(app_handle)?;
 
     Ok(())
 }
 
 /// Shows the initial window based on whether the user is authenticated or not.
 fn show_initial_window(app_handle: &AppHandle) -> AppResult<()> {
+    log::info!("Showing the initial window based on whether the user is authenticated or not.");
+
     let minimize = app_handle
         .cli()
         .matches()?
