@@ -14,7 +14,7 @@ pub type AppSerializableResult<T> = Result<T, AppSerializableError>;
 ///
 /// TODO: polish doc
 #[derive(Debug, Serialize)]
-struct AppSerializableError {
+pub struct AppSerializableError {
     pub message: String,
 }
 
