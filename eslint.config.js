@@ -30,7 +30,7 @@ module.exports = tslint.config(
         "error",
         {
           type: "element",
-          prefix: "app",
+          prefix: "cpt",
           style: "kebab-case",
         },
       ],
