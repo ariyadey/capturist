@@ -3,12 +3,14 @@
   "productName": "capturist",
   "version": "0.1.0",
   "identifier": "me.ariyadey.capturist.app",
+
   "build": {
-    "beforeDevCommand": "pnpm start",
+    "beforeDevCommand": "npm start",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm build",
+    "beforeBuildCommand": "npm build",
     "frontendDist": "../dist/capturist/browser"
   },
+
   "app": {
     "windows": [
       {
