@@ -588,7 +588,6 @@ dependencies = [
  "tauri-plugin-opener",
  "tauri-plugin-single-instance",
  "tauri-plugin-store",
- "thiserror 2.0.16",
  "url",
 ]
 
