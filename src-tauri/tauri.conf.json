@@ -67,5 +67,17 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  "plugins": {
+    "cli": {
+      "description": "Capturist - A Todoist client to quickly add tasks",
+      "args": [
+        {
+          "name": "minimize"
+        },
+        {
+          "name": "quick-add"
+        }
+      ]
+    },
   }
 }
