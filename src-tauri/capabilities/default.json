@@ -1,10 +1,45 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "identifier": "default",
+  "platforms": [
+    "linux"
+  ],
+  "windows": [
+    "quick-add",
+    "authentication"
+  ],
   "permissions": [
+    "autostart:default",
+    "cli:default",
     "core:default",
-    "opener:default"
+    "core:app:allow-default-window-icon",
+    "core:event:default",
+    "core:menu:allow-new",
+    "core:tray:allow-new",
+    "core:window:allow-hide",
+    "core:window:allow-maximize",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-resizable",
+    "core:window:allow-show",
+    "deep-link:default",
+    "global-shortcut:default",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-register-all",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-unregister-all",
+    "log:default",
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://todoist.com/oauth/authorize*"
+        }
+      ]
+    },
+    "store:default"
   ]
 }
