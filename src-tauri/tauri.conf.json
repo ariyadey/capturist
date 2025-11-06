@@ -14,9 +14,42 @@
   "app": {
     "windows": [
       {
-        "title": "capturist",
-        "width": 800,
-        "height": 600
+        "alwaysOnTop": true,
+        "center": true,
+        "closable": false,
+        "create": false,
+        "decorations": false,
+        "dragDropEnabled": false,
+        "focus": true,
+        "fullscreen": false,
+        "label": "quick-add",
+        "maximized": true,
+        "resizable": true,
+        "shadow": false,
+        "skipTaskbar": true,
+        "title": "Capturist",
+        "transparent": true,
+        "visible": true,
+        "zoomHotkeysEnabled": false
+      },
+      {
+        "alwaysOnTop": false,
+        "center": true,
+        "closable": true,
+        "create": false,
+        "decorations": true,
+        "dragDropEnabled": true,
+        "focus": true,
+        "fullscreen": false,
+        "label": "authentication",
+        "maximized": false,
+        "resizable": false,
+        "shadow": true,
+        "skipTaskbar": false,
+        "title": "Capturist - Log in to Todoist",
+        "transparent": false,
+        "visible": true,
+        "zoomHotkeysEnabled": true
       }
     ],
     "security": {
