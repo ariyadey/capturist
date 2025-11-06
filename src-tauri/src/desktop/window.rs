@@ -62,17 +62,6 @@ pub fn set_up_current_window_synchronization(app_handle: &AppHandle) {
 pub fn init_quick_add_dialog(app_handle: &AppHandle, minimize: bool) -> AppResult<()> {
     log::info!("Opening the Quick-Add dialog...");
 
-    let authenticated = app_handle
-        .state::<AppState>()
-        .authenticated
-        .lock()
-        .unwrap()
-        .to_owned();
-    ensure!(
-        authenticated,
-        "Quick-Add dialog can't be opened unless the user is authenticated."
-    );
-
     let window = app_handle
         .get_webview_window(&WindowLabel::QuickAdd.to_string())
         .ok_or(tauri::Error::WebviewNotFound)
@@ -100,17 +89,6 @@ pub fn init_quick_add_dialog(app_handle: &AppHandle, minimize: bool) -> AppResul
 pub fn init_authentication_window(app_handle: &AppHandle, minimize: bool) -> AppResult<()> {
     log::info!("Opening the Authentication window...");
 
-    let authenticated = app_handle
-        .state::<AppState>()
-        .authenticated
-        .lock()
-        .unwrap()
-        .to_owned();
-    ensure!(
-        !authenticated,
-        "Authentication window won't be opened when the user is authenticated."
-    );
-
     let window = app_handle
         .get_webview_window(&WindowLabel::Authentication.to_string())
         .ok_or(tauri::Error::WebviewNotFound)
@@ -130,12 +108,12 @@ pub fn init_authentication_window(app_handle: &AppHandle, minimize: bool) -> App
 /// This function destroys all existing webview windows except the Quick-Add dialog,
 /// and then initializes and shows the Quick-Add dialog.
 fn switch_to_quick_add_dialog(app_handle: &AppHandle) -> AppResult<()> {
+    init_quick_add_dialog(app_handle, false)?;
     app_handle
         .webview_windows()
         .values()
         .filter(|w| w.label() != WindowLabel::QuickAdd.to_string())
         .try_for_each(|window| window.destroy())?;
-    init_quick_add_dialog(app_handle, false)?;
 
     Ok(())
 }
@@ -145,13 +123,13 @@ fn switch_to_quick_add_dialog(app_handle: &AppHandle) -> AppResult<()> {
 /// This function destroys all existing webview windows except the Authentication window,
 /// and then initializes and shows the Authentication window.
 fn switch_to_authentication_window(app_handle: &AppHandle) -> AppResult<()> {
+    init_authentication_window(app_handle, false)?;
     app_handle
         .webview_windows()
         .to_owned()
         .values()
         .filter(|w| w.label() != WindowLabel::Authentication.to_string())
         .try_for_each(|window| window.destroy())?;
-    init_authentication_window(app_handle, false)?;
 
     Ok(())
 }
