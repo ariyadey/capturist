@@ -1,0 +1,40 @@
+<div class="bg-surface-container-lowest flex h-full w-full items-center justify-center">
+  <div class="flex flex-row justify-center gap-x-12 p-8">
+    <div class="flex max-w-[350px] flex-col items-start gap-4">
+      <div>
+        <img alt="Todoist Logo" height="32" ngSrc="/img/todoist-extended.svg" width="122" />
+      </div>
+      <h1>Log in</h1>
+      @if (!authenticationClicked()) {
+        <p>Click below to securely log in. We'll bring you right back here after you're done.</p>
+        <button (click)="authenticate()" mat-flat-button>Continue in your browser</button>
+        <div class="font-label-md text-on-surface-variant">
+          Don't have an account?
+          <a
+            class="text-primary font-bold hover:underline"
+            href="https://app.todoist.com/auth/signup"
+            target="_blank"
+          >
+            Sign up
+          </a>
+        </div>
+      } @else {
+        <p>Go to the browser to complete log in.</p>
+        <div class="font-label-md text-on-surface-variant flex flex-col gap-1">
+          Not seeing the browser tab?
+          <a
+            (click)="authenticationClicked.set(false)"
+            (keydown.enter)="authenticationClicked.set(false)"
+            class="text-primary font-label-md cursor-pointer font-bold! hover:underline"
+            tabindex="0"
+          >
+            Go back and tray again
+          </a>
+        </div>
+      }
+    </div>
+    <div class="flex w-80 items-center">
+      <img alt="Landing Image" height="560" ngSrc="/img/landing-image.png" width="700" />
+    </div>
+  </div>
+</div>
