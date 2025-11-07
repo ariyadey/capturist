@@ -1,6 +1,7 @@
 @use "tailwind";
 @use "@angular/material" as mat;
-@use "theme-colors" as colors;
+@use "colors" as colors;
+@use "fonts" as fonts;
 @use "sass:map";
 
 /* Material Colors */
@@ -21,39 +22,20 @@
 /* Material Typography */
 //noinspection SassScssUnresolvedMixin
 :root {
-  &[dir="ltr"] {
-    @include mat.theme(
-      (
-        typography: (
-          brand-family: (
-            Arya,
-            sans-serif,
-          ),
-          plain-family: (
-            Roboto,
-            sans-serif,
-          ),
+  @include mat.theme(
+    (
+      typography: (
+        brand-family: (
+          "Noto Sans",
+          sans-serif,
         ),
-      )
-    );
-  }
-
-  &[dir="rtl"] {
-    @include mat.theme(
-      (
-        typography: (
-          brand-family: (
-            Zain,
-            sans-serif,
-          ),
-          plain-family: (
-            Vazirmatn,
-            sans-serif,
-          ),
+        plain-family: (
+          "Noto Sans",
+          sans-serif,
         ),
-      )
-    );
-  }
+      ),
+    )
+  );
 }
 
 /* Material Components */
