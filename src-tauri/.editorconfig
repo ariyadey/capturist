@@ -1,0 +1,4 @@
+# Editor configuration, see https://editorconfig.org
+[*.rs]
+tab_width = 4
+indent_size = tab
