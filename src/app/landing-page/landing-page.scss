@@ -1,0 +1,10 @@
+@use "@angular/material" as mat;
+
+:host {
+  @include mat.button-overrides(
+    (
+      filled-container-height: 36px,
+      filled-horizontal-padding: 16px,
+    )
+  );
+}

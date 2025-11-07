@@ -7,7 +7,7 @@
       <h1>Log in</h1>
       @if (!authenticationClicked()) {
         <p>Click below to securely log in. We'll bring you right back here after you're done.</p>
-        <button (click)="authenticate()" mat-flat-button>Continue in your browser</button>
+        <button (click)="authenticate()" matButton="filled">Continue in your browser</button>
         <div class="font-label-md text-on-surface-variant">
           Don't have an account?
           <a
@@ -25,7 +25,7 @@
           <a
             (click)="authenticationClicked.set(false)"
             (keydown.enter)="authenticationClicked.set(false)"
-            class="text-primary font-label-md cursor-pointer font-bold! hover:underline"
+            class="text-primary cursor-pointer font-bold hover:underline"
             tabindex="0"
           >
             Go back and tray again

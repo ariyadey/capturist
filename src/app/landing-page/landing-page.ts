@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 @Component({
   selector: "cpt-landing-page",
   templateUrl: "./landing-page.html",
-  styles: ``,
+  styleUrls: ["./landing-page.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgOptimizedImage, MatButton],
 })

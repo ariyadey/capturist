@@ -4,8 +4,16 @@
 @use "fonts" as fonts;
 @use "sass:map";
 
+/* Material Density */
+:root {
+  @include mat.theme(
+    (
+      density: -2,
+    )
+  );
+}
+
 /* Material Colors */
-//noinspection SassScssUnresolvedMixin
 :root {
   @include mat.theme(
     (
@@ -20,7 +28,6 @@
 }
 
 /* Material Typography */
-//noinspection SassScssUnresolvedMixin
 :root {
   @include mat.theme(
     (
