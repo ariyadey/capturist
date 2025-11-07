@@ -50,20 +50,26 @@
   @include mat.button-overrides(
     (
       filled-container-shape: 5px,
+      filled-horizontal-padding: 12px,
       text-container-shape: 5px,
+      text-horizontal-padding: 12px,
     )
   );
 
   @include mat.dialog-overrides(
     (
       container-shape: 10px,
-      with-actions-content-padding: 0px,
+      content-padding: 16px,
+      with-actions-content-padding: 16px,
+      actions-padding: 16px,
+      container-elevation-shadow: var(--mat-sys-level5),
+      container-color: var(--mat-sys-surface-container-lowest),
     )
   );
 
-  @include mat.form-field-overrides(
+  @include mat.divider-overrides(
     (
-      filled-container-color: var(--mat-sys-surface),
+      color: color-mix(in srgb, var(--mat-sys-on-surface) 10%, white),
     )
   );
 }
