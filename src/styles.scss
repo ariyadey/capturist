@@ -1,15 +1,16 @@
 @use "tailwind";
 @use "@angular/material" as mat;
-@use "theme";
+@use "theme-colors" as colors;
 @use "sass:map";
 
 /* Material Colors */
+//noinspection SassScssUnresolvedMixin
 :root {
   @include mat.theme(
     (
       color: (
-        primary: theme.$primary-palette,
-        tertiary: theme.$tertiary-palette,
+        primary: colors.$primary-palette,
+        tertiary: colors.$tertiary-palette,
         theme-type: color-scheme,
       ),
       density: 0,
@@ -18,6 +19,7 @@
 }
 
 /* Material Typography */
+//noinspection SassScssUnresolvedMixin
 :root {
   &[dir="ltr"] {
     @include mat.theme(
