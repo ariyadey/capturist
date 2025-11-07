@@ -93,7 +93,7 @@
     color-scheme: dark;
   }
 
-  @apply bg-surface;
+  @apply bg-transparent;
   @apply text-on-surface;
   @apply font-body-lg;
   @apply selection:text-on-primary selection:bg-primary;
