@@ -1,0 +1,29 @@
+@use "@angular/material" as mat;
+
+:host {
+  .task-name-field {
+    @include mat.form-field-overrides(
+      (
+        container-text-size: 20px,
+        container-text-weight: 600,
+        container-text-line-height: 25px,
+      )
+    );
+  }
+
+  .task-description-field {
+    @include mat.form-field-overrides(
+      (
+        container-text-size: 13px,
+        container-text-weight: 400,
+        container-text-line-height: 22px,
+      )
+    );
+  }
+
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--mat-sys-on-surface),
+    )
+  );
+}

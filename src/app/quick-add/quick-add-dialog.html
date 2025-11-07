@@ -1,0 +1,48 @@
+<!-- TODO
+      The text of the task that is parsed.
+      It can include a due date in free form text,
+      a project name starting with the # character (without spaces),
+      a label starting with the @ character, an assignee starting with the + character,
+      a priority (e.g., p1), a deadline between {} (e.g. {in 3 days}),
+      or a description starting from // until the end of the text.
+-->
+<form (ngSubmit)="onSubmit()" [formGroup]="form" class="w-[560px]">
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="task-name-field" subscriptSizing="dynamic">
+        <textarea
+          [formControl]="form.controls.name"
+          cdkAutosizeMaxRows="5"
+          cdkAutosizeMinRows="1"
+          cdkTextareaAutosize
+          matInput
+          maxlength="500"
+          placeholder="Task name"
+        ></textarea>
+      </mat-form-field>
+      <mat-form-field class="task-description-field" subscriptSizing="dynamic">
+        <textarea
+          [formControl]="form.controls.description"
+          cdkAutosizeMaxRows="8"
+          cdkAutosizeMinRows="1"
+          cdkTextareaAutosize
+          matInput
+          maxlength="16383"
+          placeholder="Description"
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-divider />
+  <mat-dialog-actions>
+    <button matButton="text" matDialogClose>Cancel</button>
+    <button
+      [class.cursor-not-allowed]="form.invalid"
+      [disabled]="form.invalid"
+      matButton="filled"
+      type="submit"
+    >
+      Add task
+    </button>
+  </mat-dialog-actions>
+</form>
