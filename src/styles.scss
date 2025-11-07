@@ -40,27 +40,25 @@
 
 /* Material Components */
 :root {
-  @include mat.sidenav-overrides(
+  @include mat.button-overrides(
     (
-      container-width: 256px,
-      container-divider-color: var(--mat-sys-outline-variant),
+      filled-container-shape: 5px,
+      text-container-shape: 5px,
     )
   );
 
-  @include mat.divider-overrides(
+  @include mat.dialog-overrides(
     (
-      color: var(--mat-sys-outline-variant),
+      container-shape: 10px,
+      with-actions-content-padding: 0px,
     )
   );
 
-  @media (width >= 960px) {
-    @include mat.sidenav-overrides(
-      (
-        container-width: 88px,
-      )
-    );
-    --mat-sidenav-container-background-color: var(--mat-sys-surface-container);
-  }
+  @include mat.form-field-overrides(
+    (
+      filled-container-color: var(--mat-sys-surface),
+    )
+  );
 }
 
 /* Root Styles */
@@ -84,21 +82,14 @@
 h1 {
   @apply font-display-md;
   @apply font-bold;
-  @apply sm:font-display-lg;
-  @apply sm:leading-tight;
-  @apply sm:font-bold;
-  @apply md:text-7xl;
 }
 
 h2 {
   @apply font-headline-sm;
-  @apply md:font-headline-md;
 }
 
 h3 {
   @apply font-headline-sm;
-  @apply md:font-headline-md;
-  font-size: 26px;
 }
 
 h4 {
@@ -121,72 +112,5 @@ blockquote {
 
   p {
     @apply flex flex-col gap-3;
-  }
-}
-
-.card-content {
-  @apply mt-5;
-}
-
-[truncate] {
-  @apply relative;
-  @apply overflow-hidden;
-  transition: max-height 0.5s ease-in-out;
-
-  &.truncated::after {
-    content: "";
-    @apply absolute inset-x-0 bottom-0;
-    @apply h-20;
-    background: linear-gradient(to top, var(--mat-sys-surface-container-low), transparent);
-    @apply pointer-events-none;
-  }
-
-  &.expanded {
-    @apply max-h-[2000px];
-  }
-
-  .more-less-btn {
-    @apply absolute end-0 bottom-0 ps-28;
-    @apply select-none;
-    @apply cursor-pointer;
-    @apply font-body-lg;
-    @apply text-on-surface-variant;
-    @apply z-10;
-    transition:
-      opacity 0.3s ease-in-out,
-      visibility 0.3s ease-in-out;
-    will-change: opacity, visibility;
-
-    &.visible-btn {
-      @apply visible opacity-100;
-      @apply pointer-events-auto;
-    }
-
-    &.hidden-btn {
-      @apply invisible opacity-0;
-      @apply pointer-events-none;
-    }
-
-    mat-card & {
-      background:
-        linear-gradient(to bottom, transparent, var(--mat-sys-surface-container-low) 50%),
-        linear-gradient(
-          to right,
-          transparent,
-          var(--mat-sys-surface-container-low) 50%,
-          var(--mat-sys-surface-container-low) 100%
-        );
-    }
-
-    [dir="rtl"] mat-card & {
-      background:
-        linear-gradient(to bottom, transparent, var(--mat-sys-surface-container-low) 50%),
-        linear-gradient(
-          to left,
-          transparent,
-          var(--mat-sys-surface-container-low) 50%,
-          var(--mat-sys-surface-container-low) 100%
-        );
-    }
   }
 }
