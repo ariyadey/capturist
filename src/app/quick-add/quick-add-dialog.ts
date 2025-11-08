@@ -57,6 +57,7 @@ export class QuickAddDialog {
         this.form.disable();
       } else {
         this.form.enable();
+        this.taskNameTextArea()?.nativeElement.focus();
       }
     });
   }
@@ -73,7 +74,6 @@ export class QuickAddDialog {
       })
       .then(async (task) => {
         this.form.reset();
-        setTimeout(() => this.taskNameTextArea()?.nativeElement.focus());
         await this.notification.send({ title: "Task added", body: task.url });
       })
       .catch(async (error: TodoistRequestError) => {
