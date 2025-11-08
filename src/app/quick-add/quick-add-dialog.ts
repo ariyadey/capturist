@@ -71,7 +71,7 @@ export class QuickAddDialog {
         note: this.form.getRawValue().description,
         autoReminder: true,
       })
-      .then(async task => {
+      .then(async (task) => {
         this.form.reset();
         setTimeout(() => this.taskNameTextArea()?.nativeElement.focus());
         await this.notification.send({ title: "Task added", body: task.url });

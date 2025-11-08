@@ -57,21 +57,17 @@
   );
 
   @include mat.form-field-overrides(
-      (
-        container-height: 0,
-        container-vertical-padding: 2px,
-        state-layer-color: transparent,
-        filled-active-indicator-height: 0px,
-        filled-focus-active-indicator-height: 0px,
-        filled-caret-color: var(--mat-sys-on-surface),
-        filled-container-color: transparent,
-        filled-input-text-color: var(--mat-sys-on-surface),
-        filled-input-text-placeholder-color: color-mix(
-            in srgb,
-            var(--mat-sys-on-surface) 50%,
-            white
-        ),
-      )
+    (
+      container-height: 0,
+      container-vertical-padding: 2px,
+      state-layer-color: transparent,
+      filled-active-indicator-height: 0px,
+      filled-focus-active-indicator-height: 0px,
+      filled-caret-color: var(--mat-sys-on-surface),
+      filled-container-color: transparent,
+      filled-input-text-color: var(--mat-sys-on-surface),
+      filled-input-text-placeholder-color: color-mix(in srgb, var(--mat-sys-on-surface) 50%, white),
+    )
   );
 
   @include mat.dialog-overrides(
@@ -147,7 +143,9 @@ blockquote {
 }
 
 .quick-add-panel {
-  @include mat.dialog-overrides((
-    with-actions-content-padding: 16px 0px,
-  ));
+  @include mat.dialog-overrides(
+    (
+      with-actions-content-padding: 16px 0px,
+    )
+  );
 }

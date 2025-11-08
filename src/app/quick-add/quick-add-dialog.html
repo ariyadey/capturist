@@ -11,10 +11,10 @@
     <div class="flex flex-col">
       <mat-form-field class="task-name-field" subscriptSizing="dynamic">
         <textarea
-          #taskNameTextArea
           (keydown.control.enter)="onSubmit()"
           (keydown.enter)="$event.preventDefault(); onSubmit()"
           [formControl]="form.controls.name"
+          #taskNameTextArea
           cdkAutosizeMaxRows="5"
           cdkAutosizeMinRows="1"
           cdkTextareaAutosize

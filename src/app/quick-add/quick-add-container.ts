@@ -21,17 +21,17 @@ export class QuickAddContainer implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.openQuickAdd();
-    const quickAddUnlistenFn = await this.currentWebviewWindow.listen(IpcEvent.QUICK_ADD, _ =>
+    const quickAddUnlistenFn = await this.currentWebviewWindow.listen(IpcEvent.QUICK_ADD, (_) =>
       this.openQuickAdd(),
     );
-    const blurUnlistenFn = await this.currentWebviewWindow.listen("tauri://blur", _ =>
+    const blurUnlistenFn = await this.currentWebviewWindow.listen("tauri://blur", (_) =>
       this.currentWebviewWindow.hide(),
     );
     this.unlistenFns.push(quickAddUnlistenFn, blurUnlistenFn);
   }
 
   ngOnDestroy() {
-    this.unlistenFns.forEach(unlistenFn => unlistenFn());
+    this.unlistenFns.forEach((unlistenFn) => unlistenFn());
   }
 
   protected openQuickAdd() {

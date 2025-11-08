@@ -4,13 +4,14 @@ plugins:
   - prettier-plugin-organize-imports
   - prettier-plugin-tailwindcss
 attributeGroups:
+  - ^(#)$
   - $ANGULAR_STRUCTURAL_DIRECTIVE
   - $ANGULAR_OUTPUT
   - ^(name|\[name\])$
   - ^(id|\[id\])$
   - ^(class)|\[class\]$
   - ^(cssClass|\[cssClass\])$
-  - (^class\.|\[class\.\])$
+  - ^(class\.|\[class\.\])$
   - ^(ngClass|\[ngClass\])$
   - $ANGULAR_TWO_WAY_BINDING
   - $ANGULAR_INPUT
