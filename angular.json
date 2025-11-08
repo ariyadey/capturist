@@ -10,11 +10,6 @@
   "projects": {
     "capturist": {
       "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "inlineStyle": true
-        }
-      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "cpt",
@@ -32,7 +27,8 @@
                 "input": "./public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": ["src/styles.scss"],
+            "inlineStyleLanguage": "scss"
           },
           "configurations": {
             "production": {
@@ -86,21 +82,15 @@
   },
   "schematics": {
     "@schematics/angular:component": {
+      "inlineStyle": true,
       "changeDetection": "OnPush"
     },
-    "@schematics/angular:directive": {
-    },
-    "@schematics/angular:service": {
-    },
-    "@schematics/angular:guard": {
-    },
-    "@schematics/angular:interceptor": {
-    },
-    "@schematics/angular:module": {
-    },
-    "@schematics/angular:pipe": {
-    },
-    "@schematics/angular:resolver": {
-    }
+    "@schematics/angular:directive": {},
+    "@schematics/angular:service": {},
+    "@schematics/angular:guard": {},
+    "@schematics/angular:interceptor": {},
+    "@schematics/angular:module": {},
+    "@schematics/angular:pipe": {},
+    "@schematics/angular:resolver": {}
   }
 }
