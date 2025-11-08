@@ -60,6 +60,8 @@ export class QuickAddDialog {
   }
 
   onSubmit() {
+    if (this.form.invalid || this.isAdding()) return;
+
     this.isAdding.set(true);
     this.todoistApi
       .quickAddTask({
@@ -70,7 +72,6 @@ export class QuickAddDialog {
       .catch((error: TodoistRequestError) => {
         console.error(error.isAuthenticationError());
         // TODO: 05/09/2025 Show error message
-        // TODO: 08/11/2025 ctrl+enter handling
       })
       .finally(() => {
         this.isAdding.set(false);

@@ -12,6 +12,8 @@
       <mat-form-field class="task-name-field" subscriptSizing="dynamic">
         <textarea
           #taskNameTextArea
+          (keydown.control.enter)="onSubmit()"
+          (keydown.enter)="$event.preventDefault(); onSubmit()"
           [formControl]="form.controls.name"
           cdkAutosizeMaxRows="5"
           cdkAutosizeMinRows="1"
@@ -23,6 +25,7 @@
       </mat-form-field>
       <mat-form-field class="task-description-field" subscriptSizing="dynamic">
         <textarea
+          (keydown.control.enter)="onSubmit()"
           [formControl]="form.controls.description"
           cdkAutosizeMaxRows="8"
           cdkAutosizeMinRows="1"
