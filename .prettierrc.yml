@@ -14,3 +14,7 @@ attributeGroups:
   - ^(ngClass|\[ngClass\])$
   - $ANGULAR_TWO_WAY_BINDING
   - $ANGULAR_INPUT
+overrides:
+  - files: "*.html"
+    options:
+      parser: angular
