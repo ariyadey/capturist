@@ -26,4 +26,15 @@
       text-label-text-color: var(--mat-sys-on-surface),
     )
   );
+
+  .is-adding {
+    button[type="submit"] {
+      @include mat.button-overrides(
+        (
+          filled-container-color: transparent,
+          filled-disabled-container-color: transparent,
+        )
+      );
+    }
+  }
 }

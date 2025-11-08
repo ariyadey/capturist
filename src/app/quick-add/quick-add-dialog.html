@@ -6,7 +6,7 @@
       a priority (e.g., p1), a deadline between {} (e.g. {in 3 days}),
       or a description starting from // until the end of the text.
 -->
-<form (ngSubmit)="onSubmit()" [formGroup]="form" class="w-[560px]">
+<form (ngSubmit)="onSubmit()" [class.is-adding]="isAdding()" [formGroup]="form" class="w-[560px]">
   <mat-dialog-content>
     <div class="flex flex-col">
       <mat-form-field class="task-name-field" subscriptSizing="dynamic">
@@ -37,12 +37,16 @@
   <mat-dialog-actions>
     <button matButton="text" matDialogClose>Cancel</button>
     <button
-      [class.cursor-not-allowed]="form.invalid"
-      [disabled]="form.invalid"
+      [class.cursor-not-allowed]="form.invalid || isAdding()"
+      [disabled]="form.invalid || isAdding()"
       matButton="filled"
       type="submit"
     >
-      Add task
+      @if (isAdding()) {
+        <mat-spinner [diameter]="20" />
+      } @else {
+        Add task
+      }
     </button>
   </mat-dialog-actions>
 </form>
