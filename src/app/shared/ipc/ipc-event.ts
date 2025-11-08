@@ -1,4 +1,4 @@
-export const enum AppEvent {
+export const enum IpcEvent {
   AUTHENTICATION = "authentication",
   QUICK_ADD = "quick-add",
 }

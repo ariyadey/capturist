@@ -17,6 +17,7 @@ import { MatFormField } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Todoist } from "@cpt/shared/external/todoist";
+import { NativeNotification } from "@cpt/shared/ipc/native-notification";
 import { TodoistRequestError } from "@doist/todoist-api-typescript";
 
 @Component({
@@ -40,6 +41,7 @@ import { TodoistRequestError } from "@doist/todoist-api-typescript";
 })
 export class QuickAddDialog {
   protected readonly todoistApi = inject(Todoist).api;
+  protected readonly notification = inject(NativeNotification);
   protected readonly form = inject(NonNullableFormBuilder).group({
     name: ["", Validators.required],
     description: [""],
@@ -69,14 +71,17 @@ export class QuickAddDialog {
         note: this.form.getRawValue().description,
         autoReminder: true,
       })
-      .catch((error: TodoistRequestError) => {
-        console.error(error.isAuthenticationError());
-        // TODO: 05/09/2025 Show error message
+      .then(async task => {
+        this.form.reset();
+        setTimeout(() => this.taskNameTextArea()?.nativeElement.focus());
+        await this.notification.send({ title: "Task added", body: task.url });
+      })
+      .catch(async (error: TodoistRequestError) => {
+        await this.notification.send({ title: "Failed to add task", body: error.message });
+        console.error(error.message);
       })
       .finally(() => {
         this.isAdding.set(false);
-        this.form.reset();
-        setTimeout(() => this.taskNameTextArea()?.nativeElement.focus());
       });
   }
 }

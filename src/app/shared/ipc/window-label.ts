@@ -1,4 +1,4 @@
-export const enum AppWindowLabel {
+export const enum WindowLabel {
   QUICK_ADD = "quick-add",
   AUTHENTICATION = "authentication",
 }

@@ -10,8 +10,8 @@ import {
 } from "@angular/core";
 import { provideRouter, withInMemoryScrolling, withRouterConfig } from "@angular/router";
 import { Todoist } from "@cpt/shared/external/todoist";
-import { forwardConsole } from "@cpt/shared/ipc/app-log";
-import { AppWindowLabel } from "@cpt/shared/ipc/app-window-label";
+import { forwardConsole } from "@cpt/shared/ipc/ipc-log";
+import { WindowLabel } from "@cpt/shared/ipc/window-label";
 import { window } from "@tauri-apps/api";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Window } from "@tauri-apps/api/window";
@@ -21,10 +21,10 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideAppInitializer(() => {
       forwardConsole();
-      switch (getCurrentWebviewWindow().label as AppWindowLabel) {
-        case AppWindowLabel.QUICK_ADD:
+      switch (getCurrentWebviewWindow().label as WindowLabel) {
+        case WindowLabel.QUICK_ADD:
           return inject(Todoist).initialize();
-        case AppWindowLabel.AUTHENTICATION:
+        case WindowLabel.AUTHENTICATION:
           return Promise.resolve();
       }
     }),

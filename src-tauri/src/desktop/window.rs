@@ -1,7 +1,6 @@
 use crate::ipc;
 use crate::shared::error::AppResult;
-use crate::shared::state::AppState;
-use anyhow::{ensure, Context};
+use anyhow::Context;
 use ipc::events::CustomEvent;
 use std::fmt;
 use tauri::{AppHandle, Emitter, Listener, Manager, WebviewWindow, WebviewWindowBuilder};

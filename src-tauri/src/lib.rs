@@ -7,7 +7,6 @@ use crate::shared::{state, storage};
 use desktop::{autostart, shortcut, tray};
 use ipc::deeplink;
 use shared::state::AppState;
-use std::collections::HashSet;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_cli::CliExt;
@@ -66,6 +65,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             ipc::commands::start_authentication,
             ipc::commands::get_todoist_access_token,
+            ipc::commands::send_notification,
         ])
         .run(tauri::generate_context!())
         .expect("Error while running Tauri application.");

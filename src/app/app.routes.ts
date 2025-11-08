@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { Route, Router, Routes, UrlSegment } from "@angular/router";
 import { AppPath } from "@cpt/app.path";
-import { AppWindowLabel } from "@cpt/shared/ipc/app-window-label";
+import { WindowLabel } from "@cpt/shared/ipc/window-label";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export const routes: Routes = [
@@ -9,10 +9,10 @@ export const routes: Routes = [
     path: AppPath.ROOT,
     pathMatch: "full",
     redirectTo: _ => {
-      switch (getCurrentWebviewWindow().label as AppWindowLabel) {
-        case AppWindowLabel.AUTHENTICATION:
+      switch (getCurrentWebviewWindow().label as WindowLabel) {
+        case WindowLabel.AUTHENTICATION:
           return "landing";
-        case AppWindowLabel.QUICK_ADD:
+        case WindowLabel.QUICK_ADD:
           return "quick-add";
       }
     },
@@ -22,7 +22,7 @@ export const routes: Routes = [
     loadComponent: () => import("@cpt/landing-page/landing-page").then(x => x.LandingPage),
     canMatch: [
       (_: Route, __: Array<UrlSegment>) =>
-        (getCurrentWebviewWindow().label as AppWindowLabel) === AppWindowLabel.AUTHENTICATION
+        (getCurrentWebviewWindow().label as WindowLabel) === WindowLabel.AUTHENTICATION
           ? true
           : inject(Router).parseUrl(`/${AppPath.ROOT}`),
     ],
@@ -33,7 +33,7 @@ export const routes: Routes = [
       import("@cpt/quick-add/quick-add-container").then(x => x.QuickAddContainer),
     canMatch: [
       (_: Route, __: Array<UrlSegment>) =>
-        (getCurrentWebviewWindow().label as AppWindowLabel) === AppWindowLabel.QUICK_ADD
+        (getCurrentWebviewWindow().label as WindowLabel) === WindowLabel.QUICK_ADD
           ? true
           : inject(Router).parseUrl(`/${AppPath.ROOT}`),
     ],
