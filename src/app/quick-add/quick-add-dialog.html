@@ -11,6 +11,7 @@
     <div class="flex flex-col">
       <mat-form-field class="task-name-field" subscriptSizing="dynamic">
         <textarea
+          #taskNameTextArea
           [formControl]="form.controls.name"
           cdkAutosizeMaxRows="5"
           cdkAutosizeMinRows="1"

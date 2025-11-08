@@ -1,6 +1,6 @@
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, signal, viewChild } from "@angular/core";
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatDialogActions, MatDialogClose, MatDialogContent } from "@angular/material/dialog";
@@ -28,7 +28,6 @@ import { TodoistRequestError } from "@doist/todoist-api-typescript";
     MatDivider,
     MatProgressSpinnerModule,
     CommonModule,
-
   ],
 })
 export class QuickAddDialog {
@@ -38,9 +37,21 @@ export class QuickAddDialog {
     description: [""],
   });
   protected readonly isAdding = signal(false);
+  protected readonly taskNameTextArea = viewChild("taskNameTextArea", {
+    read: ElementRef<HTMLTextAreaElement>,
+  });
+
+  constructor() {
+    effect(() => {
+      if (this.isAdding()) {
+        this.form.disable();
+      } else {
+        this.form.enable();
+      }
+    });
+  }
 
   onSubmit() {
-    this.form.disable();
     this.isAdding.set(true);
     this.todoistApi
       .quickAddTask({
@@ -56,7 +67,7 @@ export class QuickAddDialog {
       .finally(() => {
         this.isAdding.set(false);
         this.form.reset();
-        this.form.enable();
+        setTimeout(() => this.taskNameTextArea()?.nativeElement.focus());
       });
   }
 }
