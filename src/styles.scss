@@ -22,7 +22,6 @@
         tertiary: colors.$tertiary-palette,
         theme-type: color-scheme,
       ),
-      density: 0,
     )
   );
 }
@@ -67,7 +66,11 @@
       filled-container-color: transparent,
       filled-disabled-container-color: transparent,
       filled-input-text-color: var(--mat-sys-on-surface),
-      filled-input-text-placeholder-color: color-mix(in srgb, var(--mat-sys-on-surface) 50%, white),
+      filled-input-text-placeholder-color: color-mix(
+          in srgb,
+          var(--mat-sys-on-surface) 50%,
+          var(--mat-sys-surface)
+        ),
     )
   );
 
@@ -84,7 +87,7 @@
 
   @include mat.divider-overrides(
     (
-      color: color-mix(in srgb, var(--mat-sys-on-surface) 10%, white),
+      color: color-mix(in srgb, var(--mat-sys-on-surface) 10%, var(--mat-sys-surface)),
     )
   );
 }
@@ -147,6 +150,7 @@ blockquote {
   @include mat.dialog-overrides(
     (
       with-actions-content-padding: 16px 0px,
+      actions-alignment: space-between,
     )
   );
 }

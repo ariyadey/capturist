@@ -11,8 +11,6 @@ pub type AppSerializableResult<T> = Result<T, AppSerializableError>;
 ///
 /// `anyhow::Error` is not `Serialize`, so we convert it to this simple string-based
 /// error at the boundary of our application (in the `invoke_handler`).
-///
-/// TODO: polish doc
 #[derive(Debug, Serialize)]
 pub struct AppSerializableError {
     pub message: String,

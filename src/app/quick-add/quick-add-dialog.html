@@ -1,20 +1,12 @@
-<!-- TODO
-      The text of the task that is parsed.
-      It can include a due date in free form text,
-      a project name starting with the # character (without spaces),
-      a label starting with the @ character, an assignee starting with the + character,
-      a priority (e.g., p1), a deadline between {} (e.g. {in 3 days}),
-      or a description starting from // until the end of the text.
--->
 <form (ngSubmit)="onSubmit()" [class.is-adding]="isAdding()" [formGroup]="form" class="w-[560px]">
   <mat-dialog-content>
     <div class="flex flex-col">
       <mat-form-field class="task-name-field" subscriptSizing="dynamic">
         <textarea
+          #taskNameTextArea
           (keydown.control.enter)="onSubmit()"
           (keydown.enter)="$event.preventDefault(); onSubmit()"
           [formControl]="form.controls.name"
-          #taskNameTextArea
           cdkAutosizeMaxRows="5"
           cdkAutosizeMinRows="1"
           cdkTextareaAutosize
@@ -22,6 +14,19 @@
           maxlength="500"
           placeholder="Task name"
         ></textarea>
+        <mat-icon
+          matSuffix
+          matTooltip="
+            Due date (e.g., 'today', 'every week', 'tom at 2pm)
+            #Project
+            @Label
+            +Assignee
+            p1, p2, p3, p4 for priority
+            {Deadline} (e.g., {in 3 days})
+            // Description
+          "
+          svgIcon="info"
+        />
       </mat-form-field>
       <mat-form-field class="task-description-field" subscriptSizing="dynamic">
         <textarea
@@ -39,18 +44,23 @@
   </mat-dialog-content>
   <mat-divider />
   <mat-dialog-actions>
-    <button matButton="text" matDialogClose>Cancel</button>
-    <button
-      [class.cursor-not-allowed]="form.invalid || isAdding()"
-      [disabled]="form.invalid || isAdding()"
-      matButton="filled"
-      type="submit"
-    >
-      @if (isAdding()) {
-        <mat-spinner [diameter]="20" />
-      } @else {
-        Add task
-      }
-    </button>
+    <div>
+      <mat-icon [matTooltip]="shortcutTooltipText()" svgIcon="keyboard" />
+    </div>
+    <div>
+      <button matButton="text" matDialogClose>Cancel</button>
+      <button
+        [class.cursor-not-allowed]="form.invalid || isAdding()"
+        [disabled]="form.invalid || isAdding()"
+        matButton="filled"
+        type="submit"
+      >
+        @if (isAdding()) {
+          <mat-spinner [diameter]="20" />
+        } @else {
+          Add task
+        }
+      </button>
+    </div>
   </mat-dialog-actions>
 </form>

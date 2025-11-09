@@ -8,5 +8,3 @@ import { RouterOutlet } from "@angular/router";
   imports: [RouterOutlet],
 })
 export class App {}
-
-// TODO: 07/11/2025 Add a global shortcut hint for wayland users

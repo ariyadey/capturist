@@ -9,6 +9,12 @@ use tauri_plugin_log::log;
 ///
 /// The shortcut is `Alt + Space` on macOS and `Ctrl + Space` on other operating systems.
 /// When the shortcut is pressed, it attempts to open the Quick-Add dialog.
+///
+/// Wayland is currently unsupported.
+///
+///See: https://github.com/tauri-apps/global-hotkey/issues/28
+///
+/// TODO: Remove wayland specific code after the above issue got resolved.
 pub fn set_up_global_shortcut(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up global shortcut...");
 

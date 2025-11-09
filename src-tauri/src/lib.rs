@@ -66,6 +66,7 @@ pub fn run() {
             ipc::commands::start_authentication,
             ipc::commands::get_todoist_access_token,
             ipc::commands::send_notification,
+            ipc::commands::is_wayland_session,
         ])
         .run(tauri::generate_context!())
         .expect("Error while running Tauri application.");

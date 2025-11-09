@@ -6,8 +6,6 @@ use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
 
 /// The path to the settings store file.
-///
-/// TODO: 31/10/2025 Specify the location of store exactly
 const STORE_PATH: &'static str = "settings.json";
 
 /// Saves a serializable value to the settings store.

@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -13,12 +14,17 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angula
 import { MatButton } from "@angular/material/button";
 import { MatDialogActions, MatDialogClose, MatDialogContent } from "@angular/material/dialog";
 import { MatDivider } from "@angular/material/divider";
-import { MatFormField } from "@angular/material/form-field";
+import { MatFormField, MatSuffix } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Todoist } from "@cpt/shared/external/todoist";
 import { NativeNotification } from "@cpt/shared/ipc/native-notification";
+import { invoke } from "@tauri-apps/api/core";
 import { TodoistRequestError } from "@doist/todoist-api-typescript";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { from } from "rxjs";
 
 @Component({
   selector: "cpt-quick-add-dialog",
@@ -37,6 +43,9 @@ import { TodoistRequestError } from "@doist/todoist-api-typescript";
     MatDivider,
     MatProgressSpinnerModule,
     CommonModule,
+    MatIcon,
+    MatTooltip,
+    MatSuffix,
   ],
 })
 export class QuickAddDialog {
@@ -47,6 +56,16 @@ export class QuickAddDialog {
     description: [""],
   });
   protected readonly isAdding = signal(false);
+  protected readonly isWayland = toSignal(from(invoke("is_wayland_session")));
+  protected readonly shortcutTooltipText = computed(() => {
+    const commonHint = `
+      You can manually assign one by setting a script shortcut in OS settings
+      executing 'capturist --quick-add' command.
+    `;
+    return this.isWayland()
+      ? `Currently, global shortcut is not working for wayland automatically. ${commonHint}`
+      : `The default global shortcut is "Ctrl+Space". ${commonHint}`;
+  });
   protected readonly taskNameTextArea = viewChild("taskNameTextArea", {
     read: ElementRef<HTMLTextAreaElement>,
   });

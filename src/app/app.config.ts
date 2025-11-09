@@ -16,11 +16,13 @@ import { window } from "@tauri-apps/api";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Window } from "@tauri-apps/api/window";
 import { routes } from "./app.routes";
+import { IconService } from "@cpt/shared/theme/icon-service";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAppInitializer(() => {
       forwardConsole();
+      inject(IconService).setUpMatIconRegistry();
       switch (getCurrentWebviewWindow().label as WindowLabel) {
         case WindowLabel.QUICK_ADD:
           return inject(Todoist).initialize();
