@@ -12,13 +12,13 @@ const KEYRING_SERVICE_NAME: &'static str = APP_ID;
 
 /// Saves a value to the system keyring associated with a given `StorageKey`.
 pub fn set(key: StorageKey, value: &str) -> AppResult<()> {
-    keyring::Entry::new(KEYRING_SERVICE_NAME, &key.to_string())?.set_password(value)?;
+    get_provider(&key)?.set_password(value)?;
     Ok(())
 }
 
 /// Retrieves a value from the system keyring associated with a given `StorageKey`.
 pub fn find(key: StorageKey) -> AppResult<Option<String>> {
-    match keyring::Entry::new(KEYRING_SERVICE_NAME, &key.to_string())?.get_password() {
+    match get_provider(&key)?.get_password() {
         Ok(value) => Ok(Some(value)),
         Err(keyring::Error::NoEntry) => Ok(None),
         Err(e) => Err(e.into()),
@@ -29,9 +29,16 @@ pub fn find(key: StorageKey) -> AppResult<Option<String>> {
 ///
 /// If the entry does not exist, this function will still return `Ok(())`.
 pub fn delete(key: StorageKey) -> AppResult<()> {
-    match keyring::Entry::new(KEYRING_SERVICE_NAME, &key.to_string())?.delete_credential() {
+    match get_provider(&key)?.delete_credential() {
         Ok(_) => Ok(()),
         Err(keyring::Error::NoEntry) => Ok(()),
         Err(e) => Err(e.into()),
     }
+}
+
+/// Gets a provider for the given key.
+/// In production, this is a `keyring::Entry`.
+/// In tests, this can be a mock provider.
+fn get_provider(key: &StorageKey) -> Result<keyring::Entry, keyring::Error> {
+    keyring::Entry::new(KEYRING_SERVICE_NAME, &key.to_string())
 }
