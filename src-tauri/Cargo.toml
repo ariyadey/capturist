@@ -1,8 +1,9 @@
 [package]
 name = "capturist"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "A quick-add desktop tool for Todoist"
+authors = ["Ariya Moheb <ariya.mms@gmail.com>"]
+publish = false
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
