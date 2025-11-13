@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "capturist",
+  "productName": "Capturist",
+  "identifier": "me.ariyadey.capturist",
   "version": "0.1.0",
-  "identifier": "me.ariyadey.capturist.app",
 
   "build": {
     "beforeDevCommand": "npm start",
