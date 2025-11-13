@@ -3,7 +3,7 @@ use crate::shared::error::AppResult;
 use anyhow::Context;
 use ipc::events::CustomEvent;
 use std::fmt;
-use tauri::{AppHandle, Emitter, Listener, Manager, WebviewWindow, WebviewWindowBuilder};
+use tauri::{AppHandle, Listener, Manager, WebviewWindow, WebviewWindowBuilder};
 
 /// Represents the different types of windows that can be opened in the application.
 #[derive(Debug, Eq, PartialEq, Hash)]
@@ -65,19 +65,12 @@ pub fn init_quick_add_dialog(app_handle: &AppHandle, minimize: bool) -> AppResul
         .get_webview_window(&WindowLabel::QuickAdd.to_string())
         .ok_or(tauri::Error::WebviewNotFound)
         .or_else(|_| create_window(WindowLabel::QuickAdd, app_handle))?;
-    window.maximize()?;
+    window.set_resizable(false)?;
     if minimize {
         window.hide()?;
     } else {
         window.show()?;
     }
-    window.set_resizable(false)?;
-    window.set_always_on_top(true)?;
-    window.emit_to(
-        &WindowLabel::QuickAdd.to_string(),
-        &CustomEvent::QuickAdd.to_string(),
-        serde_json::Value::Null,
-    )?;
 
     Ok(())
 }
