@@ -108,6 +108,7 @@
   @apply text-on-surface;
   @apply font-body-lg;
   @apply selection:text-on-primary selection:bg-primary;
+  @apply select-none;
 }
 
 h1 {
