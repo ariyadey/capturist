@@ -11,6 +11,7 @@ pub struct AccessTokenResponse {
     /// The access token to be used for authenticating API requests.
     pub access_token: String,
     /// The type of token, typically "Bearer".
+    #[allow(dead_code)]
     pub token_type: String,
 }
 
@@ -23,6 +24,7 @@ pub struct AuthCallbackResponse {
 }
 
 /// Represents the permission scopes for the Todoist API.
+#[allow(dead_code)]
 pub enum PermissionScope {
     /// Grants permission to add new tasks (the application cannot read or modify any existing data).
     TaskAdd,

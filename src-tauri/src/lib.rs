@@ -10,6 +10,7 @@ use shared::state::AppState;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_cli::CliExt;
+use tauri_plugin_log::fern::colors::{Color, ColoredLevelConfig};
 
 mod desktop;
 mod external;
@@ -18,7 +19,25 @@ mod shared;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    #[cfg(debug_assertions)]
+    let builder = tauri::Builder::default().plugin(tauri_plugin_devtools::init());
+    #[cfg(not(debug_assertions))]
+    let builder = tauri::Builder::default().plugin(
+        tauri_plugin_log::Builder::default()
+            .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
+            .level(log::LevelFilter::Info)
+            .with_colors(
+                ColoredLevelConfig::new()
+                    .error(Color::Red)
+                    .warn(Color::Yellow)
+                    .info(Color::Green)
+                    .debug(Color::Cyan)
+                    .trace(Color::Blue),
+            )
+            .build(),
+    );
+
+    builder
         // TODO: 10/09/2025 https://v2.tauri.app/plugin/single-instance/#usage-in-snap-and-flatpak
         .plugin(tauri_plugin_single_instance::init(
             |app_handle, argv, cwd| {
@@ -33,11 +52,6 @@ pub fn run() {
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_global_shortcut::Builder::default().build())
-        .plugin(
-            tauri_plugin_log::Builder::default()
-                .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
-                .build(),
-        )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .manage(AppState {
