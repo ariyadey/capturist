@@ -5,6 +5,8 @@ name = "capturist"
 version = "0.1.0"
 description = "A quick-add desktop tool for Todoist"
 authors = ["Ariya Moheb <ariya.mms@gmail.com>"]
+repository = "https://github.com/ariyadey/capturist"
+license = "MIT"
 publish = false
 edition = "2021"
 
