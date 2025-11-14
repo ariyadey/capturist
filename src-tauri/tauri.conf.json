@@ -54,13 +54,14 @@
     ],
     "security": {
       "csp": {
-        "default-src": "'self'",
-        "connect-src": "'self' https://api.todoist.com",
-        "script-src": "'self'",
-        "style-src": "'self'",
-        "img-src": "'self'",
-        "font-src": "'self'"
-      }
+        "default-src": ["'self'"],
+        "connect-src": ["'self'", "ipc://localhost", "https://api.todoist.com"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'"],
+        "font-src": ["'self'"]
+      },
+      "dangerousDisableAssetCspModification": ["script-src", "style-src"]
     }
   },
 
