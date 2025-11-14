@@ -10,7 +10,6 @@ use shared::state::AppState;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_cli::CliExt;
-use tauri_plugin_log::fern::colors::{Color, ColoredLevelConfig};
 
 mod desktop;
 mod external;
@@ -19,23 +18,31 @@ mod shared;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let mut builder = tauri::Builder::default();
+
     #[cfg(debug_assertions)]
-    let builder = tauri::Builder::default().plugin(tauri_plugin_devtools::init());
+    {
+        builder = builder.plugin(tauri_plugin_devtools::init());
+    }
+
     #[cfg(not(debug_assertions))]
-    let builder = tauri::Builder::default().plugin(
-        tauri_plugin_log::Builder::default()
-            .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
-            .level(log::LevelFilter::Info)
-            .with_colors(
-                ColoredLevelConfig::new()
-                    .error(Color::Red)
-                    .warn(Color::Yellow)
-                    .info(Color::Green)
-                    .debug(Color::Cyan)
-                    .trace(Color::Blue),
-            )
-            .build(),
-    );
+    {
+        use tauri_plugin_log::fern::colors::{Color, ColoredLevelConfig};
+        builder = builder.plugin(
+            tauri_plugin_log::Builder::default()
+                .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
+                .level(log::LevelFilter::Info)
+                .with_colors(
+                    ColoredLevelConfig::new()
+                        .error(Color::Red)
+                        .warn(Color::Yellow)
+                        .info(Color::Green)
+                        .debug(Color::Cyan)
+                        .trace(Color::Blue),
+                )
+                .build(),
+        );
+    }
 
     builder
         // TODO: 10/09/2025 https://v2.tauri.app/plugin/single-instance/#usage-in-snap-and-flatpak
