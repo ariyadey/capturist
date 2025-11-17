@@ -28,6 +28,7 @@ panic = "abort" # Higher performance by disabling panic handlers.
 strip = true # Ensures debug symbols are removed.
 
 [build-dependencies]
+dotenv = "0.15"
 tauri-build = { version = "2", features = ["config-json5"] }
 
 [dependencies]
