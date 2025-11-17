@@ -97,7 +97,7 @@ export class QuickAddDialog {
       })
       .catch(async (error: TodoistRequestError) => {
         await this.notification.send({ title: "Failed to add task", body: error.message });
-        console.error(error.message);
+        console.error(error);
       })
       .finally(() => {
         this.isAdding.set(false);
