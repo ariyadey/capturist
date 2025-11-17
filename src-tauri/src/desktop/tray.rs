@@ -9,6 +9,7 @@ use crate::shared::metadata::APP_TITLE;
 use crate::shared::state::AppState;
 use anyhow::{format_err, Context};
 use serde_json::json;
+use std::env;
 use std::fmt;
 use tauri::menu::{CheckMenuItem, Menu, MenuBuilder, MenuEvent, MenuItem};
 use tauri::tray::TrayIconBuilder;
@@ -113,16 +114,16 @@ fn get_tray_menu(app_handle: &AppHandle) -> AppResult<Menu<Wry>> {
         .unwrap()
         .to_owned();
 
-    MenuBuilder::with_id(app_handle, TRAY_MENU_ID)
-        .item(&MenuItem::with_id(
-            app_handle,
-            MenuId::QuickAdd.to_string(),
-            "Add a new task",
-            user_authenticated,
-            None::<String>,
-        )?)
-        .separator()
-        .item(&CheckMenuItem::with_id(
+    let mut menu_builder = MenuBuilder::with_id(app_handle, TRAY_MENU_ID).item(&MenuItem::with_id(
+        app_handle,
+        MenuId::QuickAdd.to_string(),
+        "Add a new task",
+        user_authenticated,
+        None::<String>,
+    )?);
+
+    if env::var("SNAP").is_err() {
+        menu_builder = menu_builder.separator().item(&CheckMenuItem::with_id(
             app_handle,
             MenuId::AutoStart.to_string(),
             "Launch at startup",
@@ -130,6 +131,9 @@ fn get_tray_menu(app_handle: &AppHandle) -> AppResult<Menu<Wry>> {
             app_handle.autolaunch().is_enabled()?,
             None::<String>,
         )?)
+    }
+
+    menu_builder
         .separator()
         .item(&MenuItem::with_id(
             app_handle,
