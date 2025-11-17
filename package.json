@@ -8,7 +8,7 @@
   },
   "version": "0.1.0",
   "private": true,
-  "packageManager": "npm@11.6.0+sha512.77f3fb0dbbd881835d7bd1217deabdf7ed77fc4ec4f363df64fc3cb986404abf6c437661041080f5c5d225103508e7c9ea30cb2742b7e942675d05a10af2d7b9",
+  "packageManager": "npm@11.6.2+sha512.ee22b335fcbc95662cdf3ab8a053daf045d9cf9c6df6040d28965abb707512b2c16fa6c5eec049d34c74f78f390cebd14f697919eadb97756564d4f9eccc4954",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -28,7 +28,7 @@
     "@angular/platform-browser-dynamic": "^20.2.3",
     "@angular/router": "^20.2.3",
     "@doist/todoist-api-typescript": "^5.1.2",
-    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/api": "^2.9.0",
     "@tauri-apps/plugin-autostart": "^2.5.0",
     "@tauri-apps/plugin-cli": "^2.4.1",
     "@tauri-apps/plugin-deep-link": "^2.4.3",
