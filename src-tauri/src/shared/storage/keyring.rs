@@ -1,8 +1,4 @@
 //! This module provides a secure way to storage sensitive information using the system's keyring.
-//!
-//! # TODO: Platform Packaging Caveats on Linux
-//! - Secret Service (DBus) must be available in the session.
-//! - If packaged as Snap/Flatpak, appropriate permissions/portals may be required.
 
 use crate::shared::error::AppResult;
 use crate::shared::metadata::APP_ID;
