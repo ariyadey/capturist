@@ -1,0 +1,72 @@
+name: capturist
+type: app
+base: core24
+version: '0.1.0'
+summary: A practical desktop application for quickly adding tasks to Todoist
+description: |
+  Capturist is a desktop application for Linux designed to quickly add tasks to Todoist.
+  It lives in your system tray and can be summoned with a global shortcut,
+  allowing you to capture tasks without breaking your workflow.
+
+  Capturist is an unofficial Todoist client and is not affiliated with or endorsed by Doist.
+
+grade: devel
+confinement: strict
+
+platforms:
+  amd64:
+    build-on:
+      - amd64
+
+parts:
+  capturist-part:
+    plugin: dump
+    build-snaps:
+      - node/22/stable
+      - rustup/latest/stable
+    build-packages:
+      - libssl-dev
+    stage-packages:
+      - libnotify-bin
+    stage:
+      - -usr/lib/*/libicuio.so*
+      - -usr/lib/*/libicutest.so*
+    source: .
+    # language=Bash
+    override-build: |
+      set -eu
+      APP_INSTALL_DIR="$SNAPCRAFT_PART_INSTALL"
+      DESKTOP_FILE="$APP_INSTALL_DIR/usr/share/applications/Capturist.desktop"
+      rustup default stable
+      npm ci --no-audit --no-fund
+      npm run tauri build -- --bundles deb
+      dpkg -x src-tauri/target/release/bundle/deb/*.deb "$APP_INSTALL_DIR"/
+      sed -i -e "s|Icon=capturist|Icon=/usr/share/icons/hicolor/128x128/apps/capturist.png|g" "$DESKTOP_FILE"
+      sed -i -e "s|^Exec=capturist$|Exec=capturist %u|g" "$DESKTOP_FILE"
+
+apps:
+  capturist:
+    command: usr/bin/capturist
+    desktop: usr/share/applications/Capturist.desktop
+    extensions:
+      # The gnome extension already includes
+      # [ desktop, desktop-legacy, gsettings, opengl, wayland, x11, mount-observe, calendar-service ]
+      - gnome
+    plugs:
+      - network
+      - network-status
+      - single-instance-plug
+    slots:
+      - single-instance-slot
+
+plugs:
+  single-instance-plug:
+    interface: dbus
+    bus: session
+    name: org.me_ariyadey_capturist.SingleInstance
+
+slots:
+  single-instance-slot:
+    interface: dbus
+    bus: session
+    name: org.me_ariyadey_capturist.SingleInstance

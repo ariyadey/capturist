@@ -3,7 +3,7 @@
 [package]
 name = "capturist"
 version = "0.1.0"
-description = "A quick-add desktop tool for Todoist"
+description = "A practical desktop application for quickly adding tasks to Todoist"
 authors = ["Ariya Moheb <ariya.mms@gmail.com>"]
 repository = "https://github.com/ariyadey/capturist"
 license = "MIT"

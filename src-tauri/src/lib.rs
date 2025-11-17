@@ -45,7 +45,6 @@ pub fn run() {
     }
 
     builder
-        // TODO: 10/09/2025 https://v2.tauri.app/plugin/single-instance/#usage-in-snap-and-flatpak
         .plugin(tauri_plugin_single_instance::init(
             |app_handle, argv, cwd| {
                 let _ = on_another_instance_trial(app_handle, argv, cwd)
