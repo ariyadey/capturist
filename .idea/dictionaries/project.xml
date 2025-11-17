@@ -1,7 +1,39 @@
 <component name="ProjectDictionaryState">
   <dictionary name="project">
     <words>
+      <w>aarch</w>
       <w>appimage</w>
+      <w>appindicator</w>
+      <w>appname</w>
+      <w>coredump</w>
+      <w>devmode</w>
+      <w>doist</w>
+      <w>gsettings</w>
+      <w>hicolor</w>
+      <w>icns</w>
+      <w>libayatana</w>
+      <w>libcaca</w>
+      <w>libcolordprivate</w>
+      <w>libdconf</w>
+      <w>libexslt</w>
+      <w>libform</w>
+      <w>libgstcheck</w>
+      <w>libgstcontroller</w>
+      <w>libicuio</w>
+      <w>libicutest</w>
+      <w>libicutu</w>
+      <w>libmenu</w>
+      <w>libnotify</w>
+      <w>liborc</w>
+      <w>libpanel</w>
+      <w>libpulse</w>
+      <w>librsvg</w>
+      <w>libunwind</w>
+      <w>libvulkan</w>
+      <w>libwebkit</w>
+      <w>libwoff</w>
+      <w>libxcb</w>
+      <w>libxdo</w>
       <w>noto</w>
       <w>reqwest</w>
     </words>
