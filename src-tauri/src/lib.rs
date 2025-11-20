@@ -60,16 +60,13 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::default().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
-        .manage(AppState {
-            authenticated: Mutex::new(
-                storage::keyring::find(StorageKey::TodoistToken)
-                    .unwrap()
-                    .is_some(),
-            ),
-            ..Default::default()
-        })
+        .manage(AppState::default())
         .setup(|app| {
             let app_handle = &app.handle();
+
+            *app_handle.state::<AppState>().authenticated.lock().unwrap() =
+                storage::secure::find(StorageKey::TodoistToken, app_handle)?.is_some();
+
             state::set_up_state_synchronization(app_handle);
             #[cfg(desktop)]
             {
@@ -78,7 +75,7 @@ pub fn run() {
                 }
                 tray::set_up_tray_menu(app_handle)?;
             }
-            deeplink::set_up_deep_link_handling(app.handle());
+            deeplink::set_up_deep_link_handling(app_handle);
             window::set_up_current_window_synchronization(app_handle);
             show_initial_window(app_handle)?;
             Ok(())

@@ -55,7 +55,7 @@ pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult
     let token = todoist::sdk::get_auth_token(&client_id, &client_secret, &payload.code)
         .await?
         .access_token;
-    storage::keyring::set(StorageKey::TodoistToken, &token)?;
+    storage::secure::set(StorageKey::TodoistToken, &token, app_handle)?;
     app_handle.emit(&CustomEvent::Authentication.to_string(), json!(true))?;
 
     Ok(())
@@ -63,7 +63,7 @@ pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult
 
 /// Logs out the user by clearing user data and emitting an authentication event.
 pub fn log_out(app_handle: &AppHandle) -> AppResult<()> {
-    storage::keyring::delete(StorageKey::TodoistToken)?;
+    storage::secure::delete(StorageKey::TodoistToken, app_handle)?;
     app_handle.emit(&CustomEvent::Authentication.to_string(), json!(false))?;
 
     Ok(())

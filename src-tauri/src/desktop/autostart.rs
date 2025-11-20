@@ -1,7 +1,7 @@
 use crate::ipc::events::CustomEvent;
 use crate::shared::error::AppResult;
+use crate::shared::storage::general;
 use crate::shared::storage::key::StorageKey;
-use crate::shared::storage::settings;
 use anyhow::Context;
 use tauri::{AppHandle, Listener};
 use tauri_plugin_autostart::ManagerExt;
@@ -13,7 +13,7 @@ pub fn set_up_autostart(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up autostart...");
 
     let should_autostart =
-        settings::get(StorageKey::Autostart, app_handle).map(|b| b.unwrap_or(true));
+        general::find(StorageKey::Autostart, app_handle).map(|b| b.unwrap_or(true));
     toggle_autostart(should_autostart, app_handle)?;
 
     let owned_app_handle = app_handle.to_owned();
@@ -49,7 +49,7 @@ fn toggle_autostart(enable: AppResult<bool>, app_handle: &AppHandle) -> AppResul
         app_handle.autolaunch().disable()?;
     }
 
-    settings::set(StorageKey::Autostart, should_autostart, &app_handle)?;
+    general::set(StorageKey::Autostart, should_autostart, &app_handle)?;
 
     Ok(())
 }

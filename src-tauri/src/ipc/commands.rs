@@ -32,8 +32,8 @@ pub async fn start_authentication(
 
 /// Returns the Todoist access token from the secure storage.
 #[tauri::command]
-pub async fn get_todoist_access_token() -> AppSerializableResult<String> {
-    storage::keyring::find(StorageKey::TodoistToken)?
+pub async fn get_todoist_access_token(app_handle: AppHandle) -> AppSerializableResult<String> {
+    storage::secure::find(StorageKey::TodoistToken, &app_handle)?
         .context("Todoist token not found")
         .map_err(Into::into)
 }

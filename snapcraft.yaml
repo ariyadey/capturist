@@ -63,6 +63,7 @@ apps:
     plugs:
       - network
       - network-status
+      - password-manager-service
       - single-instance-plug
     slots:
       - single-instance-slot
