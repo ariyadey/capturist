@@ -1,0 +1,15 @@
+use std::env;
+
+/// Checks if the application is currently running on a Wayland display server.
+///
+/// This is determined by checking the `XDG_SESSION_TYPE` environment variable.
+pub fn is_running_on_wayland() -> bool {
+    env::var("XDG_SESSION_TYPE").map_or(false, |value| value == "wayland")
+}
+
+/// Checks if the application is currently running as a Snap package.
+///
+/// This is determined by checking for the presence of the `SNAP` environment variable.
+pub fn is_running_as_snap() -> bool {
+    env::var("SNAP").is_ok()
+}

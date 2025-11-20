@@ -2,10 +2,9 @@ use crate::external::todoist::auth;
 use crate::shared::error::AppSerializableResult;
 use crate::shared::metadata::APP_TITLE;
 use crate::shared::state::AppState;
-use crate::shared::storage;
 use crate::shared::storage::key::StorageKey;
+use crate::shared::{environment, storage};
 use anyhow::{format_err, Context};
-use std::env;
 use std::process::Command;
 use tauri::{AppHandle, State};
 
@@ -62,5 +61,5 @@ pub fn send_notification(title: &str, body: &str) -> AppSerializableResult<()> {
 /// Checks if the current desktop session is Wayland.
 #[tauri::command]
 pub fn is_wayland_session() -> bool {
-    env::var("XDG_SESSION_TYPE").map_or(false, |value| value == "wayland")
+    environment::is_running_on_wayland()
 }
