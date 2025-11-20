@@ -4,12 +4,12 @@
 use crate::desktop::window;
 use crate::external::todoist::auth;
 use crate::ipc::events::CustomEvent;
+use crate::shared::environment;
 use crate::shared::error::AppResult;
 use crate::shared::metadata::APP_TITLE;
 use crate::shared::state::AppState;
 use anyhow::{format_err, Context};
 use serde_json::json;
-use std::env;
 use std::fmt;
 use tauri::menu::{CheckMenuItem, Menu, MenuBuilder, MenuEvent, MenuItem};
 use tauri::tray::TrayIconBuilder;
@@ -122,7 +122,7 @@ fn get_tray_menu(app_handle: &AppHandle) -> AppResult<Menu<Wry>> {
         None::<String>,
     )?);
 
-    if env::var("SNAP").is_err() {
+    if !environment::is_running_as_snap() {
         menu_builder = menu_builder.separator().item(&CheckMenuItem::with_id(
             app_handle,
             MenuId::AutoStart.to_string(),
@@ -130,7 +130,7 @@ fn get_tray_menu(app_handle: &AppHandle) -> AppResult<Menu<Wry>> {
             true,
             app_handle.autolaunch().is_enabled()?,
             None::<String>,
-        )?)
+        )?);
     }
 
     menu_builder

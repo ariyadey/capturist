@@ -3,7 +3,7 @@ use crate::ipc::deeplink::DeepLinkHost;
 use crate::shared::error::AppResult;
 use crate::shared::metadata::APP_ID;
 use crate::shared::storage::key::StorageKey;
-use crate::shared::{state, storage};
+use crate::shared::{environment, state, storage};
 use desktop::{autostart, shortcut, tray};
 use ipc::deeplink;
 use shared::state::AppState;
@@ -73,8 +73,11 @@ pub fn run() {
             state::set_up_state_synchronization(app_handle);
             #[cfg(desktop)]
             {
+                #[cfg(not(target_os = "linux"))]
                 shortcut::set_up_global_shortcut(app_handle)?;
-                autostart::set_up_autostart(app_handle)?;
+                if !environment::is_running_as_snap() {
+                    autostart::set_up_autostart(app_handle)?;
+                }
                 tray::set_up_tray_menu(app_handle)?;
             }
             deeplink::set_up_deep_link_handling(app.handle());
