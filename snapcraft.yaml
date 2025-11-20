@@ -10,7 +10,7 @@ description: |
 
   Capturist is an unofficial Todoist client and is not affiliated with or endorsed by Doist.
 
-grade: devel
+grade: stable
 confinement: strict
 
 platforms:
@@ -30,6 +30,7 @@ parts:
       - libnotify-bin
     stage:
       - -usr/lib/*/libicuio.so*
+      - -usr/lib/*/libicutu.so*
       - -usr/lib/*/libicutest.so*
     source: .
     # language=Bash
