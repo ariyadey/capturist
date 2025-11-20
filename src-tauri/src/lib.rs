@@ -73,8 +73,6 @@ pub fn run() {
             state::set_up_state_synchronization(app_handle);
             #[cfg(desktop)]
             {
-                #[cfg(not(target_os = "linux"))]
-                shortcut::set_up_global_shortcut(app_handle)?;
                 if !environment::is_running_as_snap() {
                     autostart::set_up_autostart(app_handle)?;
                 }
@@ -86,10 +84,12 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            ipc::commands::is_os_linux,
+            ipc::commands::is_wayland_session,
             ipc::commands::start_authentication,
             ipc::commands::get_todoist_access_token,
+            ipc::commands::get_global_shortcut,
             ipc::commands::send_notification,
-            ipc::commands::is_wayland_session,
         ])
         .run(tauri::generate_context!())
         .expect("Error while running Tauri application.");

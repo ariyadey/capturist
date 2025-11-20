@@ -1,3 +1,4 @@
+use crate::desktop::shortcut;
 use crate::external::todoist::auth;
 use crate::shared::error::AppSerializableResult;
 use crate::shared::metadata::APP_TITLE;
@@ -7,6 +8,18 @@ use crate::shared::{environment, storage};
 use anyhow::{format_err, Context};
 use std::process::Command;
 use tauri::{AppHandle, State};
+
+/// Checks if the current environment is Linux.
+#[tauri::command]
+pub fn is_os_linux() -> bool {
+    cfg!(target_os = "linux")
+}
+
+/// Checks if the current desktop session is Wayland.
+#[tauri::command]
+pub fn is_wayland_session() -> bool {
+    environment::is_running_on_wayland()
+}
 
 /// Initiates the Todoist authentication flow.
 #[tauri::command]
@@ -23,6 +36,12 @@ pub async fn get_todoist_access_token() -> AppSerializableResult<String> {
     storage::keyring::find(StorageKey::TodoistToken)?
         .context("Todoist token not found")
         .map_err(Into::into)
+}
+
+/// Returns the accelerator string for the global shortcut.
+#[tauri::command]
+pub fn get_global_shortcut() -> String {
+    shortcut::get_global_shortcut_accelerator()
 }
 
 /// Sends a desktop notification using `notify-send`.
@@ -56,10 +75,4 @@ pub fn send_notification(title: &str, body: &str) -> AppSerializableResult<()> {
             }
         })
         .map_err(Into::into)
-}
-
-/// Checks if the current desktop session is Wayland.
-#[tauri::command]
-pub fn is_wayland_session() -> bool {
-    environment::is_running_on_wayland()
 }

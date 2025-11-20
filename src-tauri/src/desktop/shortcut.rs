@@ -4,7 +4,6 @@ use tauri::AppHandle;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_log::log;
 
-// TODO: 05/11/2025 Make global shortcut configurable
 /// Sets up the global shortcut for opening the Quick-Add dialog.
 ///
 /// The shortcut is `Alt + Space` on macOS and `Ctrl + Space` on other operating systems.
@@ -12,17 +11,14 @@ use tauri_plugin_log::log;
 ///
 /// Wayland is currently unsupported.
 ///
-///See: https://github.com/tauri-apps/global-hotkey/issues/28
+/// TODO:
+///  05/11/2025 Enable global shortcut and make it configurable after the following issue got resolved.
 ///
-/// TODO: Remove wayland specific code after the above issue got resolved.
+/// See: https://github.com/tauri-apps/global-hotkey/issues/28
 pub fn set_up_global_shortcut(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up global shortcut...");
 
-    #[cfg(target_os = "macos")]
-    let shortcut = Shortcut::new(Some(Modifiers::ALT), Code::Space);
-    #[cfg(not(target_os = "macos"))]
-    let shortcut = Shortcut::new(Some(Modifiers::CONTROL), Code::Space);
-
+    let shortcut = get_global_shortcut();
     if app_handle.global_shortcut().is_registered(shortcut) {
         log::info!("Global shortcut is already registered. Skipping the setup...");
         return Ok(());
@@ -38,4 +34,21 @@ pub fn set_up_global_shortcut(app_handle: &AppHandle) -> AppResult<()> {
         })?;
 
     Ok(())
+}
+
+/// Returns the accelerator string for the global shortcut.
+pub fn get_global_shortcut_accelerator() -> String {
+    get_global_shortcut().to_string()
+}
+
+/// Returns the platform-specific global shortcut.
+fn get_global_shortcut() -> Shortcut {
+    #[cfg(target_os = "macos")]
+    {
+        Shortcut::new(Some(Modifiers::ALT), Code::Space)
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Shortcut::new(Some(Modifiers::CONTROL), Code::Space)
+    }
 }
