@@ -1,3 +1,6 @@
+[![capturist](https://snapcraft.io/capturist/badge.svg)](https://snapcraft.io/capturist)
+[![capturist](https://snapcraft.io/capturist/trending.svg?name=0)](https://snapcraft.io/capturist)
+
 # Capturist
 
 <p style="text-align: center;">
@@ -12,23 +15,26 @@
 
 ## ✨ Features
 
-- **Global Shortcut:** Open the quick-add dialog from anywhere with a configurable global shortcut (default: `Ctrl+Space`).
+- **Global Shortcut:** Open the quick-add dialog from anywhere with a configurable global shortcut.
 - **System Tray Icon:** Lives discreetly in your system tray for easy access.
-- **Launch at Startup:** Automatically start with your system so it's always ready.
-- **Native Notifications:** Get native desktop notifications confirming your task was added.
+- **Launch at Startup:** Automatically start with your system so it's always ready. (In Snap environment, you can manage it via system/Snap settings itself).
+- **Native Notifications:** Get native desktop notifications confirming your task was added with a corresponding link to Todoist web app.
 - **Secure:** Your Todoist token is securely stored in the operating system's native keyring.
 - **Modern & Fast:** Built with Rust and Tauri for a small memory footprint and a snappy, native feel.
+- **Familiar UI**: Based on Todoist User interface for a familiar look and feel.
+- **Natural Language Detection**: [Todoist quick-add keywords](https://www.todoist.com/help/articles/use-task-quick-add-in-todoist-va4Lhpzz#h_01J1DEY59AGACAT8JW998EPH74) are supported.
 
 ## 🚀 Installation
 
-The initial release of Capturist will be available as a Snap package from the Snap Store.
+Capturist is available as a Snap package from the Snap Store.
 
-1.  Install the application from the Snap Store:
-    ```bash
-    sudo snap install capturist
-    ```
+[![Get it from the Snap Store](https://snapcraft.io/en/light/install.svg)](https://snapcraft.io/capturist)
 
-2.  Alternatively, you can find the latest `.snap` file on the **[Releases](https://github.com/your-username/your-repo/releases)** page. <!-- TODO: Replace with your actual repo URL -->
+Or run the following command:
+
+```bash
+snap install capturist
+```
 
 Support for other packaging formats (like Flatpak, AppImage, .deb, .rpm, and AUR) may be added in the future based on community requests.
 
@@ -40,7 +46,7 @@ Interested in contributing or running the latest development version? Here’s h
 
 -   [Node.js and npm](https://nodejs.org/)
 -   [Rust](https://www.rust-lang.org/tools/install)
--   [Angular CLI](https://angular.io/cli): `npm install -g @angular/cli`
+-   [Angular CLI](https://angular.dev/cli): `npm install -g @angular/cli`
 -   System dependencies for Tauri. Follow the [official Tauri guide](httpss://tauri.app/v1/guides/getting-started/prerequisites) for your OS.
 
 ### Development Mode
@@ -66,27 +72,28 @@ The resulting binaries will be available in the `src-tauri/target/release` direc
 This project uses a modern stack to deliver a fast, native-like experience.
 
 -   **Core Technologies:**
-    -   **Frontend:** [Angular](https://angular.io/) with [Angular Material](https://material.angular.io/) and [Tailwind CSS](https://tailwindcss.com/).
+    -   **Frontend:** [Angular](https://angular.dev/) with [Angular Material](https://material.angular.dev/) and [Tailwind CSS](https://tailwindcss.com/).
     -   **Backend:** [Rust](https://www.rust-lang.org/) with the [Tauri](https://tauri.app/) framework.
 -   **Key Conventions:**
     -   The Angular application is fully **zoneless** and uses **Signals** for state management, resulting in optimal performance.
     -   The backend handles the core OAuth2 flow and secure API interactions.
     -   Communication between the frontend and backend is done via Tauri's secure IPC (Commands and Events).
-    -   Code quality is maintained with Prettier and ESLint.
+    -   Code quality is maintained with *Cargo Check*, *Prettier* and *ESLint*.
 
 ## 🛡️ Security
 
 Security is a top priority for Capturist.
 
 -   The OAuth2 `state` parameter (for CSRF protection) is generated and verified entirely on the backend.
--   The user's Todoist API token is never stored by the application directly, but is securely kept in the operating system's native keyring.
+-   To let Capturist securely save the Todoist API token in the OS native Keyring, you should allow it in sandboxed environments:
+    - **Snap**: Run `snap connect capturist:password-manager-service`
 -   A strict Content Security Policy (CSP) is configured in `tauri.conf.json` to mitigate cross-site scripting (XSS) risks.
 
 ## 🤝 Contributing
 
 Pull requests are welcome!
 For major changes, please open an issue first to discuss what you would like to change.
-Please ensure to update tests as appropriate.
+Please ensure to add/update tests as appropriate.
 
 Before submitting, please run `npm run lint` to ensure your code adheres to the project's style.
 
