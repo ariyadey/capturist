@@ -70,8 +70,9 @@ jobs:
           path: ${{ steps.build.outputs.snap }}
 
   snap-publish:
-    needs: [snap-build, release-linux]
-    # Only run on main push or tags, NOT on PRs
+    needs:
+      - release-linux
+      - snap-build
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
