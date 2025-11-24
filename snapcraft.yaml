@@ -29,7 +29,7 @@ parts:
   capturist-part:
     plugin: dump
     build-snaps:
-      - node/22/stable
+      - node/24/stable
       - rustup/latest/stable
     build-packages:
       - libssl-dev
