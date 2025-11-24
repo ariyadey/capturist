@@ -1,0 +1,42 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "New Version (e.g., 0.2.1)"
+        required: true
+        type: string
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump Version
+        run: npm run bump ${{ inputs.version }}
+
+      - name: Commit and Push
+        run: |
+          git commit -am "chore: bump version to ${{ inputs.version }}"
+          git push origin main
+
+      - name: Create and Push Tag
+        run: |
+          git tag v${{ inputs.version }}
+          git push origin v${{ inputs.version }}
