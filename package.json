@@ -14,7 +14,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "bump": "node scripts/bump-version.mjs"
   },
   "dependencies": {
     "@angular/animations": "^20.2.3",

@@ -1,0 +1,98 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release-linux:
+    permissions:
+      contents: write
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: install frontend dependencies
+        run: npm ci
+
+      - name: Build and Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODOIST_CLIENT_ID: ${{ secrets.TODOIST_CLIENT_ID }}
+          TODOIST_CLIENT_SECRET: ${{ secrets.TODOIST_CLIENT_SECRET }}
+        with:
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+          releaseName: ${{ github.ref_type == 'tag' && format('Capturist {0}', github.ref_name) || '' }}
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
+
+  snap-build:
+    runs-on: ubuntu-latest
+    outputs:
+      snap-file: ${{ steps.build.outputs.snap }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "TODOIST_CLIENT_ID=${{ secrets.TODOIST_CLIENT_ID }}" > .env
+          echo "TODOIST_CLIENT_SECRET=${{ secrets.TODOIST_CLIENT_SECRET }}" >> .env
+
+      - name: Build Snap
+        id: build
+        uses: snapcore/action-build@v1
+
+      - name: Upload Snap Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap-artifact
+          path: ${{ steps.build.outputs.snap }}
+
+  snap-publish:
+    needs: [snap-build, release-linux]
+    # Only run on main push or tags, NOT on PRs
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Snap Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: snap-artifact
+          path: .
+
+      - name: Publish Snap
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: ${{ needs.snap-build.outputs.snap-file }}
+          release: ${{ github.ref_type == 'tag' && 'stable' || 'edge' }}
+
+      - name: Upload Snap to Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: "*.snap"
