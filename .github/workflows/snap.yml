@@ -21,11 +21,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create .env file
+        run: |
+          echo "TODOIST_CLIENT_ID=${{ secrets.TODOIST_CLIENT_ID }}" > .env
+          echo "TODOIST_CLIENT_SECRET=${{ secrets.TODOIST_CLIENT_SECRET }}" >> .env
+
       - name: Build Snap
         id: build
-        env:
-          TODOIST_CLIENT_ID: ${{ secrets.TODOIST_CLIENT_ID }}
-          TODOIST_CLIENT_SECRET: ${{ secrets.TODOIST_CLIENT_SECRET }}
         uses: snapcore/action-build@v1
 
       - name: Upload Snap Artifact
