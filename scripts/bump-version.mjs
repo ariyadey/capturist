@@ -11,7 +11,7 @@ if (!newVersion) {
 }
 
 // Validate version format (SemVer)
-if (!/^\d+\.\d+\.\d+/.test(newVersion)) {
+if (!/^\d+\.\d+\.\d+$/.test(newVersion)) {
   console.error('❌ Error: Version must be in SemVer format (e.g., 1.2.3)');
   process.exit(1);
 }
