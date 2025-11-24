@@ -2,10 +2,13 @@ name: Build and Publish Snap
 
 on:
   push:
-    branches: ["main"]
-    tags: ["v*"]
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -21,8 +24,6 @@ jobs:
       - name: Build Snap
         id: build
         uses: snapcore/action-build@v1
-        with:
-          snapcraft-channel: latest/stable
 
       - name: Upload Snap Artifact
         uses: actions/upload-artifact@v4
@@ -49,4 +50,11 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
         with:
           snap: ${{ needs.build.outputs.snap-file }}
-          release: ${{ startsWith(github.ref, 'refs/tags/') && 'stable' || 'edge' }}
+          release: ${{ github.ref_type == 'tag' && 'stable' || 'edge' }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: "*.snap"
+          generate_release_notes: true
