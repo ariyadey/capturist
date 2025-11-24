@@ -60,8 +60,11 @@ jobs:
         run: |
           echo "TODOIST_CLIENT_ID=${{ secrets.TODOIST_CLIENT_ID }}" > .env
           echo "TODOIST_CLIENT_SECRET=${{ secrets.TODOIST_CLIENT_SECRET }}" >> .env
-          echo "TAURI_SIGNING_PRIVATE_KEY=${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}" >> .env
-          echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD=${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}" >> .env
+
+      - name: Disable updater for Snap
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq moreutils
+          jq 'del(.plugins.updater) | .bundle.createUpdaterArtifacts = false' src-tauri/tauri.conf.json | sponge src-tauri/tauri.conf.json
 
       - name: Build Snap
         id: build

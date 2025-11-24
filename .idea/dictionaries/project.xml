@@ -34,6 +34,7 @@
       <w>libwoff</w>
       <w>libxcb</w>
       <w>libxdo</w>
+      <w>moreutils</w>
       <w>noto</w>
       <w>reqwest</w>
     </words>
