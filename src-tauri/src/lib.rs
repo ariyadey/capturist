@@ -1,13 +1,12 @@
-use crate::desktop::{cli, window};
+use crate::desktop::{cli, update, window};
 use crate::ipc::deeplink::DeepLinkHost;
 use crate::shared::error::AppResult;
 use crate::shared::metadata::APP_ID;
 use crate::shared::storage::key::StorageKey;
 use crate::shared::{environment, state, storage};
-use desktop::{autostart, shortcut, tray};
+use desktop::{autostart, tray};
 use ipc::deeplink;
 use shared::state::AppState;
-use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_cli::CliExt;
 
@@ -60,6 +59,7 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::default().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(AppState::default())
         .setup(|app| {
             let app_handle = &app.handle();
@@ -72,6 +72,9 @@ pub fn run() {
             {
                 if !environment::is_running_as_snap() {
                     autostart::set_up_autostart(app_handle)?;
+                }
+                if environment::is_running_as_appimage() {
+                    update::set_up_updater(app_handle);
                 }
                 tray::set_up_tray_menu(app_handle)?;
             }

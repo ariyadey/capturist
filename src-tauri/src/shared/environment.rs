@@ -13,3 +13,10 @@ pub fn is_running_on_wayland() -> bool {
 pub fn is_running_as_snap() -> bool {
     env::var("SNAP").is_ok()
 }
+
+/// Checks if the application is currently running as an AppImage.
+///
+/// This is determined by checking for the presence of the `APPIMAGE` environment variable.
+pub fn is_running_as_appimage() -> bool {
+    env::var("APPIMAGE").is_ok()
+}

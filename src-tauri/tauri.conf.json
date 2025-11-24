@@ -3,14 +3,12 @@
   "productName": "Capturist",
   "identifier": "me.ariyadey.capturist",
   "version": "0.1.0",
-
   "build": {
     "beforeDevCommand": "npm run start",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist/capturist/browser"
   },
-
   "app": {
     "windows": [
       {
@@ -64,7 +62,6 @@
       "dangerousDisableAssetCspModification": ["script-src", "style-src"]
     }
   },
-
   "bundle": {
     "active": true,
     "category": "Productivity",
@@ -74,9 +71,9 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
   },
-
   "plugins": {
     "cli": {
       "description": "Capturist - A Todoist client to quickly add tasks",
@@ -93,6 +90,10 @@
       "desktop": {
         "schemes": ["capturist"]
       }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFCMEI5RTRCRDYxQTg2RjYKUldUMmhocldTNTRMRzFFZFZJcVBBbktMMVppQlp1ZEI2b25ZQUQzUGZVVmhuUnJtazJUcXRSMWUK",
+      "endpoints": ["https://github.com/ariyadey/capturist/releases/latest/download/latest.json"]
     }
   }
 }

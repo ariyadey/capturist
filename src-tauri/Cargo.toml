@@ -54,3 +54,4 @@ tauri-plugin-cli = "2"
 tauri-plugin-devtools = "2"
 tauri-plugin-global-shortcut = "2"
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
+tauri-plugin-updater = "2"

@@ -4,4 +4,5 @@ pub mod autostart;
 pub mod cli;
 pub mod shortcut;
 pub mod tray;
+pub mod update;
 pub mod window;
