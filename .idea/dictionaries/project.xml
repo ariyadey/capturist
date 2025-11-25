@@ -8,6 +8,7 @@
       <w>coredump</w>
       <w>devmode</w>
       <w>doist</w>
+      <w>dtolnay</w>
       <w>gsettings</w>
       <w>hicolor</w>
       <w>icns</w>
@@ -35,8 +36,11 @@
       <w>libxcb</w>
       <w>libxdo</w>
       <w>moreutils</w>
+      <w>noreply</w>
       <w>noto</w>
       <w>reqwest</w>
+      <w>snapcore</w>
+      <w>softprops</w>
     </words>
   </dictionary>
 </component>

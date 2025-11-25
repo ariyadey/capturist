@@ -18,25 +18,45 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Configure Git
+        # language=Bash
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Bump Version
-        run: npm run bump ${{ inputs.version }}
+        # language=Bash
+        run: |
+          NEW_VERSION="${{ inputs.version }}"
+          echo "Bumping to $NEW_VERSION"
+
+          # Update package.json
+          sed -i 's/"version": ".*"/"version": "'$NEW_VERSION'"/' package.json
+
+          # Update tauri.conf.json
+          sed -i 's/"version": ".*"/"version": "'$NEW_VERSION'"/' src-tauri/tauri.conf.json
+
+          # Update Cargo.toml
+          sed -i 's/^version = ".*"/version = "'$NEW_VERSION'"/' src-tauri/Cargo.toml
+
+          # Update snapcraft.yaml
+          sed -i "s/version: '.*'/version: '$NEW_VERSION'/" snapcraft.yaml
+
+          # Update Cargo.lock
+          cd src-tauri
+          cargo check
 
       - name: Commit and Push
+        # language=Bash
         run: |
           git commit -am "chore: bump version to ${{ inputs.version }}"
           git push origin main
 
       - name: Create and Push Tag
+        # language=Bash
         run: |
           git tag v${{ inputs.version }}
           git push origin v${{ inputs.version }}

@@ -50,7 +50,6 @@ yarn-error.log
 testem.log
 /typings
 .env
-capturist.key*
 
 # System files
 .DS_Store

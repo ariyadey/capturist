@@ -46,12 +46,11 @@ You can release either locally or via the Cloud (GitHub Actions).
 
 #### Option 2: Local Release
 
-To update the version across all files (`package.json`, `tauri.conf.json`, `Cargo.toml`, `snapcraft.yaml`), use the helper script:
-
-```bash
-npm run bump <new-version>
-# Example: npm run bump 0.2.0
-```
+If you prefer to release locally, you must manually update the version in:
+-   `package.json`
+-   `src-tauri/tauri.conf.json`
+-   `src-tauri/Cargo.toml`
+-   `snapcraft.yaml`
 
 Then commit the changes and create a tag:
 
