@@ -62,11 +62,6 @@ jobs:
           echo "TODOIST_CLIENT_ID=${{ secrets.TODOIST_CLIENT_ID }}" > .env
           echo "TODOIST_CLIENT_SECRET=${{ secrets.TODOIST_CLIENT_SECRET }}" >> .env
 
-      - name: Disable updater for Snap
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq moreutils
-          jq 'del(.plugins.updater) | .bundle.createUpdaterArtifacts = false' src-tauri/tauri.conf.json | sponge src-tauri/tauri.conf.json
-
       - name: Build Snap
         id: build
         uses: snapcore/action-build@v1

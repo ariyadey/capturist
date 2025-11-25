@@ -83,6 +83,7 @@
   },
   "bundle": {
     "active": true,
+    "targets": "all",
     "category": "Productivity",
     "icon": [
       "icons/32x32.png",
