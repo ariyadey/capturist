@@ -29,29 +29,29 @@ strip = true # Ensures debug symbols are removed.
 
 [build-dependencies]
 dotenv = "0.15"
-tauri-build = { version = "2", features = ["config-json5"] }
+tauri-build = { version = "2.5", features = [] }
 
 [dependencies]
-anyhow = "1"
-keyring = { version = "3", features = ["sync-secret-service", "windows-native", "apple-native"] }
+anyhow = "1.0"
+keyring = { version = "3.6", features = ["sync-secret-service", "windows-native", "apple-native"] }
 log = "0.4"
 rand = "0.9"
 reqwest = { version = "0.12", features = ["json"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 serde_urlencoded = "0.7"
-url = { version = "2", features = ["serde"] }
+url = { version = "2.5", features = ["serde"] }
 
-tauri = { version = "2", features = ["config-json5", "tray-icon"] }
-tauri-plugin-deep-link = "2"
-tauri-plugin-log = { version = "2", features = ["colored"] }
-tauri-plugin-opener = "2"
-tauri-plugin-store = "2"
+tauri = { version = "2.9", features = ["config-json5", "tray-icon"] }
+tauri-plugin-deep-link = "2.4"
+tauri-plugin-log = { version = "2.7", features = ["colored"] }
+tauri-plugin-opener = "2.5"
+tauri-plugin-store = "2.4"
 
 [target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
-tauri-plugin-autostart = "2"
-tauri-plugin-cli = "2"
-tauri-plugin-devtools = "2"
-tauri-plugin-global-shortcut = "2"
-tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
-tauri-plugin-updater = "2"
+tauri-plugin-autostart = "2.5"
+tauri-plugin-cli = "2.4"
+tauri-plugin-devtools = "2.0"
+tauri-plugin-global-shortcut = "2.3"
+tauri-plugin-single-instance = { version = "2.3", features = ["deep-link"] }
+tauri-plugin-updater = "2.9"
