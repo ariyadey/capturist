@@ -1,3 +1,4 @@
+[![Release](https://github.com/ariyadey/capturist/actions/workflows/release.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/release.yml)
 [![capturist](https://snapcraft.io/capturist/badge.svg)](https://snapcraft.io/capturist)
 [![capturist](https://snapcraft.io/capturist/trending.svg?name=0)](https://snapcraft.io/capturist)
 
