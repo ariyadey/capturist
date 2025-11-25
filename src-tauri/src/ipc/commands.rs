@@ -9,6 +9,12 @@ use anyhow::{format_err, Context};
 use std::process::Command;
 use tauri::{AppHandle, State};
 
+/// Checks if the application is running in debug mode.
+#[tauri::command]
+pub fn is_dev_mode() -> bool {
+    cfg!(debug_assertions)
+}
+
 /// Checks if the current environment is Linux.
 #[tauri::command]
 pub fn is_os_linux() -> bool {
