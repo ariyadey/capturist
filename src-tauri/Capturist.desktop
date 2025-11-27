@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Office;
+Comment=A practical desktop application for quickly adding tasks to Todoist
+Exec=capturist %u
+StartupWMClass=capturist
+Icon=capturist
+Name=Capturist
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/capturist

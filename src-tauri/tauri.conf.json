@@ -93,6 +93,15 @@
       "icons/icon.ico"
     ],
     "createUpdaterArtifacts": true
+    "createUpdaterArtifacts": true,
+    "linux": {
+      "deb": {
+        "desktopTemplate": "Capturist.desktop"
+      },
+      "rpm": {
+        "desktopTemplate": "Capturist.desktop"
+      }
+    }
   },
   "plugins": {
     "cli": {

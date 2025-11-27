@@ -1,6 +1,8 @@
+use crate::shared::environment;
 use crate::shared::error::AppResult;
 use anyhow::{format_err, Context};
 use std::fmt;
+use std::ops::Not;
 use tauri::AppHandle;
 use tauri_plugin_deep_link::DeepLinkExt;
 
@@ -34,8 +36,12 @@ impl TryFrom<&str> for DeepLinkHost {
 }
 
 /// Sets up the deep link handling for the application.
-pub fn set_up_deep_link_handling(app_handle: &AppHandle) {
+pub fn set_up_deep_link_handling(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up deep link handling...");
+
+    if environment::is_running_as_snap().not() {
+        app_handle.deep_link().register_all()?;
+    }
 
     let owned_app_handle = app_handle.to_owned();
     app_handle.deep_link().on_open_url(move |event| {
@@ -67,4 +73,6 @@ pub fn set_up_deep_link_handling(app_handle: &AppHandle) {
             None => log::error!("No URL found in deep link"),
         }
     });
+
+    Ok(())
 }

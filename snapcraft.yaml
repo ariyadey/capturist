@@ -50,7 +50,6 @@ parts:
       npm run tauri build -- --config src-tauri/tauri.snap.conf.json
       dpkg -x src-tauri/target/release/bundle/deb/*.deb "$APP_INSTALL_DIR"/
       sed -i -e "s|Icon=capturist|Icon=/usr/share/icons/hicolor/128x128/apps/capturist.png|g" "$DESKTOP_FILE"
-      sed -i -e "s|^Exec=capturist$|Exec=capturist %u|g" "$DESKTOP_FILE"
 
 apps:
   capturist:
