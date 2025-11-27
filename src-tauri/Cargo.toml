@@ -51,7 +51,6 @@ tauri-plugin-store = "2.4"
 [target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
 tauri-plugin-autostart = "2.5"
 tauri-plugin-cli = "2.4"
-tauri-plugin-devtools = "2.0"
 tauri-plugin-global-shortcut = "2.3"
 tauri-plugin-single-instance = { version = "2.3", features = ["deep-link"] }
 tauri-plugin-updater = "2.9"

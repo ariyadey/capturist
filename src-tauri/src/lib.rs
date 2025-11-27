@@ -9,6 +9,7 @@ use ipc::deeplink;
 use shared::state::AppState;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_cli::CliExt;
+use tauri_plugin_log::fern::colors::{Color, ColoredLevelConfig};
 
 mod desktop;
 mod external;
@@ -17,17 +18,14 @@ mod shared;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let mut builder = tauri::Builder::default();
-
-    #[cfg(debug_assertions)]
-    {
-        builder = builder.plugin(tauri_plugin_devtools::init());
-    }
-
-    #[cfg(not(debug_assertions))]
-    {
-        use tauri_plugin_log::fern::colors::{Color, ColoredLevelConfig};
-        builder = builder.plugin(
+    tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(
+            |app_handle, argv, cwd| {
+                let _ = on_another_instance_trial(app_handle, argv, cwd)
+                    .inspect_err(|e| log::error!("{e:?}"));
+            },
+        ))
+        .plugin(
             tauri_plugin_log::Builder::default()
                 .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
                 .level(log::LevelFilter::Info)
@@ -40,16 +38,7 @@ pub fn run() {
                         .trace(Color::Blue),
                 )
                 .build(),
-        );
-    }
-
-    builder
-        .plugin(tauri_plugin_single_instance::init(
-            |app_handle, argv, cwd| {
-                let _ = on_another_instance_trial(app_handle, argv, cwd)
-                    .inspect_err(|e| log::error!("{e:?}"));
-            },
-        ))
+        )
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             Some(vec![&cli::MINIMIZE_ARG]),
