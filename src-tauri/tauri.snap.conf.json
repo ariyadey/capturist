@@ -3,8 +3,5 @@
   "bundle": {
     "targets": "deb",
     "createUpdaterArtifacts": false
-  },
-  "plugins": {
-    "updater": null
   }
 }
