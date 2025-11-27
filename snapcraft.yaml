@@ -78,3 +78,7 @@ slots:
     interface: dbus
     bus: session
     name: org.me_ariyadey_capturist.SingleInstance
+
+layout:
+  /usr/lib/x86_64-linux-gnu/webkit2gtk-4.1:
+    symlink: $SNAP/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1
