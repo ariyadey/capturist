@@ -92,13 +92,18 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "createUpdaterArtifacts": true
     "createUpdaterArtifacts": true,
     "linux": {
       "deb": {
+        "depends": [
+          "libnotify-bin"
+        ],
         "desktopTemplate": "Capturist.desktop"
       },
       "rpm": {
+        "depends": [
+          "libnotify"
+        ],
         "desktopTemplate": "Capturist.desktop"
       }
     }
