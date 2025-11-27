@@ -1,7 +1,7 @@
 use crate::desktop::shortcut;
 use crate::external::todoist::auth;
 use crate::shared::error::AppSerializableResult;
-use crate::shared::metadata::APP_TITLE;
+use crate::shared::metadata::APP_ID;
 use crate::shared::state::AppState;
 use crate::shared::storage::key::StorageKey;
 use crate::shared::{environment, storage};
@@ -67,7 +67,7 @@ pub fn send_notification(title: &str, body: &str) -> AppSerializableResult<()> {
         .arg(title)
         .arg(body)
         .arg("--app-name")
-        .arg(APP_TITLE)
+        .arg(APP_ID)
         .arg("--hint=int:transient:1")
         .status()
         .context("Failed to execute notify-send command")
