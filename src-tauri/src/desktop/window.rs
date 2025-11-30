@@ -70,6 +70,7 @@ pub fn init_quick_add_dialog(app_handle: &AppHandle, minimize: bool) -> AppResul
         window.hide()?;
     } else {
         window.show()?;
+        window.set_focus()?;
     }
 
     Ok(())

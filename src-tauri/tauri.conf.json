@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "alwaysOnTop": true,
+        "alwaysOnTop": false,
         "center": true,
         "closable": false,
         "create": false,
