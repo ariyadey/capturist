@@ -28,7 +28,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_log::Builder::default()
                 .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
-                .level(log::LevelFilter::Info)
+                .level(log::LevelFilter::Debug)
                 .with_colors(
                     ColoredLevelConfig::new()
                         .error(Color::Red)
