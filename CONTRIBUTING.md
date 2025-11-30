@@ -28,6 +28,14 @@ Write clear and concise commit messages.
   - Create a GitHub Release.
   - Publish an AppImage
   - Publish to the Snap Store `stable` channel.
+  - Build a Flatpak bundle (`.flatpak`) and attach it to the release.
+
+### Flatpak & Flathub
+
+To publish to Flathub:
+1.  The `release.yml` workflow builds a `capturist.flatpak` bundle.
+2.  For the **first release**, you must manually submit the manifest (`distribution/flatpak/me.ariyadey.capturist.yml`) to [Flathub](https://github.com/flathub/flathub).
+3.  For subsequent releases, you will update the Flathub repository with the new version.
 
 ### Versioning & Releasing
 

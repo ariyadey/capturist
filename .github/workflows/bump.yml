@@ -45,6 +45,11 @@ jobs:
           # Update snapcraft.yaml
           sed -i "s/version: '.*'/version: '$NEW_VERSION'/" snapcraft.yaml
 
+          # Update Flatpak manifest (if version field exists, though we use .deb source)
+          # Note: Our manifest doesn't have a hardcoded version field for the app itself, 
+          # but if we added one later, this would be where to do it.
+          # For now, we just rely on the .deb version.
+          
           # Update Cargo.lock
           cd src-tauri
           cargo check
