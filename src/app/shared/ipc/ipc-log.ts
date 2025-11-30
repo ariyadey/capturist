@@ -10,8 +10,9 @@ export function forwardConsole() {
   ] as const);
   logLevelMap.forEach((logger, fnName, _) => {
     const original = console[fnName];
-    console[fnName] = (message) => {
-      original(message);
+    console[fnName] = (...args: Array<unknown>) => {
+      original(...args);
+      const message = args.map((arg) => String(arg)).join("\n");
       logger(message);
     };
   });
