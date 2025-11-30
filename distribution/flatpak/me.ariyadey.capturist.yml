@@ -11,6 +11,7 @@ finish-args:
   - --share=network
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.secrets
 modules:
   - name: capturist
     buildsystem: simple
@@ -22,7 +23,6 @@ modules:
       - install -D -m 644 /app/share/applications/Capturist.desktop /app/share/applications/me.ariyadey.capturist.desktop
       # Fix desktop file to match app-id
       - sed -i 's/Icon=capturist/Icon=me.ariyadey.capturist/' /app/share/applications/me.ariyadey.capturist.desktop
-      - sed -i 's/Exec=capturist/Exec=capturist/' /app/share/applications/me.ariyadey.capturist.desktop
     sources:
       - type: file
         path: capturist.deb
