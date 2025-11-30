@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: capturist_${{ github.ref_type == 'tag' && github.ref_name || 'build' }}_amd64.deb
-          path: src-tauri/target/release/bundle/deb/capturist_*_amd64.deb
+          path: src-tauri/target/release/bundle/deb/Capturist_*_amd64.deb
 
   snap-build:
     runs-on: ubuntu-latest
