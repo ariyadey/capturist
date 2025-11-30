@@ -5,6 +5,7 @@
       <w>appimage</w>
       <w>appindicator</w>
       <w>appname</w>
+      <w>buildsystem</w>
       <w>coredump</w>
       <w>devmode</w>
       <w>doist</w>

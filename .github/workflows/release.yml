@@ -51,6 +51,9 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           generateReleaseNotes: true
 
+      - name: Debug - List Files
+        run: ls -R src-tauri/target/release/bundle
+
       - name: Upload Deb Artifact
         uses: actions/upload-artifact@v4
         with:
