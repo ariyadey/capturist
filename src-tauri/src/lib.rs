@@ -73,7 +73,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            ipc::commands::is_dev_mode,
+            ipc::commands::is_debug_mode,
             ipc::commands::is_os_linux,
             ipc::commands::is_wayland_session,
             ipc::commands::is_running_as_appimage,

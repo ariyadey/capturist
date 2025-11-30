@@ -11,7 +11,7 @@ use tauri::{AppHandle, State};
 
 /// Checks if the application is running in debug mode.
 #[tauri::command]
-pub fn is_dev_mode() -> bool {
+pub fn is_debug_mode() -> bool {
     cfg!(debug_assertions)
 }
 
