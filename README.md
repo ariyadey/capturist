@@ -1,5 +1,6 @@
 [![Release](https://github.com/ariyadey/capturist/actions/workflows/release.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/release.yml)
-[![capturist](https://snapcraft.io/capturist/badge.svg)](https://snapcraft.io/capturist)
+[![Snap Store](https://snapcraft.io/capturist/badge.svg)](https://snapcraft.io/capturist)
+![Flatpak](https://img.shields.io/badge/flatpak-supported-blue.svg)
 [![capturist](https://snapcraft.io/capturist/trending.svg?name=0)](https://snapcraft.io/capturist)
 
 # Capturist
@@ -27,17 +28,27 @@
 
 ## 🚀 Installation
 
-Capturist is available as a Snap package from the Snap Store.
+### Snap Store (Recommended)
 
 [![Get it from the Snap Store](https://snapcraft.io/en/light/install.svg)](https://snapcraft.io/capturist)
-
-Or run the following command:
 
 ```bash
 snap install capturist
 ```
 
-Support for other packaging formats (like Flatpak, AppImage, .deb, .rpm, and AUR) may be added in the future based on community requests.
+### Flatpak
+
+Download the `.flatpak` bundle from [Releases](https://github.com/ariyadey/capturist/releases) and run:
+
+```bash
+flatpak install capturist.flatpak
+```
+
+### Manual Installation
+
+You can also download `.deb` and `.rpm` files from the [Releases](https://github.com/ariyadey/capturist/releases) page.
+
+> **Note**: Support for **AppImage** and **AUR** may be added in the future based on community requests.
 
 ## 💻 Building from Source
 
