@@ -27,6 +27,12 @@ pub fn is_wayland_session() -> bool {
     environment::is_running_on_wayland()
 }
 
+/// Checks if the application is running as an AppImage.
+#[tauri::command]
+pub fn is_running_as_appimage() -> bool {
+    environment::is_running_as_appimage()
+}
+
 /// Initiates the Todoist authentication flow.
 #[tauri::command]
 pub async fn start_authentication(

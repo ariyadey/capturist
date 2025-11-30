@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -21,6 +22,9 @@ import { NativeNotification } from "@cpt/shared/ipc/native-notification";
 import { TodoistRequestError } from "@doist/todoist-api-typescript";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
+import { invoke } from "@tauri-apps/api/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { from } from "rxjs";
 
 @Component({
   selector: "cpt-quick-add-dialog",
@@ -51,11 +55,13 @@ export class QuickAddDialog {
     name: ["", Validators.required],
     description: [""],
   });
+  protected readonly isAppImage = toSignal(from(invoke<boolean>("is_running_as_appimage")));
+  protected readonly shortcutTooltipText = computed(
+    () =>
+      "To assign a global shortcut, " +
+      `set a script shortcut in OS settings executing "${this.isAppImage() ? "<AppImage path>" : "capturist"} --quick-add" command.`,
+  );
   protected readonly isAdding = signal(false);
-  protected readonly shortcutTooltipText = signal(
-    "To assign a global shortcut, " +
-      'set a script shortcut in OS settings executing "capturist --quick-add" command.',
-  ).asReadonly();
   protected readonly taskNameTextArea = viewChild("taskNameTextArea", {
     read: ElementRef<HTMLTextAreaElement>,
   });
