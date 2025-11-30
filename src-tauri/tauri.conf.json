@@ -83,7 +83,10 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "deb",
+      "rpm"
+    ],
     "category": "Productivity",
     "icon": [
       "icons/32x32.png",
@@ -92,7 +95,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "createUpdaterArtifacts": true,
+    "createUpdaterArtifacts": false,
     "linux": {
       "deb": {
         "depends": [
