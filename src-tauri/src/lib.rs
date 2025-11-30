@@ -67,7 +67,7 @@ pub fn run() {
                 }
                 tray::set_up_tray_menu(app_handle)?;
             }
-            deeplink::set_up_deep_link_handling(app_handle);
+            deeplink::set_up_deep_link_handling(app_handle)?;
             window::set_up_current_window_synchronization(app_handle);
             show_initial_window(app_handle)?;
             Ok(())
