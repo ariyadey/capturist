@@ -1,4 +1,5 @@
 use std::env;
+use std::ops::Not;
 
 /// Checks if the application is currently running on a Wayland display server.
 ///
@@ -11,7 +12,7 @@ pub fn is_running_on_wayland() -> bool {
 ///
 /// This is determined by checking for the presence of the `SNAP` environment variable.
 pub fn is_running_as_snap() -> bool {
-    env::var("SNAP").is_ok()
+    cfg!(dev).not() && env::var("SNAP").is_ok()
 }
 
 /// Checks if the application is currently running as an AppImage.
