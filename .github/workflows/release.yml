@@ -135,7 +135,7 @@ jobs:
           path: .
 
       - name: Rename Deb for Manifest
-        run: mv capturist_*.deb capturist.deb
+        run: mv Capturist_*.deb capturist.deb
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
