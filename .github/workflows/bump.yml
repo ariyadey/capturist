@@ -21,6 +21,12 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install system dependencies
+        # language=Bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
       - name: Configure Git
         # language=Bash
         run: |
@@ -46,10 +52,10 @@ jobs:
           sed -i "s/version: '.*'/version: '$NEW_VERSION'/" snapcraft.yaml
 
           # Update Flatpak manifest (if version field exists, though we use .deb source)
-          # Note: Our manifest doesn't have a hardcoded version field for the app itself, 
+          # Note: Our manifest doesn't have a hardcoded version field for the app itself,
           # but if we added one later, this would be where to do it.
           # For now, we just rely on the .deb version.
-          
+
           # Update Cargo.lock
           cd src-tauri
           cargo check
