@@ -123,7 +123,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-46
+      image: bilelmoussaoui/flatpak-github-actions:gnome-47
       options: --privileged
     steps:
       - uses: actions/checkout@v4
@@ -135,7 +135,7 @@ jobs:
           path: .
 
       - name: Rename Deb for Manifest
-        run: mv Capturist_*.deb capturist.deb
+        run: mv Capturist_*.deb distribution/flatpak/capturist.deb
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
