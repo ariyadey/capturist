@@ -17,7 +17,7 @@ website: https://github.com/ariyadey/capturist
 
 type: app
 base: core24
-version: '0.2.4'
+version: '0.2.5'
 grade: stable
 confinement: strict
 platforms:
