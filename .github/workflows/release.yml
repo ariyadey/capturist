@@ -119,6 +119,8 @@ jobs:
           append_body: true
 
   flatpak-build:
+    permissions:
+      contents: write
     needs: general-build-release
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
