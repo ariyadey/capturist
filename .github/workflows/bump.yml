@@ -33,32 +33,24 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump Version
+      - name: Bump Version Files
         # language=Bash
         run: |
           NEW_VERSION="${{ inputs.version }}"
           echo "Bumping to $NEW_VERSION"
-
-          # Update package.json
           sed -i 's/"version": ".*"/"version": "'$NEW_VERSION'"/' package.json
-
-          # Update tauri.conf.json
           sed -i 's/"version": ".*"/"version": "'$NEW_VERSION'"/' src-tauri/tauri.conf.json
-
-          # Update Cargo.toml
           sed -i 's/^version = ".*"/version = "'$NEW_VERSION'"/' src-tauri/Cargo.toml
-
-          # Update snapcraft.yaml
           sed -i "s/version: '.*'/version: '$NEW_VERSION'/" snapcraft.yaml
 
-          # Update Flatpak manifest (if version field exists, though we use .deb source)
-          # Note: Our manifest doesn't have a hardcoded version field for the app itself,
-          # but if we added one later, this would be where to do it.
-          # For now, we just rely on the .deb version.
-
-          # Update Cargo.lock
-          cd src-tauri
-          cargo check
+      - name: Update Cargo.lock
+        working-directory: ./src-tauri
+        env:
+          TODOIST_CLIENT_ID: ${{ secrets.TODOIST_CLIENT_ID }}
+          TODOIST_CLIENT_SECRET: ${{ secrets.TODOIST_CLIENT_SECRET }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: cargo check
 
       - name: Commit and Push
         # language=Bash
