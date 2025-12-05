@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>me.ariyadey.capturist</id>
+  <name>Capturist</name>
+  <summary>Quickly add tasks to Todoist from your desktop</summary>
+  <description>
+    <p>
+      Capturist is a desktop application for Linux designed to quickly add tasks to Todoist.
+      It lives in your system tray and can be summoned with a global shortcut,
+      allowing you to capture tasks without breaking your workflow.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Global keyboard shortcut to instantly open the quick-add window</li>
+      <li>System tray integration for easy access</li>
+      <li>Minimal and fast interface</li>
+      <li>Secure OAuth authentication with Todoist</li>
+    </ul>
+    <p>
+      Capturist is an unofficial Todoist client and is not affiliated with or endorsed by Doist.
+    </p>
+  </description>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <developer id="me.ariyadey">
+    <name>Ariya Moheb</name>
+  </developer>
+
+  <url type="homepage">https://github.com/ariyadey/capturist</url>
+  <url type="bugtracker">https://github.com/ariyadey/capturist/issues</url>
+  <url type="vcs-browser">https://github.com/ariyadey/capturist</url>
+  <url type="contact">https://ariyadey.me</url>
+  <url type="contact">mailto:ariya.mms@gmail.com</url>
+
+  <categories>
+    <category>Utility</category>
+    <category>Office</category>
+  </categories>
+
+  <keywords>
+    <keyword>todoist</keyword>
+    <keyword>tasks</keyword>
+    <keyword>todo</keyword>
+    <keyword>productivity</keyword>
+    <keyword>quick add</keyword>
+    <keyword>to-do list</keyword>
+  </keywords>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/ariyadey/capturist/raw/main/public/img/screenshot-quick-add.png
+      </image>
+      <caption>Task quick-add interface</caption>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="0.2.5" date="2024-12-01">
+      <description>
+        <p>Latest release with bug fixes and improvements.</p>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-info">mild</content_attribute>
+  </content_rating>
+
+  <requires>
+    <internet>always</internet>
+  </requires>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+
+  <launchable type="desktop-id">Capturist.desktop</launchable>
+</component>
