@@ -14,6 +14,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "lint": "ng lint",
+    "format:check": "prettier --check .",
     "tauri": "tauri"
   },
   "dependencies": {
