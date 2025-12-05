@@ -1,23 +1,8 @@
 name: capturist
-title: Capturist - Todoist Quick Add Utility
-summary: A practical desktop application for quickly adding tasks to Todoist
-description: |
-  Capturist is a desktop application for Linux designed to quickly add tasks to Todoist.
-  It lives in your system tray and can be summoned with a global shortcut,
-  allowing you to capture tasks without breaking your workflow.
-
-  Capturist is an unofficial Todoist client and is not affiliated with or endorsed by Doist.
-contact:
-  - https://ariyadey.me
-  - ariya.mms@gmail.com
-license: MIT
-issues: https://github.com/ariyadey/capturist/issues
-source-code: https://github.com/ariyadey/capturist
-website: https://github.com/ariyadey/capturist
+adopt-info: capturist-part
 
 type: app
 base: core24
-version: '0.2.5'
 grade: stable
 confinement: strict
 platforms:
@@ -40,6 +25,8 @@ parts:
       - -usr/lib/*/libicutu.so*
       - -usr/lib/*/libicutest.so*
     source: .
+    parse-info:
+      - me.ariyadey.capturist.metainfo.xml
     # language=Bash
     override-build: |
       set -eu
