@@ -30,13 +30,19 @@ parts:
     # language=Bash
     override-build: |
       set -eu
-      APP_INSTALL_DIR="$SNAPCRAFT_PART_INSTALL"
-      DESKTOP_FILE="$APP_INSTALL_DIR/usr/share/applications/Capturist.desktop"
-      rustup default stable
-      npm ci --no-audit --no-fund
-      npm run tauri build -- --config src-tauri/tauri.snap.conf.json
-      dpkg -x src-tauri/target/release/bundle/deb/*.deb "$APP_INSTALL_DIR"/
-      sed -i -e "s|Icon=capturist|Icon=/usr/share/icons/hicolor/128x128/apps/capturist.png|g" "$DESKTOP_FILE"
+
+      if [ ! -f "capturist.deb" ]; then
+          echo "--- No pre-built deb found, building from source... ---"
+          rustup default stable
+          npm ci --no-audit --no-fund
+          npm run tauri build -- --config src-tauri/tauri.snap.conf.json
+          mv src-tauri/target/release/bundle/deb/*.deb capturist.deb
+      fi
+
+      dpkg -x capturist.deb "$SNAPCRAFT_PART_INSTALL"/
+      desktop_file="$SNAPCRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
+      icon_path="/usr/share/icons/hicolor/128x128/apps/capturist.png"
+      sed -i -e "s|Icon=capturist|Icon=$icon_path|g" "$desktop_file"
 
 apps:
   capturist:
