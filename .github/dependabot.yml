@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+          - "angular-eslint"
+      tauri:
+        patterns:
+          - "@tauri-apps/*"
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "typescript-eslint"
+      prettier:
+        patterns:
+          - "prettier*"
+
+  - package-ecosystem: "cargo"
+    directory: "/src-tauri"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    groups:
+      tauri:
+        patterns:
+          - "tauri*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
