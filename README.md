@@ -107,7 +107,7 @@ Pull requests are welcome!
 For major changes, please open an issue first to discuss what you would like to change.
 Please ensure to add/update tests as appropriate.
 
-Before submitting, please run `npm run lint` to ensure your code adheres to the project's style.
+Before submitting, please run `npm run lint` and `npm run format:check` to ensure your code adheres to the project's style.
 
 ## 📄 License
 
