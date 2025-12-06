@@ -62,13 +62,13 @@ impl TryFrom<&str> for MenuId {
 }
 
 /// The unique identifier for the system tray icon.
-const TRAY_ID: &'static str = "capturist-tray";
+const TRAY_ID: &str = "capturist-tray";
 
 /// The unique identifier for the system tray menu.
-const TRAY_MENU_ID: &'static str = "capturist-tray-menu";
+const TRAY_MENU_ID: &str = "capturist-tray-menu";
 
 /// The title/tooltip of the system tray icon.
-const TRAY_TITLE: &'static str = APP_TITLE;
+const TRAY_TITLE: &str = APP_TITLE;
 
 /// Sets up the system tray icon and its associated menu.
 pub fn set_up_tray_menu(app_handle: &AppHandle) -> AppResult<()> {

@@ -6,7 +6,7 @@ use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
 
 /// The path to the store file.
-const STORE_PATH: &'static str = "capturist.json";
+const STORE_PATH: &str = "capturist.json";
 
 /// Saves a serializable value to the store.
 pub fn set<T: Serialize>(key: StorageKey, value: T, app_handle: &AppHandle) -> AppResult<()> {

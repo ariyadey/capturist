@@ -52,7 +52,7 @@ pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult
 
     let client_id = todoist::TODOIST_CLIENT_ID;
     let client_secret = todoist::TODOIST_CLIENT_SECRET;
-    let token = todoist::sdk::get_auth_token(&client_id, &client_secret, &payload.code)
+    let token = todoist::sdk::get_auth_token(client_id, client_secret, &payload.code)
         .await?
         .access_token;
     storage::secure::set(StorageKey::TodoistToken, &token, app_handle)?;

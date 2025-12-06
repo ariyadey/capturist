@@ -98,7 +98,7 @@ fn on_another_instance_trial(
 ) -> AppResult<()> {
     log::info!("Another instance tried to start with args: {argv:#?} and cwd: {cwd:#?}.");
 
-    let oauth_url = format!("{APP_ID}://{}", DeepLinkHost::OAUTH);
+    let oauth_url = format!("{APP_ID}://{}", DeepLinkHost::Oauth);
     let is_oauth_deep_link = argv.iter().any(|arg| arg.starts_with(&oauth_url));
     let should_minimize = argv.contains(&format!("--{}", cli::Argument::Minimize));
     if is_oauth_deep_link || should_minimize {

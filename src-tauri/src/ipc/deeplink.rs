@@ -13,13 +13,13 @@ pub enum DeepLinkHost {
     /// Represents a deep link for OAuth authentication.
     ///
     /// Example: `capturist://oauth?...`
-    OAUTH,
+    Oauth,
 }
 
 impl fmt::Display for DeepLinkHost {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DeepLinkHost::OAUTH => write!(f, "oauth"),
+            DeepLinkHost::Oauth => write!(f, "oauth"),
         }
     }
 }
@@ -29,7 +29,7 @@ impl TryFrom<&str> for DeepLinkHost {
 
     fn try_from(value: &str) -> AppResult<Self> {
         match value {
-            "oauth" => Ok(DeepLinkHost::OAUTH),
+            "oauth" => Ok(DeepLinkHost::Oauth),
             _ => Err(format_err!("Unknown deep-link host: {}", value)),
         }
     }
@@ -54,7 +54,7 @@ pub fn set_up_deep_link_handling(app_handle: &AppHandle) -> AppResult<()> {
                     .context("Invalid URL")
                     .and_then(DeepLinkHost::try_from)
                 {
-                    Ok(DeepLinkHost::OAUTH) => {
+                    Ok(DeepLinkHost::Oauth) => {
                         let owned_url = url.to_owned();
                         let owned_app_handle = owned_app_handle.to_owned();
                         // Spawns an async task to handle the authentication flow

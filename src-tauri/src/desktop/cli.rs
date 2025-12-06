@@ -2,7 +2,7 @@ use crate::shared::error::AppResult;
 use anyhow::format_err;
 use std::fmt;
 
-pub const MINIMIZE_ARG: &'static str = "--minimize";
+pub const MINIMIZE_ARG: &str = "--minimize";
 
 /// Represents a command-line argument that can be passed to the application.
 #[derive(Debug)]

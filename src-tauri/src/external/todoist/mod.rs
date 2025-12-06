@@ -4,7 +4,7 @@ pub mod auth;
 pub mod sdk;
 
 /// The client ID for the Todoist API.
-pub const TODOIST_CLIENT_ID: &'static str = env!("TODOIST_CLIENT_ID");
+pub const TODOIST_CLIENT_ID: &str = env!("TODOIST_CLIENT_ID");
 
 /// The client secret for the Todoist API.
-pub const TODOIST_CLIENT_SECRET: &'static str = env!("TODOIST_CLIENT_SECRET");
+pub const TODOIST_CLIENT_SECRET: &str = env!("TODOIST_CLIENT_SECRET");

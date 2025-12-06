@@ -15,6 +15,7 @@ use tauri_plugin_log::log;
 ///  05/11/2025 Enable global shortcut and make it configurable after the following issue got resolved.
 ///
 /// See: https://github.com/tauri-apps/global-hotkey/issues/28
+#[allow(dead_code)]
 pub fn set_up_global_shortcut(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up global shortcut...");
 

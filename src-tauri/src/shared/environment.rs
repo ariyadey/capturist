@@ -5,7 +5,7 @@ use std::ops::Not;
 ///
 /// This is determined by checking the `XDG_SESSION_TYPE` environment variable.
 pub fn is_running_on_wayland() -> bool {
-    env::var("XDG_SESSION_TYPE").map_or(false, |value| value == "wayland")
+    env::var("XDG_SESSION_TYPE").is_ok_and(|value| value == "wayland")
 }
 
 /// Checks if the application is currently running as a Snap package.

@@ -45,11 +45,11 @@ pub fn set_up_current_window_synchronization(app_handle: &AppHandle) {
         let _ = serde_json::from_str::<bool>(event.payload())
             .context("Failed to parse authentication status from event payload")
             .and_then(|authenticated| {
-                return if authenticated {
+                if authenticated {
                     switch_to_quick_add_dialog(&owned_app_handle)
                 } else {
                     switch_to_authentication_window(&owned_app_handle)
-                };
+                }
             })
             .inspect_err(|e| log::error!("{e:?}"));
     });
@@ -141,7 +141,7 @@ fn create_window(window_label: WindowLabel, app_handle: &AppHandle) -> AppResult
         .iter()
         .find(|w| w.label == window_label.to_string())
         .ok_or(tauri::Error::WebviewNotFound)?;
-    let window = WebviewWindowBuilder::from_config(app_handle, &window_config)?.build()?;
+    let window = WebviewWindowBuilder::from_config(app_handle, window_config)?.build()?;
 
     Ok(window)
 }

@@ -49,7 +49,7 @@ fn toggle_autostart(enable: AppResult<bool>, app_handle: &AppHandle) -> AppResul
         app_handle.autolaunch().disable()?;
     }
 
-    general::set(StorageKey::Autostart, should_autostart, &app_handle)?;
+    general::set(StorageKey::Autostart, should_autostart, app_handle)?;
 
     Ok(())
 }

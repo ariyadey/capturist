@@ -83,7 +83,7 @@ pub fn get_authorization_url(
     url.query_pairs_mut()
         .append_pair("client_id", client_id)
         .append_pair("scope", &scopes_str)
-        .append_pair("state", &state);
+        .append_pair("state", state);
     Ok(url)
 }
 

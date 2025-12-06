@@ -6,7 +6,7 @@ use crate::shared::storage;
 use crate::shared::storage::key::StorageKey;
 use tauri::AppHandle;
 
-const KEYRING_SERVICE_NAME: &'static str = APP_ID;
+const KEYRING_SERVICE_NAME: &str = APP_ID;
 
 /// Saves a value to the system keyring associated with a given `StorageKey`.
 pub fn set(key: StorageKey, value: &str, app_handle: &AppHandle) -> AppResult<()> {
