@@ -1,17 +1,76 @@
-name: Release
+name: CI/CD
 on:
   push:
     branches:
       - main
-    tags:
-      - "v*.*.*"
   pull_request:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g., 0.2.6). Leave empty for CI build only."
+        required: false
+        type: string
+      release_notes:
+        description: "Release notes for AppStream metadata"
+        required: false
+        type: string
+        default: "This release includes stability and performance improvements."
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IS_RELEASE: ${{ github.event_name == 'workflow_dispatch' && inputs.version != '' }}
+  BUMPED_CONFIGS: bumped-configs
+  DEB_ARTIFACT: deb-artifact
+  RPM_ARTIFACT: rpm-artifact
+  SNAP_ARTIFACT: snap-artifact
+  FLATPAK_ARTIFACT: flatpak-artifact
 
 jobs:
-  general-build-release:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Check Rust formatting
+        working-directory: src-tauri
+        run: cargo fmt --check
+
+      - name: Lint Rust
+        working-directory: src-tauri
+        run: cargo clippy -- -D warnings
+
+  build-core:
+    needs: lint
     permissions:
       contents: write
     runs-on: ubuntu-22.04
@@ -22,136 +81,248 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
+          cache: "npm"
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
       - name: Install dependencies
         # language=Bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt update
+          sudo apt install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xmlstarlet
+
+      - name: Install cargo-edit
+        if: env.IS_RELEASE
+        run: cargo install cargo-edit --locked
+
+      - name: Bump version files
+        if: env.IS_RELEASE
+        # language=BASH
+        run: |
+          NEW_VERSION="${{ inputs.version }}"
+          TODAY=$(date +%Y-%m-%d)
+          echo "Bumping to $NEW_VERSION (date: $TODAY)"
+
+          # Package.json
+          npm version "$NEW_VERSION" --no-git-tag-version --allow-same-version
+
+          # Cargo.toml
+          cd src-tauri && cargo set-version "$NEW_VERSION" && cd ..
+
+          # AppStream metainfo
+
+          # Add new release tag at the top
+          xmlstarlet ed -L \
+            -i "//releases" -t elem -n "release_new" \
+            -i "//release_new" -t attr -n "version" -v "$NEW_VERSION" \
+            -i "//release_new" -t attr -n "date" -v "$TODAY" \
+            -s "//release_new" -t elem -n "description" \
+            -s "//release_new/description" -t elem -n "p" -v "${{ inputs.release_notes }}" \
+            -r "//release_new" -v "release" \
+            me.ariyadey.capturist.metainfo.xml
+
+          # Keep only top 5 releases
+          xmlstarlet ed -L -d "//release[position()>5]" me.ariyadey.capturist.metainfo.xml
 
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build and Release
-        uses: tauri-apps/tauri-action@v0
+      - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TODOIST_CLIENT_ID: ${{ secrets.TODOIST_CLIENT_ID }}
           TODOIST_CLIENT_SECRET: ${{ secrets.TODOIST_CLIENT_SECRET }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          releaseDraft: true
-          prerelease: false
-          tagName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-          releaseName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-          releaseBody: "See the assets to download this version and install."
-          generateReleaseNotes: true
+        run: npm run tauri build
 
-      - name: Debug - List Files
-        run: ls -R src-tauri/target/release/bundle
-
-      - name: Upload Deb Artifact
+      - name: Upload DEB Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: capturist_${{ github.ref_type == 'tag' && github.ref_name || 'build' }}_amd64.deb
+          name: ${{ env.DEB_ARTIFACT }}
           path: src-tauri/target/release/bundle/deb/Capturist_*_amd64.deb
 
+      - name: Upload RPM Artifact
+        if: env.IS_RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.RPM_ARTIFACT }}
+          path: src-tauri/target/release/bundle/rpm/Capturist-*.x86_64.rpm
+
+      - name: Upload bumped configs
+        if: env.IS_RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BUMPED_CONFIGS }}
+          path: |
+            package.json
+            package-lock.json
+            src-tauri/Cargo.toml
+            src-tauri/Cargo.lock
+            me.ariyadey.capturist.metainfo.xml
+
   snap-build:
+    needs: build-core
     runs-on: ubuntu-latest
-    outputs:
-      snap-file: ${{ steps.build.outputs.snap }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create .env file
-        # language=Bash
-        run: |
-          echo "TODOIST_CLIENT_ID=${{ secrets.TODOIST_CLIENT_ID }}" > .env
-          echo "TODOIST_CLIENT_SECRET=${{ secrets.TODOIST_CLIENT_SECRET }}" >> .env
+      - name: Download bumped configs
+        if: env.IS_RELEASE
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.BUMPED_CONFIGS }}
+          path: .
+
+      - name: Download DEB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.DEB_ARTIFACT }}
+          path: .
+
+      - name: Rename DEB for manifest
+        run: mv Capturist_*.deb capturist.deb
 
       - name: Build Snap
         id: build
         uses: snapcore/action-build@v1
 
-      - name: Upload Snap Artifact
+      - name: Upload Snap artifact
         uses: actions/upload-artifact@v4
         with:
-          name: snap-artifact
+          name: ${{ env.SNAP_ARTIFACT }}
           path: ${{ steps.build.outputs.snap }}
 
-  snap-release:
-    permissions:
-      contents: write
-    needs:
-      - general-build-release
-      - snap-build
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download Snap artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: snap-artifact
-          path: .
-
-      - name: Publish Snap
-        uses: snapcore/action-publish@v1
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
-        with:
-          snap: ${{ needs.snap-build.outputs.snap-file }}
-          release: ${{ github.ref_type == 'tag' && 'stable' || 'edge' }}
-
-      - name: Upload Snap to Release
-        uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
-        with:
-          draft: true
-          make_latest: false
-          files: "*.snap"
-          fail_on_unmatched_files: true
-          append_body: true
-
   flatpak-build:
-    permissions:
-      contents: write
-    needs: general-build-release
-    if: github.event_name != 'pull_request'
+    needs: build-core
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-47
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
       options: --privileged
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Deb Artifact
+      - name: Download bumped configs
+        if: env.IS_RELEASE
         uses: actions/download-artifact@v4
         with:
-          name: capturist_${{ github.ref_type == 'tag' && github.ref_name || 'build' }}_amd64.deb
+          name: ${{ env.BUMPED_CONFIGS }}
           path: .
 
-      - name: Rename Deb for Manifest
-        run: mv Capturist_*.deb distribution/flatpak/capturist.deb
+      - name: Download DEB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.DEB_ARTIFACT }}
+          path: .
+
+      - name: Rename DEB for manifest
+        run: mv Capturist_*.deb capturist.deb
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: capturist.flatpak
-          manifest-path: distribution/flatpak/me.ariyadey.capturist.yml
-          cache-key: flatpak-builder-${{ github.sha }}
+          bundle: capturist_${{ inputs.version || 'build' }}_amd64.flatpak
+          manifest-path: me.ariyadey.capturist.yml
 
-      - name: Upload Flatpak Bundle to Release
-        uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: ${{ env.FLATPAK_ARTIFACT }}
+          path: capturist_${{ inputs.version || 'build' }}_amd64.flatpak
+
+  release:
+    needs: [build-core, snap-build, flatpak-build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download bumped configs
+        if: env.IS_RELEASE
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.BUMPED_CONFIGS }}
+          path: .
+
+      - name: Configure Git
+        if: env.IS_RELEASE
+        # language=BASH
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and Push
+        if: env.IS_RELEASE
+        # language=BASH
+        run: |
+          git commit -am "Bump version to ${{ inputs.version }}"
+          git push origin main
+
+      - name: Create and Push Tag
+        if: env.IS_RELEASE
+        # language=BASH
+        run: |
+          git tag v${{ inputs.version }}
+          git push origin v${{ inputs.version }}
+
+      - name: Download DEB artifact
+        if: env.IS_RELEASE
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.DEB_ARTIFACT }}
+          path: .
+
+      - name: Download RPM artifact
+        if: env.IS_RELEASE
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.RPM_ARTIFACT }}
+          path: .
+
+      - name: Download Snap artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SNAP_ARTIFACT }}
+          path: .
+
+      - name: Download Flatpak artifact
+        if: env.IS_RELEASE
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.FLATPAK_ARTIFACT }}
+          path: .
+
+      - name: Release to GitHub
+        if: env.IS_RELEASE
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
           draft: true
-          make_latest: false
-          files: "capturist.flatpak"
+          make_latest: true
+          files: |
+            *.deb
+            *.rpm
+            *.snap
+            *.flatpak
           fail_on_unmatched_files: true
-          append_body: true
+
+      - name: Publish to Snap Store
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: "*.snap"
+          release: ${{ inputs.version && 'stable' || 'edge' }}
