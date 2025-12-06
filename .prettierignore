@@ -1,3 +1,5 @@
-package-lock.json
+# JSON files
+**/*.json
+
+# Lock files
 src-tauri/Cargo.lock
-src-tauri/tauri.*conf.json

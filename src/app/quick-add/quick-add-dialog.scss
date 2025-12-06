@@ -22,9 +22,9 @@
   }
 
   @include mat.icon-overrides(
-      (
-        color: color-mix(in srgb, var(--mat-sys-on-surface) 50%, var(--mat-sys-surface)),
-      )
+    (
+      color: color-mix(in srgb, var(--mat-sys-on-surface) 50%, var(--mat-sys-surface)),
+    )
   );
 
   @include mat.button-overrides(

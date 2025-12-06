@@ -56,10 +56,10 @@ Interested in contributing or running the latest development version? Here’s h
 
 ### Prerequisites
 
--   [Node.js and npm](https://nodejs.org/)
--   [Rust](https://www.rust-lang.org/tools/install)
--   [Angular CLI](https://angular.dev/cli): `npm install -g @angular/cli`
--   System dependencies for Tauri. Follow the [official Tauri guide](httpss://tauri.app/v1/guides/getting-started/prerequisites) for your OS.
+- [Node.js and npm](https://nodejs.org/)
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Angular CLI](https://angular.dev/cli): `npm install -g @angular/cli`
+- System dependencies for Tauri. Follow the [official Tauri guide](httpss://tauri.app/v1/guides/getting-started/prerequisites) for your OS.
 
 ### Development Mode
 
@@ -83,23 +83,23 @@ The resulting binaries will be available in the `src-tauri/target/release` direc
 
 This project uses a modern stack to deliver a fast, native-like experience.
 
--   **Core Technologies:**
-    -   **Frontend:** [Angular](https://angular.dev/) with [Angular Material](https://material.angular.dev/) and [Tailwind CSS](https://tailwindcss.com/).
-    -   **Backend:** [Rust](https://www.rust-lang.org/) with the [Tauri](https://tauri.app/) framework.
--   **Key Conventions:**
-    -   The Angular application is fully **zoneless** and uses **Signals** for state management, resulting in optimal performance.
-    -   The backend handles the core OAuth2 flow and secure API interactions.
-    -   Communication between the frontend and backend is done via Tauri's secure IPC (Commands and Events).
-    -   Code quality is maintained with *Cargo Check*, *Prettier* and *ESLint*.
+- **Core Technologies:**
+  - **Frontend:** [Angular](https://angular.dev/) with [Angular Material](https://material.angular.dev/) and [Tailwind CSS](https://tailwindcss.com/).
+  - **Backend:** [Rust](https://www.rust-lang.org/) with the [Tauri](https://tauri.app/) framework.
+- **Key Conventions:**
+  - The Angular application is fully **zoneless** and uses **Signals** for state management, resulting in optimal performance.
+  - The backend handles the core OAuth2 flow and secure API interactions.
+  - Communication between the frontend and backend is done via Tauri's secure IPC (Commands and Events).
+  - Code quality is maintained with _Cargo Check_, _Prettier_ and _ESLint_.
 
 ## 🛡️ Security
 
 Security is a top priority for Capturist.
 
--   The OAuth2 `state` parameter (for CSRF protection) is generated and verified entirely on the backend.
--   To let Capturist securely save the Todoist API token in the OS native Keyring, you should allow it in sandboxed environments:
-    - **Snap**: Run `snap connect capturist:password-manager-service`
--   A strict Content Security Policy (CSP) is configured in `tauri.conf.json` to mitigate cross-site scripting (XSS) risks.
+- The OAuth2 `state` parameter (for CSRF protection) is generated and verified entirely on the backend.
+- To let Capturist securely save the Todoist API token in the OS native Keyring, you should allow it in sandboxed environments:
+  - **Snap**: Run `snap connect capturist:password-manager-service`
+- A strict Content Security Policy (CSP) is configured in `tauri.conf.json` to mitigate cross-site scripting (XSS) risks.
 
 ## 🤝 Contributing
 

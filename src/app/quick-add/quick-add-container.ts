@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog, MatDialogState } from "@angular/material/dialog";
 import { QuickAddDialog } from "@cpt/quick-add/quick-add-dialog";
+import { WindowLabel } from "@cpt/shared/ipc/window-label";
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { exhaustMap, from, tap } from "rxjs";
-import { WindowLabel } from "@cpt/shared/ipc/window-label";
 
 @Component({
   selector: "cpt-quick-add-container",

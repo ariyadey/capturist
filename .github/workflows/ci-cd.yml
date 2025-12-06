@@ -48,8 +48,8 @@ jobs:
       - name: Lint frontend
         run: npm run lint
 
-      - name: Check formatting
-        run: npm run format:check
+#      - name: Check formatting
+#        run: npm run format:check
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable

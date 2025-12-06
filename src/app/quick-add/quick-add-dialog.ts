@@ -10,20 +10,20 @@ import {
   signal,
   viewChild,
 } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatDialogActions, MatDialogClose, MatDialogContent } from "@angular/material/dialog";
 import { MatDivider } from "@angular/material/divider";
 import { MatFormField, MatSuffix } from "@angular/material/form-field";
+import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatTooltip } from "@angular/material/tooltip";
 import { Todoist } from "@cpt/shared/external/todoist";
 import { NativeNotification } from "@cpt/shared/ipc/native-notification";
 import { TodoistRequestError } from "@doist/todoist-api-typescript";
-import { MatIcon } from "@angular/material/icon";
-import { MatTooltip } from "@angular/material/tooltip";
 import { invoke } from "@tauri-apps/api/core";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { from } from "rxjs";
 
 @Component({
