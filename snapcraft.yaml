@@ -40,9 +40,9 @@ parts:
       fi
 
       dpkg -x capturist.deb "$SNAPCRAFT_PART_INSTALL"/
-      desktop_file="$SNAPCRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
-      icon_path="/usr/share/icons/hicolor/128x128/apps/capturist.png"
-      sed -i -e "s|Icon=capturist|Icon=$icon_path|g" "$desktop_file"
+      DESKTOP_FILE="$SNAPCRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
+      ICON_PATH="/usr/share/icons/hicolor/128x128/apps/capturist.png"
+      sed -i -e "s|Icon=capturist|Icon=$ICON_PATH|g" "$DESKTOP_FILE"
 
 apps:
   capturist:
