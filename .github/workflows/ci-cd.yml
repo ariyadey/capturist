@@ -65,6 +65,17 @@ jobs:
         working-directory: src-tauri
         run: cargo fmt --check
 
+      - name: Install dependencies
+        # language=Bash
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xmlstarlet
+
       - name: Lint Rust
         working-directory: src-tauri
         run: cargo clippy -- -D warnings
