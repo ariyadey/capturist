@@ -101,13 +101,19 @@
         "depends": [
           "libnotify-bin"
         ],
-        "desktopTemplate": "Capturist.desktop"
+        "desktopTemplate": "Capturist.desktop",
+        "files": {
+          "/usr/share/metainfo/me.ariyadey.capturist.metainfo.xml": "../me.ariyadey.capturist.metainfo.xml"
+        }
       },
       "rpm": {
         "depends": [
           "libnotify"
         ],
-        "desktopTemplate": "Capturist.desktop"
+        "desktopTemplate": "Capturist.desktop",
+        "files": {
+          "/usr/share/metainfo/me.ariyadey.capturist.metainfo.xml": "../me.ariyadey.capturist.metainfo.xml"
+        }
       }
     }
   },
