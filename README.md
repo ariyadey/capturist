@@ -1,4 +1,4 @@
-[![Release](https://github.com/ariyadey/capturist/actions/workflows/release.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/release.yml)
+[![Release](https://github.com/ariyadey/capturist/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/ci-cd.yml)
 [![Snap Store](https://snapcraft.io/capturist/badge.svg)](https://snapcraft.io/capturist)
 ![Flatpak](https://img.shields.io/badge/flatpak-supported-blue.svg)
 [![capturist](https://snapcraft.io/capturist/trending.svg?name=0)](https://snapcraft.io/capturist)
