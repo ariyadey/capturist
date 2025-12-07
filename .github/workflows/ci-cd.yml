@@ -192,6 +192,8 @@ jobs:
   snap-build:
     needs: build-core
     runs-on: ubuntu-latest
+    outputs:
+      snap-file: ${{ steps.build.outputs.snap }}
     steps:
       - uses: actions/checkout@v4
 
@@ -341,5 +343,5 @@ jobs:
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
         with:
-          snap: "*.snap"
+          snap: ${{ needs.snap-build.outputs.snap-file }}
           release: ${{ inputs.version && 'stable' || 'edge' }}
