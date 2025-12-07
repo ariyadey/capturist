@@ -20,40 +20,41 @@ build-options:
 modules:
   - name: capturist
     buildsystem: simple
-    # language=BASH
-    build-commands: |
-      set -eu
-
-      if [ ! -f "capturist.deb" ]; then
-          echo "--- No pre-built deb found, building from source... ---"
-          echo "Node version: $(node --version)"
-          echo "npm version: $(npm --version)"
-          echo "Rust version: $(rustc --version)"
-
-          npm ci --no-audit --no-fund
-          npm run tauri build -- --config src-tauri/tauri.snap.conf.json
-          mv src-tauri/target/release/bundle/deb/*.deb capturist.deb
-      fi
-
-      ar x capturist.deb
-      tar -xvf data.tar.gz
-      cp -r usr/* /app/
-
-      APP_ID="me.ariyadey.capturist"
-      APP_NAME="capturist"
-      APP_APPLICATIONS_DIR="/app/share/applications"
-      APP_ICON_DIR="/app/share/icons/hicolor/128x128/apps"
-
-      # Rename files to match Flatpak app-id conventions
-      install -D -m 644 ${APP_ICON_DIR}/${APP_NAME}.png ${APP_ICON_DIR}/${APP_ID}.png
-      install -D -m 644 ${APP_APPLICATIONS_DIR}/Capturist.desktop "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
-
-      # Fix desktop file to match the Flatpak app-id and icon conventions
-      sed -i "s|Icon=${APP_NAME}|Icon=${APP_ID}|" "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
-      sed -i "s|^Exec=${APP_NAME} %u$|Exec=${APP_NAME} --gapplication-service %u|" "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
-
-      # Patch metainfo to match the renamed desktop file
-      sed -i 's|Capturist.desktop|me.ariyadey.capturist.desktop|' /app/share/metainfo/me.ariyadey.capturist.metainfo.xml
     sources:
       - type: dir
         path: .
+    # language=BASH
+    build-commands:
+      - |
+        set -eu
+
+        if [ ! -f "capturist.deb" ]; then
+            echo "--- No pre-built deb found, building from source... ---"
+            echo "Node version: $(node --version)"
+            echo "npm version: $(npm --version)"
+            echo "Rust version: $(rustc --version)"
+
+            npm ci --no-audit --no-fund
+            npm run tauri build -- --config src-tauri/tauri.snap.conf.json
+            mv src-tauri/target/release/bundle/deb/*.deb capturist.deb
+        fi
+
+        ar x capturist.deb
+        tar -xvf data.tar.gz
+        cp -r usr/* /app/
+
+        APP_ID="me.ariyadey.capturist"
+        APP_NAME="capturist"
+        APP_APPLICATIONS_DIR="/app/share/applications"
+        APP_ICON_DIR="/app/share/icons/hicolor/128x128/apps"
+
+        # Rename files to match Flatpak app-id conventions
+        install -D -m 644 ${APP_ICON_DIR}/${APP_NAME}.png ${APP_ICON_DIR}/${APP_ID}.png
+        install -D -m 644 ${APP_APPLICATIONS_DIR}/Capturist.desktop "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
+
+        # Fix desktop file to match the Flatpak app-id and icon conventions
+        sed -i "s|Icon=${APP_NAME}|Icon=${APP_ID}|" "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
+        sed -i "s|^Exec=${APP_NAME} %u$|Exec=${APP_NAME} --gapplication-service %u|" "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
+
+        # Patch metainfo to match the renamed desktop file
+        sed -i 's|Capturist.desktop|me.ariyadey.capturist.desktop|' /app/share/metainfo/me.ariyadey.capturist.metainfo.xml
