@@ -20,9 +20,6 @@ build-options:
 modules:
   - name: capturist
     buildsystem: simple
-    sources:
-      - type: dir
-        path: .
     # language=BASH
     build-commands: |
       set -eu
@@ -57,3 +54,6 @@ modules:
 
       # Patch metainfo to match the renamed desktop file
       sed -i 's|Capturist.desktop|me.ariyadey.capturist.desktop|' /app/share/metainfo/me.ariyadey.capturist.metainfo.xml
+    sources:
+      - type: dir
+        path: .
