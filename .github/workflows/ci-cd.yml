@@ -189,7 +189,7 @@ jobs:
             src-tauri/Cargo.lock
             me.ariyadey.capturist.metainfo.xml
 
-  snap-build:
+  build-snap:
     needs: build-core
     runs-on: ubuntu-latest
     outputs:
@@ -223,7 +223,7 @@ jobs:
           name: ${{ env.SNAP_ARTIFACT }}
           path: ${{ steps.build.outputs.snap }}
 
-  flatpak-build:
+  build-flatpak:
     needs: build-core
     runs-on: ubuntu-latest
     container:
@@ -261,7 +261,7 @@ jobs:
           path: capturist_${{ inputs.version || 'build' }}_amd64.flatpak
 
   release:
-    needs: [build-core, snap-build, flatpak-build]
+    needs: [build-core, build-snap, build-flatpak]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -343,5 +343,5 @@ jobs:
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
         with:
-          snap: ${{ needs.snap-build.outputs.snap-file }}
+          snap: ${{ needs.build-snap.outputs.snap-file }}
           release: ${{ inputs.version && 'stable' || 'edge' }}
