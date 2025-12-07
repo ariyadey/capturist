@@ -142,7 +142,7 @@ jobs:
 
           # Add new release tag at the top
           xmlstarlet ed -L \
-            -i "//releases" -t elem -n "release_new" \
+            -i "//releases/release[1]" -t elem -n "release_new" \
             -i "//release_new" -t attr -n "version" -v "$NEW_VERSION" \
             -i "//release_new" -t attr -n "date" -v "$TODAY" \
             -s "//release_new" -t elem -n "description" \
