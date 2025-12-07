@@ -20,25 +20,20 @@
       Capturist is an unofficial Todoist client and is not affiliated with or endorsed by Doist.
     </p>
   </description>
-
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
-
   <developer id="me.ariyadey">
     <name>Ariya Moheb</name>
   </developer>
-
   <url type="homepage">https://github.com/ariyadey/capturist</url>
   <url type="bugtracker">https://github.com/ariyadey/capturist/issues</url>
   <url type="vcs-browser">https://github.com/ariyadey/capturist</url>
   <url type="contact">https://ariyadey.me</url>
   <url type="contact">mailto:ariya.mms@gmail.com</url>
-
   <categories>
     <category>Utility</category>
     <category>Office</category>
   </categories>
-
   <keywords>
     <keyword>todoist</keyword>
     <keyword>tasks</keyword>
@@ -47,7 +42,6 @@
     <keyword>quick add</keyword>
     <keyword>to-do list</keyword>
   </keywords>
-
   <screenshots>
     <screenshot type="default">
       <image>https://github.com/ariyadey/capturist/raw/main/public/img/screenshot-quick-add.png
@@ -55,7 +49,11 @@
       <caption>Task quick-add interface</caption>
     </screenshot>
   </screenshots>
-
+  <release version="0.3.0" date="2025-12-07">
+    <description>
+      <p>This release includes stability and performance improvements.</p>
+    </description>
+  </release>
   <releases>
     <release version="0.2.5" date="2024-12-01">
       <description>
@@ -63,19 +61,15 @@
       </description>
     </release>
   </releases>
-
   <content_rating type="oars-1.1">
     <content_attribute id="social-info">mild</content_attribute>
   </content_rating>
-
   <requires>
     <internet>always</internet>
   </requires>
-
   <supports>
     <control>pointing</control>
     <control>keyboard</control>
   </supports>
-
   <launchable type="desktop-id">Capturist.desktop</launchable>
 </component>
