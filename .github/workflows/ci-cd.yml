@@ -29,6 +29,8 @@ env:
   RPM_ARTIFACT: rpm-artifact
   SNAP_ARTIFACT: snap-artifact
   FLATPAK_ARTIFACT: flatpak-artifact
+  NPM_CONFIG_AUDIT: false
+  NPM_CONFIG_FUND: false
 
 jobs:
   lint:
@@ -119,11 +121,11 @@ jobs:
             xmlstarlet
 
       - name: Install cargo-edit
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         run: cargo install cargo-edit --locked
 
       - name: Bump version files
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
           NEW_VERSION="${{ inputs.version }}"
@@ -169,14 +171,14 @@ jobs:
           path: src-tauri/target/release/bundle/deb/Capturist_*_amd64.deb
 
       - name: Upload RPM Artifact
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.RPM_ARTIFACT }}
           path: src-tauri/target/release/bundle/rpm/Capturist-*.x86_64.rpm
 
       - name: Upload bumped configs
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BUMPED_CONFIGS }}
@@ -194,7 +196,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download bumped configs
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUMPED_CONFIGS }}
@@ -229,7 +231,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download bumped configs
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUMPED_CONFIGS }}
@@ -266,42 +268,42 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download bumped configs
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
 
       - name: Configure Git
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Commit and Push
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
           git commit -am "Bump version to ${{ inputs.version }}"
           git push origin main
 
       - name: Create and Push Tag
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
           git tag v${{ inputs.version }}
           git push origin v${{ inputs.version }}
 
       - name: Download DEB artifact
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.DEB_ARTIFACT }}
           path: .
 
       - name: Download RPM artifact
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.RPM_ARTIFACT }}
@@ -314,14 +316,14 @@ jobs:
           path: .
 
       - name: Download Flatpak artifact
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.FLATPAK_ARTIFACT }}
           path: .
 
       - name: Release to GitHub
-        if: env.IS_RELEASE
+        if: fromJSON(env.IS_RELEASE)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ inputs.version }}
