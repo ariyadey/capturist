@@ -44,7 +44,8 @@
   </keywords>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/ariyadey/capturist/raw/main/public/img/screenshot-quick-add.png
+      <image>
+        https://raw.githubusercontent.com/ariyadey/capturist/main/public/img/screenshot-quick-add.png
       </image>
       <caption>Task quick-add interface</caption>
     </screenshot>
