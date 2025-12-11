@@ -15,6 +15,13 @@ pub fn is_running_as_snap() -> bool {
     cfg!(dev).not() && env::var("SNAP").is_ok()
 }
 
+/// Checks if the application is currently running as a Flatpak.
+///
+/// This is determined by checking for the presence of the `FLATPAK_ID` environment variable.
+pub fn is_running_as_flatpak() -> bool {
+    env::var("FLATPAK_ID").is_ok()
+}
+
 /// Checks if the application is currently running as an AppImage.
 ///
 /// This is determined by checking for the presence of the `APPIMAGE` environment variable.

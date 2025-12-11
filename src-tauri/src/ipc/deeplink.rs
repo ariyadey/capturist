@@ -39,7 +39,7 @@ impl TryFrom<&str> for DeepLinkHost {
 pub fn set_up_deep_link_handling(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up deep link handling...");
 
-    if environment::is_running_as_snap().not() {
+    if environment::is_running_as_snap().not() && environment::is_running_as_flatpak().not() {
         app_handle.deep_link().register_all()?;
     }
 
