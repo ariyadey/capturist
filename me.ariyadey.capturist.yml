@@ -25,7 +25,7 @@ modules:
     sources:
       - type: archive
         url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
-        sha256: b9cc4a2acd74509435892823607d966d424bd9add57340715826d252fe3b7dc4
+        sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
     config-opts:
       - --with-gtk=3
       - --disable-dumper
