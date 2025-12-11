@@ -15,6 +15,8 @@ finish-args:
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
   - --talk-name=org.freedesktop.secrets
+  - --talk-name=org.me_ariyadey_capturist.SingleInstance
+  - --own-name=org.me_ariyadey_capturist.SingleInstance
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
 modules:
