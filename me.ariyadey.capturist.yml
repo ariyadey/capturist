@@ -20,6 +20,34 @@ finish-args:
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
 modules:
+  - name: libdbusmenu
+    buildsystem: autotools
+    sources:
+      - type: archive
+        url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
+        sha256: b9cc4a2acd74509435892823607d966d424bd9add57340715826d252fe3b7dc4
+    config-opts:
+      - --with-gtk=3
+      - --disable-dumper
+
+  - name: libayatana-indicator
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
+        tag: 0.9.4
+    config-opts:
+      - --with-gtk=3
+
+  - name: libayatana-appindicator
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+        tag: 0.5.94
+    config-opts:
+      - --with-gtk=3
+
   - name: capturist
     buildsystem: simple
     sources:

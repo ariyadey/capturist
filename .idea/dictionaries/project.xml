@@ -14,9 +14,11 @@
       <w>gsettings</w>
       <w>hicolor</w>
       <w>icns</w>
+      <w>libappindicator</w>
       <w>libayatana</w>
       <w>libcaca</w>
       <w>libcolordprivate</w>
+      <w>libdbusmenu</w>
       <w>libdconf</w>
       <w>libexslt</w>
       <w>libform</w>
@@ -25,6 +27,7 @@
       <w>libicuio</w>
       <w>libicutest</w>
       <w>libicutu</w>
+      <w>libindicator</w>
       <w>libmenu</w>
       <w>libnotify</w>
       <w>liborc</w>
