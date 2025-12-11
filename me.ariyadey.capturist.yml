@@ -24,7 +24,7 @@ finish-args:
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
 modules:
-  - shared-modules/libappindicator/libappindicator-gtk3-12.10.json
+  - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
 
   - name: capturist
     buildsystem: simple
