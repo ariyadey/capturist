@@ -231,6 +231,8 @@ jobs:
       options: --privileged
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Download bumped configs
         if: fromJSON(env.IS_RELEASE)
