@@ -7,52 +7,24 @@ sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
   - org.freedesktop.Sdk.Extension.node24
 finish-args:
-  - --share=ipc
-  - --socket=wayland
-  - --socket=fallback-x11
-  - --device=dri
-  - --share=network
-  - --talk-name=org.freedesktop.Notifications
-  - --talk-name=org.kde.StatusNotifierWatcher
-  - --talk-name=org.freedesktop.secrets
+  - --share=ipc # Needed for performance reasons if the app fallbacks to X11
+  - --socket=wayland # Permission needed to show the window on wayland
+  - --socket=fallback-x11 # Permission needed to fallback using X11 if wayland is not available
+  - --device=dri # OpenGL
+  - --share=network # Network Access
+  - --talk-name=org.freedesktop.Notifications # Needed to publish messages on dbus to trigger desktop notifications
+  - --talk-name=org.kde.StatusNotifierWatcher # Needed to publish messages on dbus to display and change system tray icon
+  - --talk-name=org.freedesktop.secrets # OS Keyring
   - --talk-name=org.me_ariyadey_capturist.SingleInstance
   - --own-name=org.me_ariyadey_capturist.SingleInstance
-  # For "Launch on Startup"
-  - --filesystem=xdg-config/autostart:create
-  # For the tray icon to be visible in some desktop environments (e.g., KDE/Cinnamon)
-  - --filesystem=xdg-run/tray-icon:create
+#  # For "Launch on Startup"
+#  - --filesystem=xdg-config/autostart:create
+#  # For the tray icon to be visible in some desktop environments (e.g., KDE/Cinnamon)
+#  - --filesystem=xdg-run/tray-icon:create
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
 modules:
-  - name: libdbusmenu
-    buildsystem: autotools
-    sources:
-      - type: archive
-        url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
-        sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
-    config-opts:
-      - --with-gtk=3
-      - --disable-dumper
-    build-packages:
-      - intltool
-
-  - name: libayatana-indicator
-    buildsystem: autotools
-    sources:
-      - type: git
-        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
-        tag: 0.9.4
-    config-opts:
-      - --with-gtk=3
-
-  - name: libayatana-appindicator
-    buildsystem: autotools
-    sources:
-      - type: git
-        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
-        tag: 0.5.94
-    config-opts:
-      - --with-gtk=3
+  - shared-modules/libappindicator/libappindicator-gtk3-12.10.json
 
   - name: capturist
     buildsystem: simple
