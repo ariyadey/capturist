@@ -17,6 +17,10 @@ finish-args:
   - --talk-name=org.freedesktop.secrets
   - --talk-name=org.me_ariyadey_capturist.SingleInstance
   - --own-name=org.me_ariyadey_capturist.SingleInstance
+  # For "Launch on Startup"
+  - --filesystem=xdg-config/autostart:create
+  # For the tray icon to be visible in some desktop environments (e.g., KDE/Cinnamon)
+  - --filesystem=xdg-run/tray-icon:create
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
 modules:
