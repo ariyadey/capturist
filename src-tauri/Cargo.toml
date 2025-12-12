@@ -2,7 +2,7 @@
 
 [package]
 name = "capturist"
-version = "0.3.7"
+version = "0.3.8"
 description = "A practical desktop application for quickly adding tasks to Todoist"
 authors = ["Ariya Moheb <ariya.mms@gmail.com>"]
 repository = "https://github.com/ariyadey/capturist"
