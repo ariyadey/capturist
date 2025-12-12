@@ -13,31 +13,17 @@ finish-args:
   - --device=dri # OpenGL
   - --share=network # Network Access
   - --talk-name=org.freedesktop.Notifications # Needed to publish messages on dbus to trigger desktop notifications
+  - --talk-name=org.freedesktop.portal.Notification # Portal access for notifications
+  - --talk-name=org.freedesktop.portal.Desktop # General portal access
+  - --talk-name=org.gnome.Notifications # Fallback for GNOME
   - --talk-name=org.kde.StatusNotifierWatcher # Needed to publish messages on dbus to display and change system tray icon
   - --talk-name=org.freedesktop.secrets # OS Keyring
   - --talk-name=org.me_ariyadey_capturist.SingleInstance
   - --own-name=org.me_ariyadey_capturist.SingleInstance
-#  # For "Launch on Startup"
-#  - --filesystem=xdg-config/autostart:create
-#  # For the tray icon to be visible in some desktop environments (e.g., KDE/Cinnamon)
-#  - --filesystem=xdg-run/tray-icon:create
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
 modules:
   - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
-
-  - name: libnotify
-    buildsystem: meson
-    sources:
-      - type: git
-        url: https://gitlab.gnome.org/GNOME/libnotify.git
-        tag: 0.8.6
-    config-opts:
-      - -Dtests=false
-      - -Dintrospection=disabled
-      - -Dman=false
-      - -Dgtk_doc=false
-      - -Ddocbook_docs=disabled
 
   - name: capturist
     buildsystem: simple
