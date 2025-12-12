@@ -7,4 +7,4 @@ Icon=capturist
 Name=Capturist
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/capturist
+MimeType=x-scheme-handler/capturist;

@@ -62,7 +62,6 @@ modules:
 
         # Fix desktop file to match the Flatpak app-id and icon conventions
         sed -i "s|Icon=${APP_NAME}|Icon=${APP_ID}|" "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
-        sed -i "s|^Exec=${APP_NAME} %u$|Exec=${APP_NAME} --gapplication-service %u|" "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
 
         # Patch metainfo to match the renamed desktop file
         sed -i 's|Capturist.desktop|me.ariyadey.capturist.desktop|' /app/share/metainfo/me.ariyadey.capturist.metainfo.xml
