@@ -346,4 +346,4 @@ jobs:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
         with:
           snap: ${{ needs.build-snap.outputs.snap-file }}
-          release: ${{ inputs.version && 'stable' || 'edge' }}
+          release: ${{ fromJSON(env.IS_RELEASE) && 'beta' || 'edge' }}
