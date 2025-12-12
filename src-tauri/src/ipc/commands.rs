@@ -33,6 +33,12 @@ pub fn is_running_as_appimage() -> bool {
     environment::is_running_as_appimage()
 }
 
+/// Checks if the application is running as a Flatpak.
+#[tauri::command]
+pub fn is_running_as_flatpak() -> bool {
+    environment::is_running_as_flatpak()
+}
+
 /// Initiates the Todoist authentication flow.
 #[tauri::command]
 pub async fn start_authentication(

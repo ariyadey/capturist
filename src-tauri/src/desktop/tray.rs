@@ -11,6 +11,7 @@ use crate::shared::state::AppState;
 use anyhow::{format_err, Context};
 use serde_json::json;
 use std::fmt;
+use std::ops::Not;
 use tauri::menu::{CheckMenuItem, Menu, MenuBuilder, MenuEvent, MenuItem};
 use tauri::tray::TrayIconBuilder;
 use tauri::{AppHandle, Emitter, Event, Listener, Manager, Wry};
@@ -122,7 +123,7 @@ fn get_tray_menu(app_handle: &AppHandle) -> AppResult<Menu<Wry>> {
         None::<String>,
     )?);
 
-    if !environment::is_running_as_snap() {
+    if environment::is_running_as_snap().not() && environment::is_running_as_flatpak().not() {
         menu_builder = menu_builder.separator().item(&CheckMenuItem::with_id(
             app_handle,
             MenuId::AutoStart.to_string(),

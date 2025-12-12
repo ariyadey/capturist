@@ -7,6 +7,7 @@ use crate::shared::{environment, state, storage};
 use desktop::{autostart, tray};
 use ipc::deeplink;
 use shared::state::AppState;
+use std::ops::Not;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_cli::CliExt;
 use tauri_plugin_log::fern::colors::{Color, ColoredLevelConfig};
@@ -59,7 +60,9 @@ pub fn run() {
             state::set_up_state_synchronization(app_handle);
             #[cfg(desktop)]
             {
-                if !environment::is_running_as_snap() {
+                if environment::is_running_as_snap().not()
+                    && environment::is_running_as_flatpak().not()
+                {
                     autostart::set_up_autostart(app_handle)?;
                 }
                 if environment::is_running_as_appimage() {
@@ -77,6 +80,7 @@ pub fn run() {
             ipc::commands::is_os_linux,
             ipc::commands::is_wayland_session,
             ipc::commands::is_running_as_appimage,
+            ipc::commands::is_running_as_flatpak,
             ipc::commands::start_authentication,
             ipc::commands::get_todoist_access_token,
             ipc::commands::get_global_shortcut,
