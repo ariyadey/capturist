@@ -62,6 +62,19 @@ pub fn get_global_shortcut() -> String {
     shortcut::get_global_shortcut_accelerator()
 }
 
+#[tauri::command]
+pub fn get_quick_add_command() -> String {
+    let quick_add_command_argument = "--quick-add";
+    let quick_add_command_base = if environment::is_running_as_appimage() {
+        "<AppImage path>"
+    } else if environment::is_running_as_flatpak() {
+        "flatpak run me.ariyadey.capturist"
+    } else {
+        "capturist"
+    };
+    format!("{quick_add_command_base} {quick_add_command_argument}")
+}
+
 /// Sends a desktop notification using `notify-send`.
 ///
 /// This command is only available on Linux systems with `notify-send` installed.

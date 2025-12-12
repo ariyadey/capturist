@@ -55,11 +55,11 @@ export class QuickAddDialog {
     name: ["", Validators.required],
     description: [""],
   });
-  protected readonly isAppImage = toSignal(from(invoke<boolean>("is_running_as_appimage")));
+  protected readonly shortcutCommand = toSignal(from(invoke<string>("get_quick_add_command")));
   protected readonly shortcutTooltipText = computed(
     () =>
       "To assign a global shortcut, " +
-      `set a script shortcut in OS settings executing "${this.isAppImage() ? "<AppImage path>" : "capturist"} --quick-add" command.`,
+      `set a script shortcut in OS settings executing "${this.shortcutCommand()}" command.`,
   );
   protected readonly isAdding = signal(false);
   protected readonly taskNameTextArea = viewChild("taskNameTextArea", {

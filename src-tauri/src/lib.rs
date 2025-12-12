@@ -84,6 +84,7 @@ pub fn run() {
             ipc::commands::start_authentication,
             ipc::commands::get_todoist_access_token,
             ipc::commands::get_global_shortcut,
+            ipc::commands::get_quick_add_command,
             ipc::commands::send_notification,
         ])
         .run(tauri::generate_context!())
