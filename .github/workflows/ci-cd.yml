@@ -78,6 +78,15 @@ jobs:
             patchelf \
             xmlstarlet
 
+      - name: Validate AppStream metadata
+        run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
+
+      - name: Install flatpak-builder-lint
+        run: pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
+
+      - name: Validate Flatpak manifest
+        run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
+
       - name: Lint Rust
         working-directory: src-tauri
         env:
