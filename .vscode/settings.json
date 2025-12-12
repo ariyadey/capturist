@@ -3,6 +3,7 @@
         "appindicator",
         "dbus",
         "libayatana",
+        "libnotify",
         "rustc"
     ]
 }

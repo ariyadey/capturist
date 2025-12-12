@@ -12,7 +12,7 @@ export function forwardConsole() {
     const original = console[fnName];
     console[fnName] = (...args: Array<unknown>) => {
       original(...args);
-      const message = args.map((arg) => String(arg)).join("\n");
+      const message = args.map((arg) => JSON.stringify(arg)).join("\n");
       logger(message);
     };
   });

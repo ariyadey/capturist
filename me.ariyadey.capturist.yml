@@ -26,6 +26,19 @@ build-options:
 modules:
   - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
 
+  - name: libnotify
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/libnotify.git
+        tag: 0.8.6
+    config-opts:
+      - -Dtests=false
+      - -Dintrospection=disabled
+      - -Dman=false
+      - -Dgtk_doc=false
+      - -Ddocbook_docs=disabled
+
   - name: capturist
     buildsystem: simple
     sources:
