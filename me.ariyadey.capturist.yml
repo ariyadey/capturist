@@ -18,7 +18,7 @@ finish-args:
   - --talk-name=org.freedesktop.portal.Settings # Required for reading system color scheme (dark/light mode)
   - --talk-name=org.gnome.Notifications # Fallback for GNOME
   - --talk-name=org.kde.StatusNotifierWatcher # Needed to publish messages on dbus to display and change system tray icon
-  - --own-name=org.kde.StatusNotifierItem-* # Required to register tray icon via StatusNotifierItem protocol
+  - --filesystem=xdg-run/tray-icon:create # Required for tray icon visibility in sandboxed environment
   - --talk-name=org.freedesktop.secrets # OS Keyring
   - --filesystem=~/.config/autostart:create # Direct autostart management
   - --filesystem=xdg-config/autostart:create # Indirect autostart management using Portals
