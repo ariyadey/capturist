@@ -51,6 +51,11 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.3.4" date="2025-12-11">
+      <description>
+        <p>This release includes stability and performance improvements.</p>
+      </description>
+    </release>
     <release version="0.3.3" date="2025-12-11">
       <description>
         <p>This release includes stability and performance improvements.</p>
@@ -69,11 +74,6 @@
     <release version="0.3.0" date="2025-12-07">
       <description>
         <p>This release includes stability and performance improvements.</p>
-      </description>
-    </release>
-    <release version="0.2.5" date="2024-12-01">
-      <description>
-        <p>Latest release with bug fixes and improvements.</p>
       </description>
     </release>
   </releases>
