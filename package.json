@@ -62,7 +62,7 @@
     "prettier-plugin-organize-attributes": "^1.0.0",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "sitemap": "^8.0.0",
+    "sitemap": "^9.0.0",
     "tailwindcss": "^4.1.12",
     "type-fest": "^4.41.0",
     "typescript": "^5.9.2",
