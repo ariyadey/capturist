@@ -165,21 +165,21 @@ jobs:
         run: npm run tauri build
 
       - name: Upload DEB Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.DEB_ARTIFACT }}
           path: src-tauri/target/release/bundle/deb/Capturist_*_amd64.deb
 
       - name: Upload RPM Artifact
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.RPM_ARTIFACT }}
           path: src-tauri/target/release/bundle/rpm/Capturist-*.x86_64.rpm
 
       - name: Upload bumped configs
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.BUMPED_CONFIGS }}
           path: |
@@ -218,7 +218,7 @@ jobs:
         uses: snapcore/action-build@v1
 
       - name: Upload Snap artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.SNAP_ARTIFACT }}
           path: ${{ steps.build.outputs.snap }}
@@ -257,7 +257,7 @@ jobs:
           manifest-path: me.ariyadey.capturist.yml
 
       - name: Upload Flatpak artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.FLATPAK_ARTIFACT }}
           path: capturist_${{ inputs.version || 'build' }}_amd64.flatpak
