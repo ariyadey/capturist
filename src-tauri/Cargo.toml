@@ -44,7 +44,7 @@ url = { version = "2.5", features = ["serde"] }
 
 tauri = { version = "2.9", features = ["config-json5", "tray-icon"] }
 tauri-plugin-deep-link = "2.4"
-tauri-plugin-log = { version = "2.7", features = ["colored"] }
+tauri-plugin-log = { version = "2.8", features = ["colored"] }
 tauri-plugin-opener = "2.5"
 tauri-plugin-store = "2.4"
 
@@ -52,5 +52,5 @@ tauri-plugin-store = "2.4"
 tauri-plugin-autostart = "2.5"
 tauri-plugin-cli = "2.4"
 tauri-plugin-global-shortcut = "2.3"
-tauri-plugin-single-instance = { version = "2.3", features = ["deep-link"] }
-tauri-plugin-updater = "2.9"
+tauri-plugin-single-instance = { version = "2.4", features = ["deep-link"] }
+tauri-plugin-updater = "2.10"
