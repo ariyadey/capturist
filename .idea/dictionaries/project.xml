@@ -5,12 +5,14 @@
       <w>appimage</w>
       <w>appindicator</w>
       <w>appname</w>
+      <w>appstreamcli</w>
       <w>buildsystem</w>
       <w>coredump</w>
       <w>devmode</w>
       <w>doist</w>
       <w>dtolnay</w>
       <w>flathub</w>
+      <w>ghcr</w>
       <w>gsettings</w>
       <w>hicolor</w>
       <w>icns</w>
@@ -41,8 +43,10 @@
       <w>noreply</w>
       <w>noto</w>
       <w>reqwest</w>
+      <w>rustfmt</w>
       <w>snapcore</w>
       <w>softprops</w>
+      <w>swatinem</w>
     </words>
   </dictionary>
 </component>
