@@ -5,9 +5,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "src",
     "paths": {
-      "@cpt/*": ["app/*"]
+      "@cpt/*": ["./src/app/*"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

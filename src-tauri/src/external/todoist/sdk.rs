@@ -1,6 +1,6 @@
 use crate::shared::error::AppResult;
 use anyhow::Context;
-use rand::Rng;
+use rand::RngExt;
 use serde::Deserialize;
 use std::fmt;
 use url::Url;
