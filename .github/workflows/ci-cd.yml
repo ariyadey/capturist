@@ -82,7 +82,9 @@ jobs:
         run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
 
       - name: Install flatpak-builder-lint
-        run: pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
+        run: |
+          sudo apt install -y gir1.2-appstream-1.0
+          pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
 
       - name: Validate Flatpak manifest
         run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
