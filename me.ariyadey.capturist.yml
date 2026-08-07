@@ -16,7 +16,6 @@ finish-args:
   - --talk-name=org.gnome.Notifications # Fallback for GNOME
   - --talk-name=org.kde.StatusNotifierWatcher # System tray icon
   - --talk-name=org.freedesktop.secrets # OS Keyring integration
-  - --own-name=me.ariyadey.capturist
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
   env:
