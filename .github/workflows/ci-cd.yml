@@ -88,6 +88,27 @@ jobs:
           sudo apt install -y flatpak-builder gir1.2-appstream-1.0 gir1.2-ostree-1.0
           pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
 
+      - name: Regenerate Flatpak offline dependency manifests
+        if: fromJSON(env.IS_RELEASE)
+        # language=BASH
+        run: |
+          mkdir -p flatpak
+          GENERATORS_DIR="/tmp/flatpak-generators"
+          if [ ! -d "$GENERATORS_DIR" ]; then
+            git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
+          fi
+          pip install toml aiohttp python-slugify requests pyyaml
+
+          echo "Generating Cargo sources..."
+          python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
+            "$PWD/src-tauri/Cargo.lock" \
+            -o "$PWD/flatpak/cargo-sources.json"
+
+          echo "Generating Node sources..."
+          PYTHONPATH="$GENERATORS_DIR/node" python3 -m flatpak_node_generator \
+            npm "$PWD/package-lock.json" \
+            -o "$PWD/flatpak/node-sources.json"
+
       - name: Validate Flatpak manifest
         run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
 
