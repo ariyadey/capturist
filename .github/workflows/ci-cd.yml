@@ -96,7 +96,8 @@ jobs:
           if [ ! -d "$GENERATORS_DIR" ]; then
             git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
           fi
-          pip install toml aiohttp python-slugify requests pyyaml
+
+          pip install toml aiohttp python-slugify requests pyyaml tomlkit
 
           echo "Generating Cargo sources..."
           python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
@@ -195,7 +196,8 @@ jobs:
           if [ ! -d "$GENERATORS_DIR" ]; then
             git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
           fi
-          pip install toml aiohttp python-slugify requests pyyaml
+
+          pip install toml aiohttp python-slugify requests pyyaml tomlkit
 
           echo "Generating Cargo sources..."
           python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
