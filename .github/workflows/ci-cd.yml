@@ -159,8 +159,29 @@ jobs:
             -r "//release_new" -v "release" \
             me.ariyadey.capturist.metainfo.xml
 
-          # Keep only top 5 releases
+          # Keep only latest 5 releases
           xmlstarlet ed -L -d "//release[position()>5]" me.ariyadey.capturist.metainfo.xml
+
+      - name: Regenerate Flatpak offline dependency manifests
+        if: fromJSON(env.IS_RELEASE)
+        # language=BASH
+        run: |
+          mkdir -p flatpak
+          GENERATORS_DIR="/tmp/flatpak-generators"
+          if [ ! -d "$GENERATORS_DIR" ]; then
+            git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
+          fi
+          pip install toml aiohttp python-slugify requests pyyaml
+
+          echo "Generating Cargo sources..."
+          python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
+            "$PWD/src-tauri/Cargo.lock" \
+            -o "$PWD/flatpak/cargo-sources.json"
+
+          echo "Generating Node sources..."
+          PYTHONPATH="$GENERATORS_DIR/node" python3 -m flatpak_node_generator \
+            npm "$PWD/package-lock.json" \
+            -o "$PWD/flatpak/node-sources.json"
 
       - name: Install frontend dependencies
         run: npm ci
@@ -197,6 +218,8 @@ jobs:
             src-tauri/Cargo.toml
             src-tauri/Cargo.lock
             me.ariyadey.capturist.metainfo.xml
+            flatpak/cargo-sources.json
+            flatpak/node-sources.json
 
   build-snap:
     needs: build-core
@@ -236,7 +259,7 @@ jobs:
     needs: build-core
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
       options: --privileged
     steps:
       - uses: actions/checkout@v6
@@ -249,15 +272,6 @@ jobs:
         with:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
-
-      - name: Download DEB artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: ${{ env.DEB_ARTIFACT }}
-          path: .
-
-      - name: Rename DEB for manifest
-        run: mv Capturist_*.deb capturist.deb
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -298,6 +312,7 @@ jobs:
         if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
+          git add flatpak/
           git commit -am "Bump version to ${{ inputs.version }}"
           git push origin main
 

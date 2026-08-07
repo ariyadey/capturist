@@ -1,7 +1,7 @@
 app-id: me.ariyadey.capturist
 command: capturist
 runtime: org.gnome.Platform
-runtime-version: "49"
+runtime-version: "50"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -10,15 +10,17 @@ finish-args:
   - --socket=wayland # Permission needed to show the window on wayland
   - --socket=fallback-x11 # Permission needed to fallback using X11 if wayland is not available
   - --share=ipc # Needed for performance reasons if the app fallbacks to X11
-  - --share=network # Network Access
-  - --device=dri # OpenGL
-  - --talk-name=org.freedesktop.Notifications # Needed to publish messages on dbus to trigger desktop notifications
+  - --share=network # Network Access for Todoist API calls
+  - --device=dri # OpenGL / GPU acceleration
+  - --talk-name=org.freedesktop.Notifications # Desktop notifications
   - --talk-name=org.gnome.Notifications # Fallback for GNOME
-  - --talk-name=org.kde.StatusNotifierWatcher # Needed to publish messages on dbus to display and change system tray icon
-  - --talk-name=org.freedesktop.secrets # OS Keyring
+  - --talk-name=org.kde.StatusNotifierWatcher # System tray icon
+  - --talk-name=org.freedesktop.secrets # OS Keyring integration
   - --own-name=me.ariyadey.capturist
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
+  env:
+    CARGO_HOME: /run/build/capturist/cargo
 modules:
   - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
 
@@ -40,37 +42,37 @@ modules:
     sources:
       - type: dir
         path: .
+      - flatpak/cargo-sources.json
+      - flatpak/node-sources.json
     # language=BASH
     build-commands:
       - |
         set -eu
 
-        if [ ! -f "capturist.deb" ]; then
-            echo "--- No pre-built deb found, building from source... ---"
-            echo "Node version: $(node --version)"
-            echo "npm version: $(npm --version)"
-            echo "Rust version: $(rustc --version)"
-
-            npm ci --no-audit --no-fund
-            npm run tauri build -- --config src-tauri/tauri.snap.conf.json
-            mv src-tauri/target/release/bundle/deb/*.deb capturist.deb
-        fi
-
-        ar x capturist.deb
-        tar -xvf data.tar.gz
-        cp -r usr/* /app/
-
         APP_ID="me.ariyadey.capturist"
         APP_NAME="capturist"
         APP_APPLICATIONS_DIR="/app/share/applications"
-        APP_ICON_DIR="/app/share/icons/hicolor/128x128/apps"
+        APP_ICON_128_DIR="/app/share/icons/hicolor/128x128/apps"
+        APP_ICON_512_DIR="/app/share/icons/hicolor/512x512/apps"
+        APP_METAINFO_DIR="/app/share/metainfo"
 
-        # Rename files to match Flatpak app-id conventions
-        install -D -m 644 ${APP_ICON_DIR}/${APP_NAME}.png ${APP_ICON_DIR}/${APP_ID}.png
-        install -D -m 644 ${APP_APPLICATIONS_DIR}/Capturist.desktop "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
+        # 1. Install Angular frontend dependencies from offline vendored cache & build frontend
+        npm install --offline --no-audit --no-fund
+        npm run build
 
-        # Fix desktop file to match the Flatpak app-id and icon conventions
-        desktop-file-edit --set-icon=${APP_ID} "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
+        # 2. Build Tauri backend in release mode using offline cargo sources
+        cargo build --manifest-path src-tauri/Cargo.toml --release --offline
 
-        # Patch metainfo to match the renamed desktop file
-        sed -i 's|Capturist.desktop|me.ariyadey.capturist.desktop|' /app/share/metainfo/me.ariyadey.capturist.metainfo.xml
+        # 3. Install application binary
+        install -D -m 755 src-tauri/target/release/capturist /app/bin/capturist
+
+        # 4. Install icons (128x128 and 512x512)
+        install -D -m 644 src-tauri/icons/128x128.png ${APP_ICON_128_DIR}/${APP_ID}.png
+        install -D -m 644 src-tauri/icons/icon.png ${APP_ICON_512_DIR}/${APP_ID}.png
+
+        # 5. Install desktop file and AppStream metainfo
+        install -D -m 644 src-tauri/Capturist.desktop "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
+        install -D -m 644 me.ariyadey.capturist.metainfo.xml "${APP_METAINFO_DIR}/${APP_ID}.metainfo.xml"
+
+        # 6. Configure desktop entry icon and binary execution target
+        desktop-file-edit --set-icon=${APP_ID} --set-key=Exec --set-value=${APP_NAME} "${APP_APPLICATIONS_DIR}/${APP_ID}.desktop"
