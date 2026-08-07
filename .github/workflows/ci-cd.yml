@@ -89,7 +89,6 @@ jobs:
           pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
 
       - name: Regenerate Flatpak offline dependency manifests
-        if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
           mkdir -p flatpak
@@ -188,6 +187,7 @@ jobs:
           xmlstarlet ed -L -d "//release[position()>5]" me.ariyadey.capturist.metainfo.xml
 
       - name: Regenerate Flatpak offline dependency manifests
+        if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
           mkdir -p flatpak
