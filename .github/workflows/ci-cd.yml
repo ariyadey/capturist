@@ -83,7 +83,7 @@ jobs:
 
       - name: Install flatpak-builder-lint
         run: |
-          sudo apt install -y gir1.2-appstream-1.0
+          sudo apt install -y gir1.2-appstream-1.0 gir1.2-ostree-1.0
           pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
 
       - name: Validate Flatpak manifest
