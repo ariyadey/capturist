@@ -21,6 +21,7 @@ runs:
           "$PWD/src-tauri/Cargo.lock" \
           -o "$PWD/flatpak/cargo-sources.json"
 
-        PYTHONPATH="$GENERATORS_DIR/node" python3 -m flatpak_node_generator \
+        export PYTHONPATH="$GENERATORS_DIR/node:$PYTHONPATH"
+        python3 -m flatpak_node_generator \
           npm "$PWD/package-lock.json" \
           -o "$PWD/flatpak/node-sources.json"
