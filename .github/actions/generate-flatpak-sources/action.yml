@@ -7,7 +7,8 @@ runs:
       shell: bash
       # language=BASH
       run: |
-        echo "GENERATORS_DIR=/tmp/flatpak-generators" >> $GITHUB_ENV
+        GENERATORS_DIR="/tmp/flatpak-generators"
+        echo "GENERATORS_DIR=$GENERATORS_DIR" >> $GITHUB_ENV
         if [ ! -d "$GENERATORS_DIR" ]; then
           git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
         fi
