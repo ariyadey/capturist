@@ -12,7 +12,7 @@ runs:
         if [ ! -d "$GENERATORS_DIR" ]; then
           git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
         fi
-        pip install toml aiohttp python-slugify requests pyyaml
+        pip install toml tomlkit aiohttp python-slugify requests pyyaml
         mkdir -p flatpak
 
     - name: Generate Cargo sources
