@@ -33,12 +33,10 @@ env:
   NPM_CONFIG_FUND: false
 
 jobs:
-  lint:
+  lint-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: true
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -54,6 +52,11 @@ jobs:
 
 #      - name: Check formatting
 #        run: npm run format:check
+
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -80,38 +83,6 @@ jobs:
             patchelf \
             xmlstarlet
 
-      - name: Validate AppStream metadata
-        run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
-
-      - name: Install flatpak-builder-lint
-        run: |
-          sudo apt install -y flatpak-builder gir1.2-appstream-1.0 gir1.2-ostree-1.0
-          pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
-
-      - name: Regenerate Flatpak offline dependency manifests
-        # language=BASH
-        run: |
-          mkdir -p flatpak
-          GENERATORS_DIR="/tmp/flatpak-generators"
-          if [ ! -d "$GENERATORS_DIR" ]; then
-            git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
-          fi
-
-          pip install toml aiohttp python-slugify requests pyyaml tomlkit
-
-          echo "Generating Cargo sources..."
-          python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
-            "$PWD/src-tauri/Cargo.lock" \
-            -o "$PWD/flatpak/cargo-sources.json"
-
-          echo "Generating Node sources..."
-          PYTHONPATH="$GENERATORS_DIR/node" python3 -m flatpak_node_generator \
-            npm "$PWD/package-lock.json" \
-            -o "$PWD/flatpak/node-sources.json"
-
-      - name: Validate Flatpak manifest
-        run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
-
       - name: Lint Rust
         working-directory: src-tauri
         env:
@@ -121,8 +92,32 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: cargo clippy -- -D warnings
 
+  lint-manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Validate AppStream metadata
+        run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
+
+      - name: Generate Flatpak offline dependency manifests
+        uses: ./.github/actions/generate-flatpak-sources
+
+      - name: Install flatpak-builder-lint
+        run: |
+          sudo apt install -y flatpak-builder gir1.2-appstream-1.0 gir1.2-ostree-1.0
+          pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
+
+      - name: Validate Flatpak manifest
+        run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
+
   build-core:
-    needs: lint
+    needs:
+      - lint-frontend
+      - lint-backend
+      - lint-manifests
     permissions:
       contents: write
     runs-on: ubuntu-22.04
@@ -187,28 +182,6 @@ jobs:
           # Keep only latest 5 releases
           xmlstarlet ed -L -d "//release[position()>5]" me.ariyadey.capturist.metainfo.xml
 
-      - name: Regenerate Flatpak offline dependency manifests
-        if: fromJSON(env.IS_RELEASE)
-        # language=BASH
-        run: |
-          mkdir -p flatpak
-          GENERATORS_DIR="/tmp/flatpak-generators"
-          if [ ! -d "$GENERATORS_DIR" ]; then
-            git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
-          fi
-
-          pip install toml aiohttp python-slugify requests pyyaml tomlkit
-
-          echo "Generating Cargo sources..."
-          python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
-            "$PWD/src-tauri/Cargo.lock" \
-            -o "$PWD/flatpak/cargo-sources.json"
-
-          echo "Generating Node sources..."
-          PYTHONPATH="$GENERATORS_DIR/node" python3 -m flatpak_node_generator \
-            npm "$PWD/package-lock.json" \
-            -o "$PWD/flatpak/node-sources.json"
-
       - name: Install frontend dependencies
         run: npm ci
 
@@ -244,8 +217,6 @@ jobs:
             src-tauri/Cargo.toml
             src-tauri/Cargo.lock
             me.ariyadey.capturist.metainfo.xml
-            flatpak/cargo-sources.json
-            flatpak/node-sources.json
 
   build-snap:
     needs: build-core
@@ -269,6 +240,7 @@ jobs:
           path: .
 
       - name: Rename DEB for manifest
+        # language=BASH
         run: mv Capturist_*.deb capturist.deb
 
       - name: Build Snap
@@ -299,6 +271,9 @@ jobs:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
 
+      - name: Regenerate Flatpak offline dependency manifests
+        uses: ./.github/actions/generate-flatpak-sources
+
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
@@ -312,7 +287,10 @@ jobs:
           path: capturist_${{ inputs.version || 'build' }}_amd64.flatpak
 
   release:
-    needs: [build-core, build-snap, build-flatpak]
+    needs:
+      - build-core
+      - build-snap
+      - build-flatpak
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
