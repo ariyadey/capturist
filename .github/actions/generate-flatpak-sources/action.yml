@@ -12,7 +12,7 @@ runs:
         if [ ! -d "$GENERATORS_DIR" ]; then
           git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
         fi
-        python3 -m pip install --quiet toml tomlkit aiohttp python-slugify requests pyyaml
+        pip install --quiet toml tomlkit aiohttp python-slugify requests pyyaml
         mkdir -p flatpak
 
     - name: Generate Cargo sources
@@ -27,6 +27,7 @@ runs:
       shell: bash
       # language=BASH
       run: |
+        pip install --quiet toml tomlkit aiohttp python-slugify requests pyyaml
         PYTHONPATH="$GENERATORS_DIR/node" python3 -m flatpak_node_generator \
           npm "$PWD/package-lock.json" \
           -o "$PWD/flatpak/node-sources.json"
