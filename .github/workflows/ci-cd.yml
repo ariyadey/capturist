@@ -208,13 +208,13 @@ jobs:
 
       - name: Download bumped configs
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
 
       - name: Download DEB artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.DEB_ARTIFACT }}
           path: .
@@ -245,13 +245,13 @@ jobs:
 
       - name: Download bumped configs
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
 
       - name: Download DEB artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.DEB_ARTIFACT }}
           path: .
@@ -282,7 +282,7 @@ jobs:
 
       - name: Download bumped configs
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
@@ -310,27 +310,27 @@ jobs:
 
       - name: Download DEB artifact
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.DEB_ARTIFACT }}
           path: .
 
       - name: Download RPM artifact
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.RPM_ARTIFACT }}
           path: .
 
       - name: Download Snap artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.SNAP_ARTIFACT }}
           path: .
 
       - name: Download Flatpak artifact
         if: fromJSON(env.IS_RELEASE)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.FLATPAK_ARTIFACT }}
           path: .
