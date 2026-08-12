@@ -22,9 +22,9 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Todoist } from "@cpt/shared/external/todoist";
 import { NativeNotification } from "@cpt/shared/ipc/native-notification";
-import { TodoistRequestError } from "@doist/todoist-api-typescript";
 import { invoke } from "@tauri-apps/api/core";
 import { from } from "rxjs";
+import { Task, TodoistRequestError } from "@doist/todoist-sdk";
 
 @Component({
   selector: "cpt-quick-add-dialog",
@@ -87,7 +87,7 @@ export class QuickAddDialog {
         note: this.form.getRawValue().description,
         autoReminder: true,
       })
-      .then(async (task) => {
+      .then(async (task: Task) => {
         this.form.reset();
         await this.notification.send({ title: "Task added", body: task.url });
       })

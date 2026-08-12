@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { TodoistApi } from "@doist/todoist-api-typescript";
+import { TodoistApi } from "@doist/todoist-sdk";
 import { invoke } from "@tauri-apps/api/core";
 
 @Injectable({ providedIn: "root" })
