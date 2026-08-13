@@ -19,6 +19,7 @@ finish-args:
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
   env:
+    TODOIST_CLIENT_ID: "a8f74d9a1f1d424eb04189ab91c56a0e"
     CARGO_HOME: /run/build/capturist/cargo
     CARGO_NET_OFFLINE: "true"
     npm_config_cache: /run/build/capturist/flatpak-node/npm-cache

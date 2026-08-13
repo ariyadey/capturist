@@ -3,19 +3,16 @@ fn main() {
     tauri_build::build()
 }
 
-/// Sets environment variables for the build process.
+/// Loads build-time environment variables from a `.env` file (if present) and
+/// exposes the Todoist client ID to the main crate via `cargo:rustc-env`.
 ///
-/// This function loads environment variables from a `.env` file (if present)
-/// and then retrieves specific Todoist API credentials. These credentials
-/// are then exposed to the main crate via `cargo:rustc-env` directives,
-/// allowing them to be accessed at compile time using the `env!` macro.
+/// The client ID is required to authenticate with Todoist's OAuth server. It is
+/// a public identifier, so it is safe to embed in the binary; supply it via
+/// `.env`, CI secrets, or the Flathub manifest's `build-options.env`. PKCE
+/// means no client secret is required.
 fn set_environment_variables() {
     dotenv::dotenv().ok();
 
     let client_id = std::env::var("TODOIST_CLIENT_ID").expect("TODOIST_CLIENT_ID must be set");
-    let client_secret =
-        std::env::var("TODOIST_CLIENT_SECRET").expect("TODOIST_CLIENT_SECRET must be set");
-
-    println!("cargo:rustc-env=TODOIST_CLIENT_ID={}", client_id);
-    println!("cargo:rustc-env=TODOIST_CLIENT_SECRET={}", client_secret);
+    println!("cargo:rustc-env=TODOIST_CLIENT_ID={client_id}");
 }
