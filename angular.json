@@ -21,6 +21,7 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "externalDependencies": ["undici", "fs", "path"],
             "assets": [
               {
                 "glob": "**/*",
