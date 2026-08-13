@@ -114,29 +114,30 @@ jobs:
         run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
 
   bump-version:
-    needs:
-      - lint-frontend
-      - lint-backend
-      - lint-manifests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        if: fromJSON(env.IS_RELEASE)
 
       - name: Set up Node
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           cache: "npm"
 
       - name: Set up Rust
+        if: fromJSON(env.IS_RELEASE)
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Rust dependencies
+        if: fromJSON(env.IS_RELEASE)
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
       - name: Install xmlstarlet
+        if: fromJSON(env.IS_RELEASE)
         # language=Bash
         run: |
           sudo apt update
@@ -189,6 +190,9 @@ jobs:
 
   build-core:
     needs:
+      - lint-frontend
+      - lint-backend
+      - lint-manifests
       - bump-version
     runs-on: ubuntu-22.04
     steps:
@@ -285,7 +289,11 @@ jobs:
           path: ${{ steps.build.outputs.snap }}
 
   build-flatpak:
-    needs: bump-version
+    needs:
+      - lint-frontend
+      - lint-backend
+      - lint-manifests
+      - bump-version
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
