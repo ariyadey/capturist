@@ -52,6 +52,11 @@
   <releases>
     <release version="0.4.0" date="2026-08-14">
       <description>
+        <p>This release includes stability and performance improvements.</p>
+      </description>
+    </release>
+    <release version="0.4.0" date="2026-08-14">
+      <description>
         <p>- Flathub release preparation \n - PKCE OAuth flow migration</p>
       </description>
     </release>
