@@ -62,6 +62,7 @@ export class Todoist {
       // Access token expired mid-session: refresh (once, deduped) and retry
       // against the freshly rebuilt client.
       if (error instanceof TodoistRequestError && error.httpStatusCode === 401) {
+        console.warn("Hit error 401; Refreshing the token manually...");
         await this.refresh();
         return await run();
       }

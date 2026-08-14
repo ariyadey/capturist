@@ -54,6 +54,13 @@ pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult
         .unwrap()
         .take()
         .unwrap_or_default();
+    let code_verifier = app_handle
+        .state::<AppState>()
+        .pkce_verifier
+        .lock()
+        .unwrap()
+        .take()
+        .unwrap_or_default();
 
     ensure!(payload.state == stored_state,
         "OAuth state mismatch. Potential CSRF attack detected. URL: {:?}, State: {}, Stored State: {}",
@@ -62,19 +69,34 @@ pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult
         stored_state
     );
 
-    let client_id = todoist::TODOIST_CLIENT_ID;
-    let code_verifier = app_handle
-        .state::<AppState>()
-        .pkce_verifier
-        .lock()
-        .unwrap()
-        .take()
-        .unwrap_or_default();
-    let response = todoist::sdk::get_auth_token(client_id, &payload.code, &code_verifier).await?;
+    let response =
+        todoist::sdk::get_auth_token(todoist::TODOIST_CLIENT_ID, &payload.code, &code_verifier)
+            .await?;
     store_tokens(&response, app_handle)?;
     app_handle.emit(&CustomEvent::Authentication.to_string(), json!(true))?;
 
     Ok(())
+}
+
+/// Returns a Todoist access token that is valid for the near future, refreshing
+/// it first if it is about to expire or has already expired.
+pub async fn get_valid_access_token(app_handle: &AppHandle) -> AppResult<String> {
+    let expires_at_secs = storage::secure::find(StorageKey::TodoistTokenExpiresAt, app_handle)?
+        .context("No Todoist token expiration entry; please sign in again")
+        .inspect_err(|_| log_out(app_handle).unwrap())?
+        .parse::<u64>()
+        .context("Invalid Todoist token expiration entry; please sign in again")
+        .inspect_err(|_| log_out(app_handle).unwrap())?;
+
+    let now_secs = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+
+    if expires_at_secs <= now_secs + REFRESH_EARLY_SECS {
+        refresh_stored_token(app_handle).await?;
+    }
+
+    storage::secure::find(StorageKey::TodoistToken, app_handle)?
+        .context("No Todoist token found; please sign in again")
+        .inspect_err(|_| log_out(app_handle).unwrap())
 }
 
 /// Refreshes the stored access token using the stored refresh token.
@@ -83,27 +105,12 @@ pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult
 /// the previously stored one.
 pub async fn refresh_stored_token(app_handle: &AppHandle) -> AppResult<()> {
     let refresh_token = storage::secure::find(StorageKey::TodoistRefreshToken, app_handle)?
-        .context("No Todoist refresh token available; please sign in again")?;
+        .context("No Todoist refresh token available; please sign in again")
+        .inspect_err(|_| log_out(app_handle).unwrap())?;
     let response =
         todoist::sdk::refresh_access_token(todoist::TODOIST_CLIENT_ID, &refresh_token).await?;
     store_tokens(&response, app_handle)?;
     Ok(())
-}
-
-/// Returns a Todoist access token that is valid for the near future, refreshing
-/// it first if it is about to expire or has already expired.
-pub async fn get_valid_access_token(app_handle: &AppHandle) -> AppResult<String> {
-    let expires_at_secs = storage::secure::find(StorageKey::TodoistTokenExpiresAt, app_handle)?
-        .context("No Todoist token expiration entry; please sign in again")?
-        .parse::<u64>()
-        .context("Invalid Todoist token expiration entry")?;
-    let now_secs = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
-
-    if expires_at_secs <= now_secs + REFRESH_EARLY_SECS {
-        refresh_stored_token(app_handle).await?;
-    }
-
-    storage::secure::find(StorageKey::TodoistToken, app_handle)?.context("Not authenticated")
 }
 
 /// Logs out the user by clearing user data and emitting an authentication event.
