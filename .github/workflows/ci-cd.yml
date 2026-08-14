@@ -353,7 +353,6 @@ jobs:
         if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
-          git add flatpak/
           git commit -am "Bump version to ${{ inputs.version }}"
           git push origin main
 
