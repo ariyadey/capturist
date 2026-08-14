@@ -46,7 +46,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/ariyadey/capturist.git
-        branch: capturist-35
         commit: de5358f02290c266fa965a67f9f036eb899ac024
       - flatpak/cargo-sources.json
       - flatpak/node-sources.json
