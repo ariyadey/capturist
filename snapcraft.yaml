@@ -45,7 +45,7 @@ parts:
       # Kept as a single-quoted literal so ${SNAP} is NOT expanded now — it's expanded by the
       # desktop launcher at runtime on the user's machine, not here at build time.
       DESKTOP_FILE_PATH="$SNAPCRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
-      RUNTIME_ICON_PATH='${SNAP}/usr/share/icons/hicolor/128x128/apps/capturist.png'
+      RUNTIME_ICON_PATH="/usr/share/icons/hicolor/128x128/apps/capturist.png"
       desktop-file-edit --set-icon="$RUNTIME_ICON_PATH" "$DESKTOP_FILE_PATH"
 
 apps:
