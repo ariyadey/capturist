@@ -23,9 +23,9 @@ module.exports = tslint.config(
     processor: angular.processInlineTemplates,
     rules: {
       "@typescript-eslint/array-type": ["error", { default: "generic", readonly: "generic" }],
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/no-unused-expressions": ["error", { allowTernary: true }],
       "@typescript-eslint/no-unused-vars": ["off"], // Delegated to TS compiler
-      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@angular-eslint/component-selector": [
         "error",
         {

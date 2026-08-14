@@ -1,10 +1,9 @@
 use crate::desktop::shortcut;
 use crate::external::todoist::auth;
+use crate::shared::environment;
 use crate::shared::error::AppSerializableResult;
 use crate::shared::metadata::APP_ID;
 use crate::shared::state::AppState;
-use crate::shared::storage::key::StorageKey;
-use crate::shared::{environment, storage};
 use anyhow::{format_err, Context};
 use std::process::Command;
 use tauri::{AppHandle, State};
@@ -48,11 +47,21 @@ pub async fn start_authentication(
     auth::start_authentication(&app_handle, &app_state).map_err(Into::into)
 }
 
-/// Returns the Todoist access token from the secure storage.
+/// Returns a valid Todoist access token, refreshing it first if it is about to
+/// expire.
 #[tauri::command]
 pub async fn get_todoist_access_token(app_handle: AppHandle) -> AppSerializableResult<String> {
-    storage::secure::find(StorageKey::TodoistToken, &app_handle)?
-        .context("Todoist token not found")
+    auth::get_valid_access_token(&app_handle)
+        .await
+        .map_err(Into::into)
+}
+
+/// Forces a refresh of the Todoist access token. Called by the frontend when an
+/// API request fails with 401 (expired access token).
+#[tauri::command]
+pub async fn refresh_todoist_access_token(app_handle: AppHandle) -> AppSerializableResult<()> {
+    auth::refresh_stored_token(&app_handle)
+        .await
         .map_err(Into::into)
 }
 

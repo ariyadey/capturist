@@ -80,7 +80,6 @@ pub fn set_up_tray_menu(app_handle: &AppHandle) -> AppResult<()> {
 
     let owned_tray_menu = tray_menu.to_owned();
     TrayIconBuilder::with_id(TRAY_ID)
-        .title(TRAY_TITLE)
         .tooltip(TRAY_TITLE)
         .icon(tray_icon)
         .menu(&owned_tray_menu)

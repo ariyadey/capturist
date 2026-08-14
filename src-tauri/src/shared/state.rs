@@ -10,6 +10,7 @@ use tauri::{AppHandle, Listener, Manager};
 pub struct AppState {
     pub authenticated: Mutex<bool>,
     pub csrf_state: Mutex<Option<String>>,
+    pub pkce_verifier: Mutex<Option<String>>,
 }
 
 /// Sets up listeners for application state synchronization.
@@ -26,6 +27,7 @@ pub fn set_up_state_synchronization(app_handle: &AppHandle) {
                 let state = owned_app_handle.state::<AppState>();
                 *state.authenticated.lock().unwrap() = authenticated;
                 *state.csrf_state.lock().unwrap() = None;
+                *state.pkce_verifier.lock().unwrap() = None;
             }
             Err(e) => {
                 log::error!("{:?}", e);

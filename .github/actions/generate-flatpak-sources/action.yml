@@ -1,0 +1,27 @@
+name: "Generate Flatpak Offline Dependency Manifests"
+description: "Generates cargo-sources.json and node-sources.json for Flatpak builds"
+runs:
+  using: "composite"
+  steps:
+    - name: Generate Flatpak offline dependency manifests
+      shell: bash
+      # language=BASH
+      run: |
+        GENERATORS_DIR="/tmp/flatpak-generators"
+
+        if [ ! -d "$GENERATORS_DIR" ]; then
+          git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
+        fi
+
+        python3 -m pip install toml tomlkit aiohttp python-slugify requests pyyaml
+
+        mkdir -p flatpak
+
+        python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
+          "$PWD/src-tauri/Cargo.lock" \
+          -o "$PWD/flatpak/cargo-sources.json"
+
+        export PYTHONPATH="$GENERATORS_DIR/node:$PYTHONPATH"
+        python3 -m flatpak_node_generator \
+          npm "$PWD/package-lock.json" \
+          -o "$PWD/flatpak/node-sources.json"

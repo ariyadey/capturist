@@ -83,6 +83,7 @@ pub fn run() {
             ipc::commands::is_running_as_flatpak,
             ipc::commands::start_authentication,
             ipc::commands::get_todoist_access_token,
+            ipc::commands::refresh_todoist_access_token,
             ipc::commands::get_global_shortcut,
             ipc::commands::get_quick_add_command,
             ipc::commands::send_notification,

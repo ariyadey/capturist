@@ -33,7 +33,7 @@ env:
   NPM_CONFIG_FUND: false
 
 jobs:
-  lint:
+  lint-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -52,6 +52,11 @@ jobs:
 
 #      - name: Check formatting
 #        run: npm run format:check
+
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -78,56 +83,64 @@ jobs:
             patchelf \
             xmlstarlet
 
-      - name: Validate AppStream metadata
-        run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
-
-      - name: Install flatpak-builder-lint
-        run: pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
-
-      - name: Validate Flatpak manifest
-        run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
-
       - name: Lint Rust
         working-directory: src-tauri
         env:
           TODOIST_CLIENT_ID: ${{ secrets.TODOIST_CLIENT_ID }}
-          TODOIST_CLIENT_SECRET: ${{ secrets.TODOIST_CLIENT_SECRET }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: cargo clippy -- -D warnings
 
-  build-core:
-    needs: lint
-    permissions:
-      contents: write
-    runs-on: ubuntu-22.04
+  lint-manifests:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Validate AppStream metadata
+        run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
+
+      - name: Generate Flatpak offline dependency manifests
+        uses: ./.github/actions/generate-flatpak-sources
+
+      - name: Install flatpak-builder-lint
+        run: |
+          sudo apt install -y flatpak-builder gir1.2-appstream-1.0 gir1.2-ostree-1.0
+          pip install git+https://github.com/flathub-infra/flatpak-builder-lint.git
+
+      - name: Validate Flatpak manifest
+        run: flatpak-builder-lint manifest me.ariyadey.capturist.yml
+
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        if: fromJSON(env.IS_RELEASE)
 
       - name: Set up Node
+        if: fromJSON(env.IS_RELEASE)
         uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           cache: "npm"
 
       - name: Set up Rust
+        if: fromJSON(env.IS_RELEASE)
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Rust dependencies
+        if: fromJSON(env.IS_RELEASE)
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
-      - name: Install dependencies
+      - name: Install xmlstarlet
+        if: fromJSON(env.IS_RELEASE)
         # language=Bash
         run: |
           sudo apt update
-          sudo apt install -y \
-            libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf \
-            xmlstarlet
+          sudo apt install -y xmlstarlet
 
       - name: Install cargo-edit
         if: fromJSON(env.IS_RELEASE)
@@ -159,8 +172,61 @@ jobs:
             -r "//release_new" -v "release" \
             me.ariyadey.capturist.metainfo.xml
 
-          # Keep only top 5 releases
+          # Keep only latest 5 releases
           xmlstarlet ed -L -d "//release[position()>5]" me.ariyadey.capturist.metainfo.xml
+
+      - name: Upload bumped configs
+        if: fromJSON(env.IS_RELEASE)
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.BUMPED_CONFIGS }}
+          path: |
+            package.json
+            package-lock.json
+            src-tauri/Cargo.toml
+            src-tauri/Cargo.lock
+            me.ariyadey.capturist.metainfo.xml
+
+  build-core:
+    needs:
+      - lint-frontend
+      - lint-backend
+      - lint-manifests
+      - bump-version
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install dependencies
+        # language=Bash
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Download bumped configs
+        if: fromJSON(env.IS_RELEASE)
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.BUMPED_CONFIGS }}
+          path: .
 
       - name: Install frontend dependencies
         run: npm ci
@@ -168,7 +234,6 @@ jobs:
       - name: Build
         env:
           TODOIST_CLIENT_ID: ${{ secrets.TODOIST_CLIENT_ID }}
-          TODOIST_CLIENT_SECRET: ${{ secrets.TODOIST_CLIENT_SECRET }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: npm run tauri build
@@ -185,18 +250,6 @@ jobs:
         with:
           name: ${{ env.RPM_ARTIFACT }}
           path: src-tauri/target/release/bundle/rpm/Capturist-*.x86_64.rpm
-
-      - name: Upload bumped configs
-        if: fromJSON(env.IS_RELEASE)
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ env.BUMPED_CONFIGS }}
-          path: |
-            package.json
-            package-lock.json
-            src-tauri/Cargo.toml
-            src-tauri/Cargo.lock
-            me.ariyadey.capturist.metainfo.xml
 
   build-snap:
     needs: build-core
@@ -220,6 +273,7 @@ jobs:
           path: .
 
       - name: Rename DEB for manifest
+        # language=BASH
         run: mv Capturist_*.deb capturist.deb
 
       - name: Build Snap
@@ -233,10 +287,14 @@ jobs:
           path: ${{ steps.build.outputs.snap }}
 
   build-flatpak:
-    needs: build-core
+    needs:
+      - lint-frontend
+      - lint-backend
+      - lint-manifests
+      - bump-version
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
       options: --privileged
     steps:
       - uses: actions/checkout@v6
@@ -250,14 +308,8 @@ jobs:
           name: ${{ env.BUMPED_CONFIGS }}
           path: .
 
-      - name: Download DEB artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.DEB_ARTIFACT }}
-          path: .
-
-      - name: Rename DEB for manifest
-        run: mv Capturist_*.deb capturist.deb
+      - name: Regenerate Flatpak offline dependency manifests
+        uses: ./.github/actions/generate-flatpak-sources
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -272,7 +324,10 @@ jobs:
           path: capturist_${{ inputs.version || 'build' }}_amd64.flatpak
 
   release:
-    needs: [build-core, build-snap, build-flatpak]
+    needs:
+      - build-core
+      - build-snap
+      - build-flatpak
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -298,6 +353,7 @@ jobs:
         if: fromJSON(env.IS_RELEASE)
         # language=BASH
         run: |
+          git add flatpak/
           git commit -am "Bump version to ${{ inputs.version }}"
           git push origin main
 
