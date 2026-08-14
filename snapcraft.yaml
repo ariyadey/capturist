@@ -18,6 +18,7 @@ parts:
       - rustup/latest/stable
     build-packages:
       - libssl-dev
+      - desktop-file-utils
     stage-packages:
       - libnotify-bin
     stage:
@@ -29,7 +30,7 @@ parts:
       - me.ariyadey.capturist.metainfo.xml
     # language=Bash
     override-build: |
-      set -eu
+      set -euo pipefail
 
       if [ ! -f "capturist.deb" ]; then
           echo "--- No pre-built deb found, building from source... ---"
@@ -40,6 +41,12 @@ parts:
       fi
 
       dpkg -x capturist.deb "$SNAPCRAFT_PART_INSTALL"/
+      # Bare icon name isn't registered by snapd here; point desktop file at the snap's own icon.
+      # Kept as a single-quoted literal so ${SNAP} is NOT expanded now — it's expanded by the
+      # desktop launcher at runtime on the user's machine, not here at build time.
+      DESKTOP_FILE_PATH="$SNAPCRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
+      RUNTIME_ICON_PATH='${SNAP}/usr/share/icons/hicolor/128x128/apps/capturist.png'
+      desktop-file-edit --set-icon="$RUNTIME_ICON_PATH" "$DESKTOP_FILE_PATH"
 
 apps:
   capturist:
