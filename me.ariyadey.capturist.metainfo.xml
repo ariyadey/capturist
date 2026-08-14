@@ -50,6 +50,11 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.4.1" date="2026-08-14">
+      <description>
+        <p>This release includes stability and performance improvements.</p>
+      </description>
+    </release>
     <release version="0.4.0" date="2026-08-14">
       <description>
         <p>This release includes stability and performance improvements.</p>
