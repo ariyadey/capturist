@@ -62,7 +62,7 @@
     "sitemap": "^9.0.1",
     "tailwindcss": "^4.3.3",
     "type-fest": "^5.8.0",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.10"
   }
