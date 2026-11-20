@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AgentCommitMessageProject"><![CDATA[{
+  "mode": "CUSTOM",
+  "instruction": "Write a Conventional Commit message for the staged diff (branch hint: $GIT_BRANCH_NAME).\n\nFormat: `<type>(<optional-scope>): <summary>`\nTypes: feat, fix, refactor, docs, chore, test, build, ci, perf (add `!` only for breaking changes).\n\nRules:\n- Use `feat`/`fix` only for user-facing changes (release-please bumps versions from them).\n- Imperative, lowercase summary ≤50 chars (max 72), no trailing period.\n- Omit body unless explaining a non-obvious \"why\" (max 3 short lines).\n- Output raw commit message only."
+}]]></component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/shared-modules" vcs="Git" />

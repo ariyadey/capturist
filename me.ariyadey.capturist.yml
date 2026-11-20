@@ -19,7 +19,6 @@ finish-args:
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
   env:
-    TODOIST_CLIENT_ID: "a8f74d9a1f1d424eb04189ab91c56a0e"
     CARGO_HOME: /run/build/capturist/cargo
     CARGO_NET_OFFLINE: "true"
     npm_config_cache: /run/build/capturist/flatpak-node/npm-cache
@@ -46,7 +45,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/ariyadey/capturist.git
-        commit: de5358f02290c266fa965a67f9f036eb899ac024
+        tag: v0.4.1 # x-release-please-version
       - flatpak/cargo-sources.json
       - flatpak/node-sources.json
     # language=BASH

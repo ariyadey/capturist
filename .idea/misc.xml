@@ -20,4 +20,7 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_24">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="TaskProjectConfiguration">
+    <server type="GitHub" url="https://github.com" />
+  </component>
 </project>

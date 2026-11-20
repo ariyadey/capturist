@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      is-release: ${{ steps.meta.outputs.is-release }}
+      release-tag: ${{ steps.meta.outputs.release-tag }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Compute release metadata
+        id: meta
+        # language=Bash
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "is-release=true" >> "$GITHUB_OUTPUT"
+            echo "release-tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            BASE=$(jq -r '.version' package.json)
+            echo "is-release=false" >> "$GITHUB_OUTPUT"
+            echo "release-tag=" >> "$GITHUB_OUTPUT"
+            echo "version=${BASE}+git.${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+          fi
+
+  package:
+    needs: prepare
+    uses: ./.github/workflows/_package.yml
+    with:
+      version: ${{ needs.prepare.outputs.version }}
+      retention-days: 14
+      upload-flathub-bundle: ${{ needs.prepare.outputs.is-release == 'true' }}
+      release-tag: ${{ needs.prepare.outputs.release-tag }}
+
+  # Runs only for v* tag pushes: attaches build artifacts to the GitHub
+  # Release created by release-please and publishes the snap to the candidate
+  # channel. Stable is promoted manually after smoke-testing candidate.
+  publish:
+    needs:
+      - prepare
+      - package
+    if: needs.prepare.outputs.is-release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.prepare.outputs.release-tag }}
+          # No body passed: preserves the release notes/changelog written by
+          # release-please when it created this release.
+          files: |
+            artifacts/deb/*.deb
+            artifacts/rpm/*.rpm
+            artifacts/snap/*.snap
+            artifacts/flatpak/*.flatpak
+          fail_on_unmatched_files: true
+
+      - name: Publish to Snap Store (candidate)
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: artifacts/snap/${{ needs.package.outputs.snap-file }}
+          release: candidate

@@ -1,4 +1,5 @@
-[![Release](https://github.com/ariyadey/capturist/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/ci-cd.yml)
+[![CI](https://github.com/ariyadey/capturist/actions/workflows/ci.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/ci.yml)
+[![Release](https://github.com/ariyadey/capturist/actions/workflows/release.yml/badge.svg)](https://github.com/ariyadey/capturist/actions/workflows/release.yml)
 [![Snap Store](https://snapcraft.io/capturist/badge.svg)](https://snapcraft.io/capturist)
 ![Flatpak](https://img.shields.io/badge/flatpak-supported-blue.svg)
 [![capturist](https://snapcraft.io/capturist/trending.svg?name=0)](https://snapcraft.io/capturist)
@@ -10,7 +11,8 @@
 </p>
 
 <p style="text-align: center;">
-  <img alt="Capturist Quick Add" src="public/img/screenshot-quick-add.png">
+  <!--suppress HtmlUnknownTarget -->
+<img alt="Capturist Quick Add" src="public/img/screenshot-quick-add.png">
 </p>
 
 **Capturist** is designed for Linux and lives in your system tray. It can be summoned with a global shortcut, allowing you to capture tasks without breaking your workflow.
@@ -59,7 +61,7 @@ Interested in contributing or running the latest development version? Here’s h
 - [Node.js and npm](https://nodejs.org/)
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Angular CLI](https://angular.dev/cli): `npm install -g @angular/cli`
-- System dependencies for Tauri. Follow the [official Tauri guide](httpss://tauri.app/v1/guides/getting-started/prerequisites) for your OS.
+- System dependencies for Tauri. Follow the [official Tauri guide](https://v2.tauri.app/start/prerequisites/) for your OS.
 
 ### Development Mode
 
@@ -90,7 +92,7 @@ This project uses a modern stack to deliver a fast, native-like experience.
   - The Angular application is fully **zoneless** and uses **Signals** for state management, resulting in optimal performance.
   - The backend handles the core OAuth2 flow and secure API interactions.
   - Communication between the frontend and backend is done via Tauri's secure IPC (Commands and Events).
-  - Code quality is maintained with _Cargo Check_, _Prettier_ and _ESLint_.
+  - Code quality is maintained with _rustfmt_, _Clippy_, _Prettier_, _ESLint_, and _Vitest_.
 
 ## 🛡️ Security
 
@@ -103,11 +105,9 @@ Security is a top priority for Capturist.
 
 ## 🤝 Contributing
 
-Pull requests are welcome!
-For major changes, please open an issue first to discuss what you would like to change.
-Please ensure to add/update tests as appropriate.
+Pull requests are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for commit conventions, local lint/test commands, and the CI/CD release flow.
 
-Before submitting, please run `npm run lint` and `npm run format:check` to ensure your code adheres to the project's style.
+For major changes, please open an issue first to discuss what you would like to change, and add/update tests as appropriate.
 
 ## 📄 License
 

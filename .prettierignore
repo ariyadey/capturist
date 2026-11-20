@@ -1,5 +1,16 @@
+# Build artifacts
+dist
+src-tauri/target
+.flatpak-builder
+.angular
+
+# Tooling config, agent skills and third-party submodules
+.agents
+.explyt
+shared-modules
+
 # JSON files
-**/*.json
+**/*.json*
 
 # Lock files
 src-tauri/Cargo.lock

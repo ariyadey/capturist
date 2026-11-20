@@ -32,6 +32,10 @@ parts:
     override-build: |
       set -euo pipefail
 
+      if [ -f "snap-version.txt" ]; then
+          craftctl set version="$(tr -d '\r\n' < snap-version.txt)"
+      fi
+
       if [ ! -f "capturist.deb" ]; then
           echo "--- No pre-built deb found, building from source... ---"
           rustup default stable
@@ -40,11 +44,9 @@ parts:
           mv src-tauri/target/release/bundle/deb/*.deb capturist.deb
       fi
 
-      dpkg -x capturist.deb "$SNAPCRAFT_PART_INSTALL"/
+      dpkg -x capturist.deb "$CRAFT_PART_INSTALL"/
       # Bare icon name isn't registered by snapd here; point desktop file at the snap's own icon.
-      # Kept as a single-quoted literal so ${SNAP} is NOT expanded now — it's expanded by the
-      # desktop launcher at runtime on the user's machine, not here at build time.
-      DESKTOP_FILE_PATH="$SNAPCRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
+      DESKTOP_FILE_PATH="$CRAFT_PART_INSTALL/usr/share/applications/Capturist.desktop"
       RUNTIME_ICON_PATH="/usr/share/icons/hicolor/128x128/apps/capturist.png"
       desktop-file-edit --set-icon="$RUNTIME_ICON_PATH" "$DESKTOP_FILE_PATH"
 
@@ -54,28 +56,16 @@ apps:
     desktop: usr/share/applications/Capturist.desktop
     extensions:
       # The gnome extension already includes
-      # [ desktop, desktop-legacy, gsettings, opengl, wayland, x11, mount-observe, calendar-service ]
+      # [ desktop, desktop-legacy, gsettings, opengl, wayland, x11 ]
       - gnome
     plugs:
       - network
       - network-status
       - password-manager-service
-      - single-instance-plug
-    slots:
-      - single-instance-slot
+#      - single-instance-plug
+#    slots:
+#      - single-instance-slot
 
-plugs:
-  single-instance-plug:
-    interface: dbus
-    bus: session
-    name: org.me_ariyadey_capturist.SingleInstance
-
-slots:
-  single-instance-slot:
-    interface: dbus
-    bus: session
-    name: org.me_ariyadey_capturist.SingleInstance
-
-layout:
-  /usr/lib/x86_64-linux-gnu/webkit2gtk-4.1:
-    symlink: $SNAP/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1
+#layout:
+#  /usr/lib/x86_64-linux-gnu/webkit2gtk-4.1:
+#    symlink: $SNAP/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1

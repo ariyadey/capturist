@@ -7,6 +7,7 @@
       <w>appname</w>
       <w>appstreamcli</w>
       <w>buildsystem</w>
+      <w>capturist</w>
       <w>coredump</w>
       <w>devmode</w>
       <w>doist</w>
@@ -42,11 +43,16 @@
       <w>moreutils</w>
       <w>noreply</w>
       <w>noto</w>
+      <w>pipefail</w>
+      <w>pkce</w>
       <w>reqwest</w>
       <w>rustfmt</w>
       <w>snapcore</w>
+      <w>snapd</w>
       <w>softprops</w>
       <w>swatinem</w>
+      <w>wayland</w>
+      <w>zoneless</w>
     </words>
   </dictionary>
 </component>
