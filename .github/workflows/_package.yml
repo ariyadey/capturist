@@ -27,6 +27,9 @@ on:
         description: "Built snap filename"
         value: ${{ jobs.build-snap.outputs.snap-file }}
 
+permissions:
+  contents: read
+
 env:
   NPM_CONFIG_AUDIT: false
   NPM_CONFIG_FUND: false
