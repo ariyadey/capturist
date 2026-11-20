@@ -10,13 +10,13 @@ import {
 } from "@angular/core";
 import { provideRouter, withInMemoryScrolling, withRouterConfig } from "@angular/router";
 import { Todoist } from "@cpt/shared/external/todoist";
+import { forwardConsole } from "@cpt/shared/ipc/ipc-log";
 import { WindowLabel } from "@cpt/shared/ipc/window-label";
+import { IconService } from "@cpt/shared/theme/icon-service";
 import { window } from "@tauri-apps/api";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Window } from "@tauri-apps/api/window";
 import { routes } from "./app.routes";
-import { IconService } from "@cpt/shared/theme/icon-service";
-import { forwardConsole } from "@cpt/shared/ipc/ipc-log";
 
 export const appConfig: ApplicationConfig = {
   providers: [
