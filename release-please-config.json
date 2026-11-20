@@ -1,0 +1,24 @@
+{
+  "skip-changelog": true,
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "include-component-in-tag": false,
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "src-tauri/Cargo.toml",
+          "jsonpath": "$.package.version"
+        },
+        {
+          "type": "generic",
+          "path": "me.ariyadey.capturist.metainfo.xml"
+        },
+        {
+          "type": "generic",
+          "path": "me.ariyadey.capturist.yml"
+        }
+      ]
+    }
+  }
+}

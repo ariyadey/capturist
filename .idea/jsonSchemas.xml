@@ -3,6 +3,38 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
+        <entry key=".postcssrc">
+          <value>
+            <SchemaInfo>
+              <option name="name" value=".postcssrc" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/postcssrc.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".postcssrc.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="Flatpak Builder Manifest">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Flatpak Builder Manifest" />
+              <option name="relativePathToSchema" value="https://www.schemastore.org/flatpak-manifest.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="me.ariyadey.capturist.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="Snapcraft">
           <value>
             <SchemaInfo>
@@ -15,6 +47,38 @@
                     <option name="pattern" value="true" />
                     <option name="path" value="**/snapcraft.yaml" />
                     <option name="mappingKind" value="Pattern" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="release-please-config.json">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="release-please-config.json" />
+              <option name="relativePathToSchema" value="https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="release-please-config.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="release-please-manifest.json">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="release-please-manifest.json" />
+              <option name="relativePathToSchema" value="https://raw.githubusercontent.com/googleapis/release-please/main/schemas/manifest.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".release-please-manifest.json" />
                   </Item>
                 </list>
               </option>

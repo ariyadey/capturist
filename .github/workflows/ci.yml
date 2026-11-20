@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NPM_CONFIG_AUDIT: false
+  NPM_CONFIG_FUND: false
+
+jobs:
+  pr-title:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Check Rust formatting
+        working-directory: src-tauri
+        run: cargo fmt --check
+
+      - name: Install system dependencies
+        # language=Bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Lint Rust
+        working-directory: src-tauri
+        run: cargo clippy -- -D warnings
+
+      - name: Run backend tests
+        working-directory: src-tauri
+        run: cargo test
+
+  lint-metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      dev-version: ${{ steps.version.outputs.dev }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install appstream
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq appstream
+
+      - name: Validate AppStream metadata
+        run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
+
+      - name: Compute dev version
+        id: version
+        # language=Bash
+        run: |
+          BASE=$(jq -r '.version' package.json)
+          echo "dev=${BASE}+git.${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+  # Continuous delivery of main to the Snap Store edge channel.
+  # Skipped for PRs and for release-please release commits (which immediately
+  # trigger release.yml via the v* tag).
+  package:
+    needs:
+      - frontend
+      - backend
+      - lint-metadata
+    if: >-
+      github.event_name == 'push' &&
+      !startsWith(github.event.head_commit.message, 'chore(main): release ') &&
+      !startsWith(github.event.head_commit.message, 'chore: release ')
+    uses: ./.github/workflows/_package.yml
+    with:
+      version: ${{ needs.lint-metadata.outputs.dev-version }}
+      retention-days: 7
+
+  publish-edge:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Snap artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: snap
+          path: .
+
+      - name: Publish to Snap Store (edge)
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: ${{ needs.package.outputs.snap-file }}
+          release: edge

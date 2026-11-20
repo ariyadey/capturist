@@ -1,0 +1,185 @@
+name: Package
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Build version (e.g. 0.5.0 or 0.4.1+git.abc1234)"
+        type: string
+        required: true
+      retention-days:
+        description: "Artifact retention in days"
+        type: number
+        required: false
+        default: 7
+      upload-flathub-bundle:
+        description: "Upload Flathub manifest (tag+commit) and offline sources artifact"
+        type: boolean
+        required: false
+        default: false
+      release-tag:
+        description: "Release tag (e.g. v0.5.0) to pin in the Flatpak manifest"
+        type: string
+        required: false
+        default: ""
+    outputs:
+      snap-file:
+        description: "Built snap filename"
+        value: ${{ jobs.build-snap.outputs.snap-file }}
+
+permissions:
+  contents: read
+
+env:
+  NPM_CONFIG_AUDIT: false
+  NPM_CONFIG_FUND: false
+
+jobs:
+  build-tauri:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install system dependencies
+        # language=Bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            rpm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri bundles
+        run: npm run tauri build
+
+      - name: Upload DEB artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: deb
+          path: src-tauri/target/release/bundle/deb/Capturist_*_amd64.deb
+          retention-days: ${{ inputs.retention-days }}
+
+      - name: Upload RPM artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: rpm
+          path: src-tauri/target/release/bundle/rpm/Capturist-*.x86_64.rpm
+          retention-days: ${{ inputs.retention-days }}
+
+  build-snap:
+    needs: build-tauri
+    runs-on: ubuntu-latest
+    outputs:
+      snap-file: ${{ steps.build.outputs.snap }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download DEB artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: deb
+          path: .
+
+      - name: Prepare Snap inputs
+        env:
+          SNAP_VERSION: ${{ inputs.version }}
+        # language=Bash
+        run: |
+          mv Capturist_*.deb capturist.deb
+          printf '%s\n' "$SNAP_VERSION" > snap-version.txt
+
+      - name: Build Snap
+        id: build
+        uses: snapcore/action-build@v1
+
+      - name: Upload Snap artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snap
+          path: ${{ steps.build.outputs.snap }}
+          retention-days: ${{ inputs.retention-days }}
+
+  build-flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Pin Flatpak source to this commit
+        env:
+          RELEASE_TAG: ${{ inputs.release-tag }}
+        # language=Bash
+        run: |
+          set -euo pipefail
+          MANIFEST="me.ariyadey.capturist.yml"
+          REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git"
+          REF="commit: ${GITHUB_SHA}"
+          if [ -n "${RELEASE_TAG}" ]; then
+            REF="tag: ${RELEASE_TAG}\n\1commit: ${GITHUB_SHA}"
+          fi
+
+          sed -i \
+            -e "\|url: https://github\.com/ariyadey/capturist\.git|{" \
+            -e "s|https://github\.com/ariyadey/capturist\.git|${REPO_URL}|" \
+            -e "n" \
+            -e "s|^\( *\)tag: .*|\1${REF}|" \
+            -e "}" \
+            "$MANIFEST"
+
+          grep -q "commit: ${GITHUB_SHA}" "$MANIFEST"
+
+      - name: Generate Flatpak offline dependency manifests
+        uses: ./.github/actions/generate-flatpak-sources
+
+      - name: Lint Flatpak manifest and AppStream metadata
+        # language=Bash
+        run: |
+          flatpak-builder-lint appstream me.ariyadey.capturist.metainfo.xml
+          flatpak-builder-lint manifest me.ariyadey.capturist.yml
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: capturist_${{ inputs.version }}_amd64.flatpak
+          manifest-path: me.ariyadey.capturist.yml
+
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: flatpak
+          path: capturist_${{ inputs.version }}_amd64.flatpak
+          retention-days: ${{ inputs.retention-days }}
+
+      - name: Upload Flathub submission bundle
+        if: inputs.upload-flathub-bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: flathub-bundle
+          path: |
+            me.ariyadey.capturist.yml
+            flatpak/cargo-sources.json
+            flatpak/node-sources.json
+          retention-days: ${{ inputs.retention-days }}

@@ -1,37 +1,13 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+dist
+tmp
 *.snap
+snap-version.txt
 
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-# Swap the comments on the following lines if you wish to use zero-installs
-# In that case, don't forget to run `yarn config set enableGlobalCache false`!
-# Documentation here: https://yarnpkg.com/features/caching#zero-installs
-#!.yarn/cache
-.pnp.*
-
-# IDEs and editors
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+node_modules
 
 # Visual Studio Code
 .vscode/*
@@ -42,15 +18,14 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+.angular/cache
 .sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
+coverage
 .env
 
 # System files
 .DS_Store
 Thumbs.db
+
+# Antigravity auto-extracted system skills
+/skills/system/

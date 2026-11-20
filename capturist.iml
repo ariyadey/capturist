@@ -8,6 +8,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src-tauri/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src-tauri/gen" />
       <excludeFolder url="file://$MODULE_DIR$/src-tauri/target" />
+      <excludeFolder url="file://$MODULE_DIR$/shared-modules" />
+      <excludeFolder url="file://$MODULE_DIR$/flatpak/cargo-sources.json" />
+      <excludeFolder url="file://$MODULE_DIR$/flatpak/node-sources.json" />
+      <excludeFolder url="file://$MODULE_DIR$/package-lock.json" />
+      <excludeFolder url="file://$MODULE_DIR$/src-tauri/Cargo.lock" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

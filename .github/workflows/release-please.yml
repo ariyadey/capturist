@@ -1,0 +1,24 @@
+name: release-please
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          # MUST be a fine-grained PAT (secrets.RELEASE_PLEASE_TOKEN) with
+          # "Contents: write" on this repo. The default GITHUB_TOKEN cannot
+          # re-trigger workflows, so the tag it pushes would never fire
+          # release.yml. With a PAT, the v* tag push triggers the Release
+          # workflow (build + GitHub Release assets + snap candidate).
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

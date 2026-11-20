@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    commit-message:
+      prefix: "chore"
     groups:
       angular:
         patterns:
@@ -27,6 +29,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    commit-message:
+      prefix: "chore"
     groups:
       tauri:
         patterns:
@@ -37,3 +41,5 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    commit-message:
+      prefix: "chore"

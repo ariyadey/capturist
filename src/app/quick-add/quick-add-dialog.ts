@@ -22,9 +22,9 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Todoist } from "@cpt/shared/external/todoist";
 import { NativeNotification } from "@cpt/shared/ipc/native-notification";
+import { Task, TodoistRequestError } from "@doist/todoist-sdk";
 import { invoke } from "@tauri-apps/api/core";
 import { from } from "rxjs";
-import { Task, TodoistRequestError } from "@doist/todoist-sdk";
 
 @Component({
   selector: "cpt-quick-add-dialog",

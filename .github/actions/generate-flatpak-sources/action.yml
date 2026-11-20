@@ -7,21 +7,19 @@ runs:
       shell: bash
       # language=BASH
       run: |
-        GENERATORS_DIR="/tmp/flatpak-generators"
+        set -euo pipefail
 
-        if [ ! -d "$GENERATORS_DIR" ]; then
-          git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$GENERATORS_DIR"
-        fi
+        WORK_DIR=$(mktemp -d)
+        trap 'rm -rf "$WORK_DIR"' EXIT
 
-        python3 -m pip install toml tomlkit aiohttp python-slugify requests pyyaml
+        git clone --depth 1 https://github.com/flatpak/flatpak-builder-tools.git "$WORK_DIR/tools"
+        python3 -m pip install --quiet --target "$WORK_DIR/deps" aiohttp tomlkit pyyaml
 
         mkdir -p flatpak
+        export PYTHONPATH="$WORK_DIR/deps:$WORK_DIR/tools/node${PYTHONPATH:+:$PYTHONPATH}"
 
-        python3 "$GENERATORS_DIR/cargo/flatpak-cargo-generator.py" \
-          "$PWD/src-tauri/Cargo.lock" \
-          -o "$PWD/flatpak/cargo-sources.json"
+        python3 "$WORK_DIR/tools/cargo/flatpak-cargo-generator.py" \
+          src-tauri/Cargo.lock -o flatpak/cargo-sources.json
 
-        export PYTHONPATH="$GENERATORS_DIR/node:$PYTHONPATH"
         python3 -m flatpak_node_generator \
-          npm "$PWD/package-lock.json" \
-          -o "$PWD/flatpak/node-sources.json"
+          npm package-lock.json -o flatpak/node-sources.json
