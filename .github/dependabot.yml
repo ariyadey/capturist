@@ -13,14 +13,26 @@ multi-ecosystem-groups:
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    multi-ecosystem-group: "tauri"
+    patterns:
+      - "@tauri-apps/*"
+
+  - package-ecosystem: "cargo"
+    directory: "/src-tauri"
+    multi-ecosystem-group: "tauri"
+    patterns:
+      - "tauri"
+      - "tauri-*"
+
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "saturday"
     commit-message:
       prefix: "chore"
-    multi-ecosystem-group: "tauri"
-    patterns:
-      - "@tauri-apps/*"
+    ignore:
+      - dependency-name: "@tauri-apps/*"
     groups:
       angular:
         patterns:
@@ -42,9 +54,9 @@ updates:
       day: "saturday"
     commit-message:
       prefix: "chore"
-    multi-ecosystem-group: "tauri"
-    patterns:
-      - "tauri*"
+    ignore:
+      - dependency-name: "tauri"
+      - dependency-name: "tauri-*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
