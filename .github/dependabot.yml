@@ -1,4 +1,15 @@
 version: 2
+
+# Tauri ships npm (@tauri-apps/*) and Cargo (tauri*) packages in lockstep, and
+# `tauri build` fails if their major.minor drift apart, so update both in one PR.
+multi-ecosystem-groups:
+  tauri:
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    commit-message:
+      prefix: "chore"
+
 updates:
   - package-ecosystem: "npm"
     directory: "/"
@@ -7,14 +18,14 @@ updates:
       day: "saturday"
     commit-message:
       prefix: "chore"
+    multi-ecosystem-group: "tauri"
+    patterns:
+      - "@tauri-apps/*"
     groups:
       angular:
         patterns:
           - "@angular/*"
           - "angular-eslint"
-      tauri:
-        patterns:
-          - "@tauri-apps/*"
       eslint:
         patterns:
           - "eslint*"
@@ -31,10 +42,9 @@ updates:
       day: "saturday"
     commit-message:
       prefix: "chore"
-    groups:
-      tauri:
-        patterns:
-          - "tauri*"
+    multi-ecosystem-group: "tauri"
+    patterns:
+      - "tauri*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

@@ -111,6 +111,23 @@ jobs:
       - name: Validate AppStream metadata
         run: appstreamcli validate --pedantic me.ariyadey.capturist.metainfo.xml
 
+      - name: Check Tauri npm/Cargo version parity
+        # language=Bash
+        run: |
+          status=0
+          while read -r pkg npm_ver; do
+            name="${pkg#@tauri-apps/}"
+            [[ "$name" == "api" ]] && crate="tauri" || crate="tauri-$name"
+            cargo_ver=$(awk -v c="\"$crate\"" '$0 == "name = " c { getline; gsub(/"/, "", $3); print $3; exit }' src-tauri/Cargo.lock)
+            if [[ "${npm_ver%.*}" != "${cargo_ver%.*}" ]]; then
+              echo "mismatch: $pkg $npm_ver != $crate ${cargo_ver:-missing}" >&2
+              status=1
+            else
+              echo "ok  $pkg $npm_ver = $crate $cargo_ver"
+            fi
+          done < <(jq -r '.packages | to_entries[] | select(.key | test("^node_modules/@tauri-apps/(api|plugin-[^/]+)$")) | "\(.key | sub("^node_modules/"; "")) \(.value.version)"' package-lock.json)
+          exit $status
+
       - name: Compute dev version
         id: version
         # language=Bash
