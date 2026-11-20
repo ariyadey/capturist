@@ -62,9 +62,16 @@ apps:
       - network
       - network-status
       - password-manager-service
-#      - single-instance-plug
-#    slots:
-#      - single-instance-slot
+    slots:
+      - single-instance
+
+slots:
+  # Must match `<tauri.conf.json identifier>.SingleInstance` for tauri-plugin-single-instance >= 2.4.
+  # No self-plug needed: snapd's default AppArmor profile allows same-snap D-Bus peers.
+  single-instance:
+    interface: dbus
+    bus: session
+    name: me.ariyadey.capturist.SingleInstance
 
 #layout:
 #  /usr/lib/x86_64-linux-gnu/webkit2gtk-4.1:
