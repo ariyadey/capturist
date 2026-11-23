@@ -56,14 +56,13 @@ pub fn set_up_deep_link_handling(app_handle: &AppHandle) -> AppResult<()> {
 
 /// Dispatches a parsed deep-link URL to its handler.
 pub fn handle_url(app_handle: &AppHandle, url: &tauri::Url) {
-    log::info!("Received deep link event with URL: {url:?}");
-
     match url
         .host_str()
         .context("Invalid URL")
         .and_then(DeepLinkHost::try_from)
     {
-        Ok(DeepLinkHost::Oauth) => {
+        Ok(host @ DeepLinkHost::Oauth) => {
+            log::info!("Received deep link event: {host:?}");
             let owned_url = url.to_owned();
             let owned_app_handle = app_handle.to_owned();
             // Spawns an async task to handle the authentication flow
@@ -74,6 +73,6 @@ pub fn handle_url(app_handle: &AppHandle, url: &tauri::Url) {
                     .inspect_err(|e| log::error!("OAuth authentication failed: {e:?}"));
             });
         }
-        _ => log::error!("Invalid URL: {url:?}"),
+        Err(_) => log::error!("Ignoring unrecognized deep link URL"),
     }
 }

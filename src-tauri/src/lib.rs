@@ -142,6 +142,16 @@ fn classify_secondary_instance_args(argv: &[String]) -> SecondaryInstanceAction<
     SecondaryInstanceAction::ShowWindow
 }
 
+fn redact_arg(arg: &str) -> String {
+    let scheme_prefix = format!("{APP_ID}://");
+    if arg.starts_with(&scheme_prefix) {
+        if let Some((base, _)) = arg.split_once(['?', '#']) {
+            return format!("{base}?<redacted>");
+        }
+    }
+    arg.to_owned()
+}
+
 /// Handles the event when another instance of the application tries to start.
 ///
 /// Runs on the main thread. Brings the existing instance's window to the foreground unless
@@ -151,7 +161,8 @@ fn on_another_instance_trial(
     argv: Vec<String>,
     cwd: String,
 ) -> AppResult<()> {
-    log::info!("Another instance tried to start with args: {argv:#?} and cwd: {cwd:#?}.");
+    let logged_argv: Vec<String> = argv.iter().map(|arg| redact_arg(arg)).collect();
+    log::info!("Another instance tried to start with args: {logged_argv:#?} and cwd: {cwd:#?}.");
 
     match classify_secondary_instance_args(&argv) {
         SecondaryInstanceAction::Ignore => Ok(()),
@@ -190,7 +201,7 @@ fn show_initial_window(app_handle: &AppHandle, minimize: bool) -> AppResult<()> 
 
 #[cfg(test)]
 mod tests {
-    use super::{classify_secondary_instance_args, SecondaryInstanceAction};
+    use super::{classify_secondary_instance_args, redact_arg, SecondaryInstanceAction};
 
     #[test]
     fn normal_secondary_launch_shows_window() {
@@ -230,5 +241,14 @@ mod tests {
             classify_secondary_instance_args(&argv),
             SecondaryInstanceAction::HandleOauthFallback("capturist://oauth?code=abc")
         );
+    }
+
+    #[test]
+    fn deep_link_query_is_redacted_for_logging() {
+        assert_eq!(
+            redact_arg("capturist://oauth?code=secret&state=xyz"),
+            "capturist://oauth?<redacted>"
+        );
+        assert_eq!(redact_arg("--minimize"), "--minimize");
     }
 }
