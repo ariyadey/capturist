@@ -45,35 +45,35 @@ pub fn set_up_deep_link_handling(app_handle: &AppHandle) -> AppResult<()> {
     }
 
     let owned_app_handle = app_handle.to_owned();
-    app_handle.deep_link().on_open_url(move |event| {
-        match event.urls().first() {
-            Some(url) => {
-                log::info!("Received deep link event with URL: {url:?}");
-
-                match url
-                    .host_str()
-                    .context("Invalid URL")
-                    .and_then(DeepLinkHost::try_from)
-                {
-                    Ok(DeepLinkHost::Oauth) => {
-                        let owned_url = url.to_owned();
-                        let owned_app_handle = owned_app_handle.to_owned();
-                        // Spawns an async task to handle the authentication flow
-                        // without blocking the event loop.
-                        tauri::async_runtime::spawn(async move {
-                            crate::external::todoist::auth::authenticate(
-                                &owned_url,
-                                &owned_app_handle,
-                            )
-                            .await
-                        });
-                    }
-                    _ => log::error!("Invalid URL: {url:?}"),
-                }
-            }
+    app_handle
+        .deep_link()
+        .on_open_url(move |event| match event.urls().first() {
+            Some(url) => handle_url(&owned_app_handle, url),
             None => log::error!("No URL found in deep link"),
-        }
-    });
+        });
 
     Ok(())
+}
+
+/// Dispatches a parsed deep-link URL to its handler.
+pub fn handle_url(app_handle: &AppHandle, url: &tauri::Url) {
+    match url
+        .host_str()
+        .context("Invalid URL")
+        .and_then(DeepLinkHost::try_from)
+    {
+        Ok(host @ DeepLinkHost::Oauth) => {
+            log::info!("Received deep link event: {host:?}");
+            let owned_url = url.to_owned();
+            let owned_app_handle = app_handle.to_owned();
+            // Spawns an async task to handle the authentication flow
+            // without blocking the event loop.
+            tauri::async_runtime::spawn(async move {
+                let _ = crate::external::todoist::auth::authenticate(&owned_url, &owned_app_handle)
+                    .await
+                    .inspect_err(|e| log::error!("OAuth authentication failed: {e:?}"));
+            });
+        }
+        Err(_) => log::error!("Ignoring unrecognized deep link URL"),
+    }
 }

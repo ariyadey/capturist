@@ -20,10 +20,19 @@ mod shared;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // Registers D-Bus name `<identifier>.SingleInstance` on Linux (matches snapcraft.yaml).
         .plugin(tauri_plugin_single_instance::init(
             |app_handle, argv, cwd| {
-                let _ = on_another_instance_trial(app_handle, argv, cwd)
-                    .inspect_err(|e| log::error!("{e:?}"));
+                // zbus invokes this on a background thread; GTK/WebKit window operations must run on main.
+                let owned_handle = app_handle.clone();
+                if let Err(e) = app_handle.run_on_main_thread(move || {
+                    let _ = on_another_instance_trial(&owned_handle, argv, cwd)
+                        .inspect_err(|e| log::error!("{e:?}"));
+                }) {
+                    log::error!(
+                        "Failed to dispatch single-instance callback to main thread: {e:?}"
+                    );
+                }
             },
         ))
         .plugin(
@@ -72,7 +81,19 @@ pub fn run() {
             }
             deeplink::set_up_deep_link_handling(app_handle)?;
             window::set_up_current_window_synchronization(app_handle);
-            show_initial_window(app_handle)?;
+            let minimize = app_handle
+                .cli()
+                .matches()
+                .inspect_err(|e| log::warn!("Failed to parse startup CLI args: {e:?}"))
+                .ok()
+                .and_then(|matches| {
+                    matches
+                        .args
+                        .get(&cli::Argument::Minimize.to_string())
+                        .and_then(|arg| arg.value.as_bool())
+                })
+                .unwrap_or(false);
+            show_initial_window(app_handle, minimize)?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -92,41 +113,76 @@ pub fn run() {
         .expect("Error while running Tauri application.");
 }
 
+#[derive(Debug, Eq, PartialEq)]
+enum SecondaryInstanceAction<'a> {
+    Ignore,
+    /// `tauri-plugin-deep-link` only auto-emits `on_open_url` when `argv.len() == 2`.
+    HandleOauthFallback(&'a str),
+    ShowWindow,
+}
+
+fn classify_secondary_instance_args(argv: &[String]) -> SecondaryInstanceAction<'_> {
+    let oauth_prefix = format!("{APP_ID}://{}", DeepLinkHost::Oauth);
+    if let Some(raw_url) = argv
+        .iter()
+        .skip(1)
+        .find(|arg| arg.starts_with(&oauth_prefix))
+    {
+        return if argv.len() == 2 {
+            SecondaryInstanceAction::Ignore
+        } else {
+            SecondaryInstanceAction::HandleOauthFallback(raw_url)
+        };
+    }
+
+    if argv.iter().skip(1).any(|arg| arg == cli::MINIMIZE_ARG) {
+        return SecondaryInstanceAction::Ignore;
+    }
+
+    SecondaryInstanceAction::ShowWindow
+}
+
+fn redact_arg(arg: &str) -> String {
+    let scheme_prefix = format!("{APP_ID}://");
+    if arg.starts_with(&scheme_prefix) {
+        if let Some((base, _)) = arg.split_once(['?', '#']) {
+            return format!("{base}?<redacted>");
+        }
+    }
+    arg.to_owned()
+}
+
 /// Handles the event when another instance of the application tries to start.
 ///
-/// This function checks the command-line arguments of the new instance.
-/// If the new instance is an OAuth deep link or requests minimization, it does nothing.
-/// Otherwise, it brings the existing instance's window to the foreground.
+/// Runs on the main thread. Brings the existing instance's window to the foreground unless
+/// the new instance is an OAuth deep link or requests minimization.
 fn on_another_instance_trial(
     app_handle: &AppHandle,
     argv: Vec<String>,
     cwd: String,
 ) -> AppResult<()> {
-    log::info!("Another instance tried to start with args: {argv:#?} and cwd: {cwd:#?}.");
+    let logged_argv: Vec<String> = argv.iter().map(|arg| redact_arg(arg)).collect();
+    log::info!("Another instance tried to start with args: {logged_argv:#?} and cwd: {cwd:#?}.");
 
-    let oauth_url = format!("{APP_ID}://{}", DeepLinkHost::Oauth);
-    let is_oauth_deep_link = argv.iter().any(|arg| arg.starts_with(&oauth_url));
-    let should_minimize = argv.contains(&format!("--{}", cli::Argument::Minimize));
-    if is_oauth_deep_link || should_minimize {
-        return Ok(());
+    match classify_secondary_instance_args(&argv) {
+        SecondaryInstanceAction::Ignore => Ok(()),
+        SecondaryInstanceAction::HandleOauthFallback(raw_url) => {
+            log::warn!(
+                "OAuth deep link received with {} args; forwarding directly since deep-link plugin skips multi-arg invocations.",
+                argv.len()
+            );
+            let url = tauri::Url::parse(raw_url)?;
+            deeplink::handle_url(app_handle, &url);
+            Ok(())
+        }
+        SecondaryInstanceAction::ShowWindow => show_initial_window(app_handle, false),
     }
-    show_initial_window(app_handle)?;
-
-    Ok(())
 }
 
 /// Shows the initial window based on whether the user is authenticated or not.
-fn show_initial_window(app_handle: &AppHandle) -> AppResult<()> {
+fn show_initial_window(app_handle: &AppHandle, minimize: bool) -> AppResult<()> {
     log::info!("Showing the initial window based on whether the user is authenticated or not.");
 
-    let minimize = app_handle
-        .cli()
-        .matches()?
-        .args
-        .get(&cli::Argument::Minimize.to_string())
-        .map(|arg| arg.value.to_owned())
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false);
     let authenticated = app_handle
         .state::<AppState>()
         .authenticated
@@ -141,4 +197,58 @@ fn show_initial_window(app_handle: &AppHandle) -> AppResult<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{classify_secondary_instance_args, redact_arg, SecondaryInstanceAction};
+
+    #[test]
+    fn normal_secondary_launch_shows_window() {
+        let argv = vec!["capturist".into()];
+        assert_eq!(
+            classify_secondary_instance_args(&argv),
+            SecondaryInstanceAction::ShowWindow
+        );
+    }
+
+    #[test]
+    fn minimize_flag_is_ignored() {
+        let argv = vec!["capturist".into(), "--minimize".into()];
+        assert_eq!(
+            classify_secondary_instance_args(&argv),
+            SecondaryInstanceAction::Ignore
+        );
+    }
+
+    #[test]
+    fn two_arg_oauth_is_left_to_deep_link_plugin() {
+        let argv = vec!["capturist".into(), "capturist://oauth?code=abc".into()];
+        assert_eq!(
+            classify_secondary_instance_args(&argv),
+            SecondaryInstanceAction::Ignore
+        );
+    }
+
+    #[test]
+    fn multi_arg_oauth_uses_direct_fallback() {
+        let argv = vec![
+            "capturist".into(),
+            "--quick-add".into(),
+            "capturist://oauth?code=abc".into(),
+        ];
+        assert_eq!(
+            classify_secondary_instance_args(&argv),
+            SecondaryInstanceAction::HandleOauthFallback("capturist://oauth?code=abc")
+        );
+    }
+
+    #[test]
+    fn deep_link_query_is_redacted_for_logging() {
+        assert_eq!(
+            redact_arg("capturist://oauth?code=secret&state=xyz"),
+            "capturist://oauth?<redacted>"
+        );
+        assert_eq!(redact_arg("--minimize"), "--minimize");
+    }
 }

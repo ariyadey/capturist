@@ -160,6 +160,39 @@ jobs:
           flatpak-builder-lint appstream me.ariyadey.capturist.metainfo.xml
           flatpak-builder-lint manifest me.ariyadey.capturist.yml
 
+      # Some ubuntu-latest runners mount container overlayfs without redirect_dir,
+      # causing flatpak-builder's runtime update to fail with EXDEV ("Invalid cross-device link").
+      - name: Make container Flatpak installations updatable
+        # language=Bash
+        run: |
+          set -euo pipefail
+          rename_dir() {
+            python3 -c '
+          import errno, os, sys
+          try:
+              os.rename(sys.argv[1], sys.argv[2])
+          except OSError as e:
+              sys.exit(18 if e.errno == errno.EXDEV else 1)
+          ' "$1" "$2"
+          }
+          for dir in /var/lib/flatpak "${HOME:-/root}/.local/share/flatpak"; do
+            [ -d "$dir/runtime" ] || continue
+            status=0
+            rename_dir "$dir/runtime" "$dir/runtime.rename-probe" || status=$?
+            if [ "$status" -eq 0 ]; then
+              rename_dir "$dir/runtime.rename-probe" "$dir/runtime"
+              echo "$dir: renames in place, nothing to do"
+            elif [ "$status" -eq 18 ]; then
+              echo "$dir: EXDEV on image layer, copying up into writable layer"
+              cp -a "$dir" "$dir.copy-up"
+              rm -rf "$dir"
+              mv "$dir.copy-up" "$dir"
+            else
+              echo "::error::$dir: unexpected rename probe failure (exit $status)"
+              exit 1
+            fi
+          done
+
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
