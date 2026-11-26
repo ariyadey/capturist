@@ -45,7 +45,10 @@ cargo test
 - Commit/PR titles follow **Conventional Commits** (`feat:`, `fix(scope):`, `refactor:`, `docs:`, `chore:`, ...); PR titles are enforced by `action-semantic-pull-request` in CI.
 - Dependabot handles dependency bumps in dedicated PRs (prefixed with `chore`).
 - Before submitting: run `npm run lint`, `npm run format:check`, `npm test`, `npm run build` (frontend) and `cargo fmt --check && cargo clippy -- -D warnings && cargo test` (backend).
-- Open an issue to discuss major changes before opening a PR; add/update tests as appropriate.
+- Open an issue to discuss major changes before opening a PR.
+- Always add/update unit tests for every bug fix, feature, and enhancement to keep the app bulletproof.
+- Always set appropriate labels, a GitHub `type` (e.g. `Bug`, `Feature`, `Task`), and assign PRs to `ariyadey` (use `gh api -X PATCH repos/ariyadey/capturist/issues/<number>` if `gh pr edit` fails on `projectCards`).
+- Persist cross-session project rules, conventions, and significant architectural decisions in this file (`AGENTS.md`).
 
 ## CI/CD
 
