@@ -12,9 +12,10 @@ use anyhow::{format_err, Context};
 use serde_json::json;
 use std::fmt;
 use std::ops::Not;
+use std::path::PathBuf;
 use tauri::menu::{CheckMenuItem, Menu, MenuBuilder, MenuEvent, MenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Emitter, Event, Listener, Manager, Wry};
+use tauri::{AppHandle, Emitter, Event, Listener, Manager, Runtime, Wry};
 use tauri_plugin_autostart::ManagerExt;
 use tauri_plugin_log::log;
 
@@ -77,11 +78,13 @@ pub fn set_up_tray_menu(app_handle: &AppHandle) -> AppResult<()> {
 
     let tray_icon = get_tray_icon(app_handle)?;
     let tray_menu = get_tray_menu(app_handle)?;
+    let tray_icon_dir = get_tray_icon_dir(app_handle)?;
 
     let owned_tray_menu = tray_menu.to_owned();
     TrayIconBuilder::with_id(TRAY_ID)
         .tooltip(TRAY_TITLE)
         .icon(tray_icon)
+        .temp_dir_path(tray_icon_dir)
         .menu(&owned_tray_menu)
         .on_menu_event(move |app_handle, event| {
             handle_menu_event(app_handle, event, &owned_tray_menu)
@@ -95,6 +98,15 @@ pub fn set_up_tray_menu(app_handle: &AppHandle) -> AppResult<()> {
     });
 
     Ok(())
+}
+
+/// Returns the directory where Linux's AppIndicator tray writes its temporary icon PNG.
+///
+/// Storing this under the app's cache directory (instead of `tray-icon`'s default
+/// `$XDG_RUNTIME_DIR/tray-icon`) keeps the path identical inside a Flatpak sandbox
+/// and on the host without needing extra Flatpak filesystem permissions.
+fn get_tray_icon_dir<R: Runtime>(app_handle: &AppHandle<R>) -> AppResult<PathBuf> {
+    Ok(app_handle.path().app_cache_dir()?.join("tray-icon"))
 }
 
 /// Retrieves the application's default window icon for use in the tray.
@@ -199,4 +211,36 @@ fn on_authentication_state_change(owned_tray_menu: &Menu<Wry>, event: Event) -> 
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{get_tray_icon_dir, MenuId};
+    use tauri::Manager;
+
+    #[test]
+    fn tray_icon_dir_uses_subdirectory_under_app_cache() {
+        let app = tauri::test::mock_app();
+        let expected = app.path().app_cache_dir().unwrap().join("tray-icon");
+
+        assert_eq!(get_tray_icon_dir(app.handle()).unwrap(), expected);
+    }
+
+    #[test]
+    fn menu_id_display_and_try_from_roundtrip() {
+        let variants = [
+            (MenuId::QuickAdd, "quick-add"),
+            (MenuId::Settings, "settings"),
+            (MenuId::AutoStart, "autostart"),
+            (MenuId::LogOut, "log-out"),
+            (MenuId::Quit, "quit"),
+        ];
+
+        for (variant, expected) in variants {
+            assert_eq!(variant.to_string(), expected);
+            assert_eq!(MenuId::try_from(expected), Ok(variant));
+        }
+
+        assert!(MenuId::try_from("unknown").is_err());
+    }
 }
