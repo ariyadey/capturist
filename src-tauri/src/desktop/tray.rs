@@ -12,10 +12,10 @@ use anyhow::{format_err, Context};
 use serde_json::json;
 use std::fmt;
 use std::ops::Not;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use tauri::menu::{CheckMenuItem, Menu, MenuBuilder, MenuEvent, MenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Emitter, Event, Listener, Manager, Wry};
+use tauri::{AppHandle, Emitter, Event, Listener, Manager, Runtime, Wry};
 use tauri_plugin_autostart::ManagerExt;
 use tauri_plugin_log::log;
 
@@ -78,8 +78,7 @@ pub fn set_up_tray_menu(app_handle: &AppHandle) -> AppResult<()> {
 
     let tray_icon = get_tray_icon(app_handle)?;
     let tray_menu = get_tray_menu(app_handle)?;
-
-    let tray_icon_dir = tray_icon_temp_dir(&app_handle.path().app_cache_dir()?);
+    let tray_icon_dir = get_tray_icon_dir(app_handle)?;
 
     let owned_tray_menu = tray_menu.to_owned();
     TrayIconBuilder::with_id(TRAY_ID)
@@ -106,8 +105,8 @@ pub fn set_up_tray_menu(app_handle: &AppHandle) -> AppResult<()> {
 /// Storing this under the app's cache directory (instead of `tray-icon`'s default
 /// `$XDG_RUNTIME_DIR/tray-icon`) keeps the path identical inside a Flatpak sandbox
 /// and on the host without needing extra Flatpak filesystem permissions.
-fn tray_icon_temp_dir(app_cache_dir: &Path) -> PathBuf {
-    app_cache_dir.join("tray-icon")
+fn get_tray_icon_dir<R: Runtime>(app_handle: &AppHandle<R>) -> AppResult<PathBuf> {
+    Ok(app_handle.path().app_cache_dir()?.join("tray-icon"))
 }
 
 /// Retrieves the application's default window icon for use in the tray.
@@ -216,25 +215,15 @@ fn on_authentication_state_change(owned_tray_menu: &Menu<Wry>, event: Event) -> 
 
 #[cfg(test)]
 mod tests {
-    use super::{tray_icon_temp_dir, MenuId};
-    use std::path::{Path, PathBuf};
+    use super::{get_tray_icon_dir, MenuId};
+    use tauri::Manager;
 
     #[test]
-    fn tray_icon_temp_dir_uses_subdirectory_under_app_cache() {
-        let flatpak_cache =
-            Path::new("/home/user/.var/app/me.ariyadey.capturist/cache/me.ariyadey.capturist");
-        assert_eq!(
-            tray_icon_temp_dir(flatpak_cache),
-            PathBuf::from(
-                "/home/user/.var/app/me.ariyadey.capturist/cache/me.ariyadey.capturist/tray-icon"
-            )
-        );
+    fn tray_icon_dir_uses_subdirectory_under_app_cache() {
+        let app = tauri::test::mock_app();
+        let expected = app.path().app_cache_dir().unwrap().join("tray-icon");
 
-        let native_cache = Path::new("/home/user/.cache/me.ariyadey.capturist");
-        assert_eq!(
-            tray_icon_temp_dir(native_cache),
-            PathBuf::from("/home/user/.cache/me.ariyadey.capturist/tray-icon")
-        );
+        assert_eq!(get_tray_icon_dir(app.handle()).unwrap(), expected);
     }
 
     #[test]
