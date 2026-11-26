@@ -1,11 +1,11 @@
 use crate::external::todoist;
-use crate::external::todoist::sdk::PermissionScope;
+use crate::external::todoist::sdk::{AuthCallbackResponse, PermissionScope};
 use crate::ipc::events::CustomEvent;
 use crate::shared::error::AppResult;
 use crate::shared::state::AppState;
 use crate::shared::storage;
 use crate::shared::storage::key::StorageKey;
-use anyhow::{ensure, Context};
+use anyhow::{bail, ensure, Context};
 use serde_json::json;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -45,33 +45,42 @@ pub fn start_authentication(
 /// It handles the entire backend authentication flow.
 pub async fn authenticate(url: &tauri::Url, app_handle: &AppHandle) -> AppResult<()> {
     let query = url.query().context("Missing query parameters")?;
-    let payload = serde_urlencoded::from_str::<todoist::sdk::AuthCallbackResponse>(query)
+    let payload = serde_urlencoded::from_str::<AuthCallbackResponse>(query)
         .context("Invalid query parameters")?;
     let stored_state = app_handle
         .state::<AppState>()
         .csrf_state
         .lock()
         .unwrap()
-        .take()
-        .unwrap_or_default();
+        .take();
     let code_verifier = app_handle
         .state::<AppState>()
         .pkce_verifier
         .lock()
         .unwrap()
-        .take()
-        .unwrap_or_default();
+        .take();
 
-    ensure!(payload.state == stored_state,
-        "OAuth state mismatch. Potential CSRF attack detected. URL: {:?}, State: {}, Stored State: {}",
-        url,
-        payload.state,
-        stored_state
+    let (code, state) = match payload {
+        AuthCallbackResponse::Success { code, state } => (code, state),
+        AuthCallbackResponse::Error {
+            error,
+            error_description,
+        } => match error_description {
+            Some(description) => {
+                bail!("Todoist OAuth authorization failed: {error} ({description})")
+            }
+            None => bail!("Todoist OAuth authorization failed: {error}"),
+        },
+    };
+
+    ensure!(
+        stored_state.as_deref() == Some(state.as_str()),
+        "OAuth state mismatch. Potential CSRF attack detected."
     );
+    let code_verifier = code_verifier.context("Missing PKCE code verifier")?;
 
     let response =
-        todoist::sdk::get_auth_token(todoist::TODOIST_CLIENT_ID, &payload.code, &code_verifier)
-            .await?;
+        todoist::sdk::get_auth_token(todoist::TODOIST_CLIENT_ID, &code, &code_verifier).await?;
     store_tokens(&response, app_handle)?;
     app_handle.emit(&CustomEvent::Authentication.to_string(), json!(true))?;
 
@@ -106,9 +115,21 @@ pub async fn get_valid_access_token(app_handle: &AppHandle) -> AppResult<String>
 pub async fn refresh_stored_token(app_handle: &AppHandle) -> AppResult<()> {
     let refresh_token = storage::secure::find(StorageKey::TodoistRefreshToken, app_handle)?
         .context("No Todoist refresh token available; please sign in again")
-        .inspect_err(|_| log_out(app_handle).unwrap())?;
-    let response =
-        todoist::sdk::refresh_access_token(todoist::TODOIST_CLIENT_ID, &refresh_token).await?;
+        .inspect_err(|_| {
+            let _ = log_out(app_handle).inspect_err(|e| log::error!("Failed to log out: {e:?}"));
+        })?;
+    let response = todoist::sdk::refresh_access_token(todoist::TODOIST_CLIENT_ID, &refresh_token)
+        .await
+        .inspect_err(|err| {
+            if err
+                .downcast_ref::<todoist::sdk::OAuthTokenError>()
+                .is_some_and(todoist::sdk::OAuthTokenError::is_token_rejected)
+            {
+                log::warn!("Todoist rejected the stored refresh token ({err}); logging out.");
+                let _ =
+                    log_out(app_handle).inspect_err(|e| log::error!("Failed to log out: {e:?}"));
+            }
+        })?;
     store_tokens(&response, app_handle)?;
     Ok(())
 }

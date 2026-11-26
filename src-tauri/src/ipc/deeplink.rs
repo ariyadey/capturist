@@ -2,7 +2,6 @@ use crate::shared::environment;
 use crate::shared::error::AppResult;
 use anyhow::{format_err, Context};
 use std::fmt;
-use std::ops::Not;
 use tauri::AppHandle;
 use tauri_plugin_deep_link::DeepLinkExt;
 
@@ -39,7 +38,9 @@ impl TryFrom<&str> for DeepLinkHost {
 pub fn set_up_deep_link_handling(app_handle: &AppHandle) -> AppResult<()> {
     log::info!("Setting up deep link handling...");
 
-    if environment::is_running_as_snap().not() && environment::is_running_as_flatpak().not() {
+    // .deb, .rpm, .snap, and .flatpak register `capturist://` via their packaged .desktop file;
+    // runtime registration is only needed for AppImage and local `tauri dev` runs.
+    if cfg!(dev) || environment::is_running_as_appimage() {
         app_handle.deep_link().register_all()?;
     }
 
