@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { TodoistApi, TodoistRequestError } from "@doist/todoist-sdk";
 import { invoke } from "@tauri-apps/api/core";
+import type { TodoistApi, TodoistRequestError } from "@todoist/sdk";
 
 /**
  * Wraps the Todoist SDK client so every API call goes through a single point
@@ -13,6 +13,9 @@ import { invoke } from "@tauri-apps/api/core";
 export class Todoist {
   /** The underlying SDK client. `undefined` until {@link initialize} runs. */
   private apiClient!: TodoistApi;
+
+  /** Cached SDK error constructor loaded dynamically with `@todoist/sdk`. */
+  private requestErrorCtor!: typeof TodoistRequestError;
 
   /** In-flight refresh, deduplicating concurrent refreshes. `null` when idle. */
   private refreshing: Promise<void> | null = null;
@@ -34,11 +37,16 @@ export class Todoist {
   }
 
   /**
-   * Fetches a valid access token from the backend and builds the SDK client.
-   * Call once at startup (or after signing in) before using {@link api}.
+   * Lazily loads `@todoist/sdk`, fetches a valid access token from the backend,
+   * and builds the SDK client. Call once at startup (or after signing in) before
+   * using {@link api}.
    */
   async initialize(): Promise<void> {
-    const token = await invoke<string>("get_todoist_access_token");
+    const [{ TodoistApi, TodoistRequestError }, token] = await Promise.all([
+      import("@todoist/sdk"),
+      invoke<string>("get_todoist_access_token"),
+    ]);
+    this.requestErrorCtor = TodoistRequestError;
     this.apiClient = new TodoistApi(token);
   }
 
@@ -61,7 +69,11 @@ export class Todoist {
     } catch (error) {
       // Access token expired mid-session: refresh (once, deduped) and retry
       // against the freshly rebuilt client.
-      if (error instanceof TodoistRequestError && error.httpStatusCode === 401) {
+      if (
+        this.requestErrorCtor &&
+        error instanceof this.requestErrorCtor &&
+        error.httpStatusCode === 401
+      ) {
         console.warn("Hit error 401; Refreshing the token manually...");
         await this.refresh();
         return await run();
