@@ -94,15 +94,11 @@ pub fn get_quick_add_command() -> String {
 ///
 /// See: https://github.com/tauri-apps/plugins-workspace/issues/2566
 ///
-/// TODO: Replace this implementation with Tauri Notification plugin after the issue got resolved.
+/// TODO: Replace this implementation with Tauri Notification plugin after the issue got resolved,
+/// and ensure notifications remain transient on Flatpak as well.
 #[tauri::command]
 pub fn send_notification(title: &str, body: &str) -> AppSerializableResult<()> {
-    Command::new("notify-send")
-        .arg(title)
-        .arg(body)
-        .arg("--app-name")
-        .arg(APP_ID)
-        .arg("--hint=int:transient:1")
+    build_notify_send_command(title, body)
         .status()
         .context("Failed to execute notify-send command")
         .and_then(|status| {
@@ -115,4 +111,47 @@ pub fn send_notification(title: &str, body: &str) -> AppSerializableResult<()> {
             }
         })
         .map_err(Into::into)
+}
+
+/// Builds the `notify-send` invocation for desktop notifications.
+///
+/// Sets `NOTIFY_IGNORE_PORTAL=1` so `libnotify` talks directly to `org.freedesktop.Notifications`
+/// inside Flatpak instead of the v1 notification portal, which drops `--hint=int:transient:1`.
+fn build_notify_send_command(title: &str, body: &str) -> Command {
+    let mut command = Command::new("notify-send");
+    command
+        .env("NOTIFY_IGNORE_PORTAL", "1")
+        .arg(title)
+        .arg(body)
+        .arg("--app-name")
+        .arg(APP_ID)
+        .arg("--hint=int:transient:1");
+    command
+}
+
+#[cfg(test)]
+mod tests {
+    use super::build_notify_send_command;
+    use crate::shared::metadata::APP_ID;
+    use std::ffi::OsStr;
+
+    #[test]
+    fn notify_send_command_sets_transient_hint_and_bypasses_portal() {
+        let command = build_notify_send_command("Task added", "https://app.todoist.com/task/1");
+
+        assert_eq!(command.get_program(), OsStr::new("notify-send"));
+        let args: Vec<&OsStr> = command.get_args().collect();
+        assert_eq!(
+            args,
+            vec![
+                OsStr::new("Task added"),
+                OsStr::new("https://app.todoist.com/task/1"),
+                OsStr::new("--app-name"),
+                OsStr::new(APP_ID),
+                OsStr::new("--hint=int:transient:1"),
+            ]
+        );
+        let envs: Vec<(&OsStr, Option<&OsStr>)> = command.get_envs().collect();
+        assert!(envs.contains(&(OsStr::new("NOTIFY_IGNORE_PORTAL"), Some(OsStr::new("1")))));
+    }
 }
