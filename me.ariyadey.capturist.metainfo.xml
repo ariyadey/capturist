@@ -50,9 +50,8 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="0.4.2" date="2026-11-26"><!-- x-release-please-version-date -->
-      <url type="details">https://github.com/ariyadey/capturist/releases/tag/v0.4.1
-      </url><!-- x-release-please-version -->
+    <release version="0.4.2" date="2026-08-14"><!-- x-release-please-version-date -->
+      <url type="details">https://github.com/ariyadey/capturist/releases/tag/v0.4.2</url><!-- x-release-please-version -->
     </release>
   </releases>
   <content_rating type="oars-1.1">
