@@ -38,6 +38,8 @@ cargo test
 - Angular components use the `.spec.ts` suffix for unit tests (Vitest + jsdom via `@angular/build:unit-test`), kept next to the source.
 - Backend Rust is formatted with `rustfmt` and must pass `cargo clippy -- -D warnings`; add `#[cfg(test)]` unit tests where behavior warrants.
 - The Angular app is **zoneless** — use Signals for state, avoid Zone.js-dependent patterns.
+- **Design & paradigm:** prefer **functional** style in low-level logic (pure functions, expressions, iterator/array transformations) and **object-oriented** design for high-level architecture (cohesive services/classes, clear encapsulation and boundaries).
+- **Immutability & null-safety:** embrace immutability by default (`const`, `readonly`, immutable bindings/data without unnecessary `mut`) and strict null-safety (explicit `Option`/nullable handling; avoid non-null assertions `!` or unchecked `.unwrap()`).
 
 ## VCS: commits & pull requests
 
