@@ -166,29 +166,18 @@ jobs:
         # language=Bash
         run: |
           set -euo pipefail
-          rename_dir() {
-            python3 -c '
-          import errno, os, sys
-          try:
-              os.rename(sys.argv[1], sys.argv[2])
-          except OSError as e:
-              sys.exit(18 if e.errno == errno.EXDEV else 1)
-          ' "$1" "$2"
-          }
           for dir in /var/lib/flatpak "${HOME:-/root}/.local/share/flatpak"; do
             [ -d "$dir/runtime" ] || continue
-            status=0
-            rename_dir "$dir/runtime" "$dir/runtime.rename-probe" || status=$?
-            if [ "$status" -eq 0 ]; then
-              rename_dir "$dir/runtime.rename-probe" "$dir/runtime"
+            if err=$(LC_ALL=C mv --no-copy "$dir/runtime" "$dir/runtime.rename-probe" 2>&1); then
+              mv --no-copy "$dir/runtime.rename-probe" "$dir/runtime"
               echo "$dir: renames in place, nothing to do"
-            elif [ "$status" -eq 18 ]; then
+            elif [[ "$err" == *"Invalid cross-device link"* ]]; then
               echo "$dir: EXDEV on image layer, copying up into writable layer"
               cp -a "$dir" "$dir.copy-up"
               rm -rf "$dir"
               mv "$dir.copy-up" "$dir"
             else
-              echo "::error::$dir: unexpected rename probe failure (exit $status)"
+              echo "::error::$dir: unexpected rename probe failure: $err"
               exit 1
             fi
           done
