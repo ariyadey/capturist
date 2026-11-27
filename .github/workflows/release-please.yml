@@ -20,5 +20,5 @@ jobs:
           # release.yml. With a PAT, the v* tag push triggers the Release
           # workflow (build + GitHub Release assets + snap candidate).
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+          config-file: .github/release-please-config.json
+          manifest-file: .github/.release-please-manifest.json
