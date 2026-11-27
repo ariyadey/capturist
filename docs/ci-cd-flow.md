@@ -2,42 +2,51 @@
 
 > Companion reference for `.github/workflows/` and `.github/actions/`. Three thin trigger workflows delegate all packaging to one shared reusable workflow (`_package.yml`); only Snap `stable` promotion and Flathub repo updates are manual.
 
+### 1. Open / Update a PR (before merge)
+
 ```mermaid
 flowchart LR
-    subgraph L1["Lane 1: Open / Update a PR (before merge)"]
-        PR_IN["PR to main"] --> PR_CI["ci.yml\nFast checks only\n(lint, fmt, test, build, PR title, appstream)"]
-        PR_CI --> PR_OUT(["Green checks on PR\nNO packaging, NO publish"])
-    end
-
-    subgraph L2["Lane 2: Merge a normal PR into main"]
-        M_IN["Merged to main\n(normal commit)"] --> M_CI["ci.yml\nFast checks"]
-        M_CI --> M_PKG["Calls _package.yml\nVersion: X.Y.Z+git.sha"]
-        M_PKG --> M_OUT(["Publish Snap to 'edge'"])
-
-        M_IN --> M_RP["release-please.yml\nOpens / updates Release PR"]
-    end
-
-    subgraph L3["Lane 3: Manual packaging test (any branch)"]
-        MAN_IN["Actions -> Release\n-> Run workflow"] --> MAN_PKG["release.yml\nCalls _package.yml\nVersion: X.Y.Z+git.sha"]
-        MAN_PKG --> MAN_OUT(["Download 4 artifacts\nNO publish"])
-    end
-
-    subgraph L4["Lane 4: Merge the release-please PR (real release)"]
-        R_IN["Merge Release PR"] --> R_RP["release-please.yml\nCreates tag vX.Y.Z +\nGitHub Release"]
-        R_IN -.-> R_SKIP["ci.yml: fast checks only\n(skips edge build)"]
-        R_RP -->|"tag push fires release.yml"| R_PKG["release.yml\nCalls _package.yml\nVersion: X.Y.Z"]
-        R_PKG --> R_OUT(["Upload 4 files to GH Release\n+ Publish Snap to 'candidate'\n+ Upload flathub-bundle artifact"])
-        R_OUT -.->|"manual after smoke test"| R_STABLE(["Promote Snap -> 'stable'\nUpdate Flathub repo"])
-    end
+    PR_IN["PR to main"] --> PR_CI["ci.yml\nFast checks only\n(lint, fmt, test, build, PR title, appstream)"]
+    PR_CI --> PR_OUT(["Green checks on PR\nNO packaging, NO publish"])
 ```
 
+### 2. Merge a normal PR into `main`
+
 ```mermaid
 flowchart LR
-    subgraph PKG["Shared _package.yml (written once, called everywhere)"]
-        direction LR
-        P_TAURI["build-tauri (ubuntu-22.04)\n.deb + .rpm"] --> P_SNAP["build-snap (ubuntu-latest)\nwraps .deb + craftctl version\n.snap"]
-        P_FLAT["build-flatpak (GNOME 50 container)\noffline sources + lint + .flatpak\n(+ flathub-bundle on v* tag)"]
-    end
+    M_IN["Merged to main\n(normal commit)"] --> M_CI["ci.yml\nFast checks"]
+    M_CI --> M_PKG["Calls _package.yml\nVersion: X.Y.Z+git.sha"]
+    M_PKG --> M_OUT(["Publish Snap to 'edge'"])
+
+    M_IN --> M_RP["release-please.yml\nOpens / updates Release PR"]
+```
+
+### 3. Merge the `release-please` PR (real release)
+
+```mermaid
+flowchart LR
+    R_IN["Merge Release PR"] --> R_RP["release-please.yml\nCreates tag vX.Y.Z +\nGitHub Release"]
+    R_IN -.-> R_SKIP["ci.yml: fast checks only\n(skips edge build)"]
+    R_RP -->|"tag push fires release.yml"| R_PKG["release.yml\nCalls _package.yml\nVersion: X.Y.Z"]
+    R_PKG --> R_OUT(["Upload 4 files to GH Release\n+ Publish Snap to 'candidate'\n+ Upload flathub-bundle artifact"])
+    R_OUT -.->|"manual after smoke test"| R_STABLE(["Promote Snap -> 'stable'\nUpdate Flathub repo"])
+```
+
+### 4. Manual packaging test (on-demand, any branch)
+
+```mermaid
+flowchart LR
+    MAN_IN["Actions -> Release\n-> Run workflow"] --> MAN_PKG["release.yml\nCalls _package.yml\nVersion: X.Y.Z+git.sha"]
+    MAN_PKG --> MAN_OUT(["Download 4 artifacts\nNO publish"])
+```
+
+### Shared `_package.yml` (called by lanes 2, 3, and 4)
+
+```mermaid
+flowchart LR
+    PKG_IN(["_package.yml\n(workflow_call)"]) --> P_TAURI["build-tauri (ubuntu-22.04)\n.deb + .rpm"]
+    P_TAURI --> P_SNAP["build-snap (ubuntu-latest)\nwraps .deb + craftctl version\n.snap"]
+    PKG_IN --> P_FLAT["build-flatpak (GNOME 50 container)\noffline sources + lint + .flatpak\n(+ flathub-bundle on v* tag)"]
 ```
 
 ## Workflow roles
