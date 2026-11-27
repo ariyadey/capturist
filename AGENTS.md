@@ -43,23 +43,18 @@ cargo test
 
 ## VCS: commits & pull requests
 
-- **Trunk-based / GitHub Flow**: `main` is always stable; create a feature branch per change (e.g. `fix-tray-icon`, `add-autostart-perm`).
-- Commit/PR titles follow **Conventional Commits** (`feat:`, `fix(scope):`, `refactor:`, `docs:`, `chore:`, ...); PR titles are enforced by `action-semantic-pull-request` in CI.
+- Follow [`CONTRIBUTING.md`](CONTRIBUTING.md) for GitHub Flow branching, Conventional Commits (enforced on PR titles in CI), PR workflow, and pre-push quality gates (`npm run lint`, `npm run format:check`, `npm test`, `npm run build`, and in `src-tauri/`: `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`).
 - Dependabot handles dependency bumps in dedicated PRs (prefixed with `chore`).
-- Before submitting: run `npm run lint`, `npm run format:check`, `npm test`, `npm run build` (frontend) and `cargo fmt --check && cargo clippy -- -D warnings && cargo test` (backend).
 - Open an issue to discuss major changes before opening a PR.
 - Always add/update unit tests for every bug fix, feature, and enhancement to keep the app bulletproof.
 - Always set appropriate labels, a GitHub `type` (e.g. `Bug`, `Feature`, `Task`), and assign PRs to `ariyadey` (use `gh api -X PATCH repos/ariyadey/capturist/issues/<number>` if `gh pr edit` fails on `projectCards`).
 - Persist cross-session project rules, conventions, and significant architectural decisions in this file (`AGENTS.md`).
 
-## CI/CD
+## CI/CD & testing notes
 
-- `.github/workflows/ci.yml` — PRs and `main` pushes: fast quality gates (`frontend` lint/format/test/build, `backend` fmt/clippy/test, semantic PR title check, `appstreamcli`). PRs never package or publish. On normal `main` pushes (skipping `release-please` release commits), calls `_package.yml` with `<version>+git.<sha>` and publishes `.snap` to Snap Store `edge`.
-- `.github/workflows/_package.yml` — reusable `workflow_call` shared by `ci.yml` and `release.yml`: builds `.deb`/`.rpm` (`ubuntu-22.04`), `.snap` (via `snap-version.txt` + `craftctl set version`), and `.flatpak` (GNOME 50 container with `generate-flatpak-sources` + `flatpak-builder-lint`).
-- `.github/workflows/release-please.yml` — watches `main`, derives the next version from Conventional Commits, and opens/maintains a release PR (bumps `package.json`, `Cargo.toml`, the single AppStream metainfo `<release>` entry, and the Flatpak manifest source tag via `x-release-please-version`/`-version-date` markers; `skip-changelog: true` keeps no `CHANGELOG.md` in-repo). On merge: creates the `v*` tag + GitHub Release with release notes.
-- `.github/workflows/release.yml` — manual `workflow_dispatch` calls `_package.yml` to build all 4 formats as artifacts without publishing (test lane); tag push `v*` calls `_package.yml` (also uploading `flathub-bundle`), uploads the 4 formats to the GitHub Release, and publishes `.snap` to `candidate`.
-- `me.ariyadey.capturist.metainfo.xml` holds a single `<release>` entry with `<url type="details">` (release history lives on GitHub Releases), updated only by `release-please` and never mutated at build time. Snapcraft adopts metadata from `parse-info` and overrides `version` via `craftctl set version` when `snap-version.txt` exists.
-- Frontend unit tests run through the `@angular/build:unit-test` builder (jsdom/Vitest); Tauri APIs are mocked in `src/test-setup.ts` via `@tauri-apps/api/mocks`.
+- Full workflow breakdown, Snap Store channels, and release/Flathub steps live in [`docs/ci-cd-flow.md`](docs/ci-cd-flow.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- `me.ariyadey.capturist.metainfo.xml` holds a single `<release>` entry with `<url type="details">` updated only by `release-please` (never mutated at build time); Snapcraft adopts metadata via `parse-info` and overrides `version` via `craftctl set version` when `snap-version.txt` exists.
+- Frontend unit tests run through `@angular/build:unit-test` (Vitest + jsdom); Tauri APIs are mocked in `src/test-setup.ts` via `@tauri-apps/api/mocks`.
 
 ## Critical invariants (read before touching these areas)
 
