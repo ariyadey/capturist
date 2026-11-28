@@ -54,7 +54,7 @@
     "browserslist-config-baseline": "^0.5.0",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
-    "jsdom": "^30.0.1",
+    "jsdom": "^31.0.1",
     "postcss": "^8.5.3",
     "prettier": "3.9.6",
     "prettier-plugin-organize-attributes": "^1.0.0",
