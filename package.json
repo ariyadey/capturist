@@ -62,7 +62,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "sitemap": "^9.0.1",
     "tailwindcss": "^4.3.3",
-    "type-fest": "^5.8.0",
+    "type-fest": "^6.0.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.73.0",
     "vitest": "^5.1.1"
